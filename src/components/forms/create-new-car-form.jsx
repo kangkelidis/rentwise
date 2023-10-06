@@ -1,6 +1,5 @@
 'use client'
 
-import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
@@ -15,31 +14,29 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 
-import { CreateNewCar } from '@/lib/actions'
+import { createNewCar } from '@/lib/actions/cars.actions'
+import { carValidationSchema } from '@/lib/validations/car'
 
-const formSchema = z.object({
-	make: z.string(),
-	model: z.string(),
-	year: z.coerce.number(),
-	registration: z.string(),
-})
+import { useRouter } from 'next/navigation'
 
 export function NewCarForm() {
-	// 1. Define your form.
+	const router = useRouter()
+
 	const form = useForm({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(carValidationSchema),
 		defaultValues: {
 			make: '',
 			model: '',
-			year: null,
+			year: '',
 			registration: '',
 		},
 	})
 
-	// 2. Define a submit handler.
 	async function onSubmit(values) {
-        const success = await CreateNewCar(values)
-        console.log(success);
+        const success = await createNewCar(values)
+		if (success) {
+			router.push('/fleet')
+		}
 	}
 
 	return (
@@ -97,7 +94,14 @@ export function NewCarForm() {
 						</FormItem>
 					)}
 				/>
-				<Button type='submit'>Submit</Button>
+				<div className='flex place-content-between'>
+					<Button type='submit'>Submit</Button>
+					<Button 
+						variant='secondary'
+						type='link'
+						onClick={() => (router.back())}
+						>Back</Button>
+				</div>
 			</form>
 		</Form>
 	)

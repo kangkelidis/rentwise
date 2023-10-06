@@ -1,7 +1,7 @@
 'use server'
 
-import dbConnect from "./dbConnect";
-import Vehicle from "@/models/vehicle";
+import dbConnect from "../dbConnect";
+import Vehicle from "@/models/vehicle.model";
 
 export async function getAllCars() {
     await dbConnect()
@@ -11,13 +11,11 @@ export async function getAllCars() {
     } catch (error) {
         console.log(err);
     }
-
 }
 
-export async function CreateNewCar(values) {
+export async function createNewCar(values) {
     await dbConnect()
 
-    console.log(values);
     try {
         const newCar = await Vehicle.create(values)
         return true;
