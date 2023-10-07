@@ -1,4 +1,4 @@
-import { NewCarForm } from '@/components/forms/create-new-car-form'
+import { VehicleProfile } from '@/components/forms/VehicleProfile'
 
 export default async function Home() {
   return (

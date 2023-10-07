@@ -16,16 +16,17 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-export function DataTable({
-  columns,
-  data,
-}) {
+import { useRouter } from "next/navigation"
+
+export function DataTable({ columns, data }) {
+  const router = useRouter()
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
-
+  console.log(table.getRowModel());
   return (
     <div className="rounded-md border">
       <Table>
@@ -51,14 +52,16 @@ export function DataTable({
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
+              className={'cursor-pointer'}
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={() => router.push(`/fleet/${row.original.id}`)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
-                ))}
+                ))} 
               </TableRow>
             ))
           ) : (

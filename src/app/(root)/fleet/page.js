@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 async function getData() {
   const cars = await getAllCars()
-  return cars.map(car => ({make: car.make, model: car.model, year:car.year, registration: car.registration}))
+  return cars.map(car => ({id: car.id, make: car.make, model: car.model, year:car.year, registration: car.registration}))
 }
 
 export default async function Page() {

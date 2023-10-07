@@ -14,28 +14,36 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 
-import { createNewCar } from '@/lib/actions/cars.actions'
+import { updateCar } from '@/lib/actions/cars.actions'
 import { carValidationSchema } from '@/lib/validations/car'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
-export function NewCarForm() {
+export function VehicleProfile({car}) {
 	const router = useRouter()
+	const pathname = usePathname()
+	if (car) {
+		car = JSON.parse(car)
+	}
 
 	const form = useForm({
 		resolver: zodResolver(carValidationSchema),
 		defaultValues: {
-			make: '',
-			model: '',
-			year: '',
-			registration: '',
+			make: car?.make || '',
+			model: car?.model || '',
+			year: car?.year || '',
+			registration: car?.registration || '',
 		},
 	})
 
 	async function onSubmit(values) {
-        const success = await createNewCar(values)
+        const success = await updateCar(car?._id, values, pathname)
 		if (success) {
-			router.push('/fleet')
+			if (pathname.includes("/fleet/")) {
+				router.back()}
+			else {
+				router.push('/fleet')
+			}
 		}
 	}
 
