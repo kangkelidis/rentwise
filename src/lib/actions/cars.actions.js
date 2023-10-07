@@ -18,7 +18,7 @@ export async function updateCar(carId, values, path) {
     console.log(carId, values, path);
     try {
         await dbConnect()
-        const newCar = await Vehicle.findOneAndUpdate({ _id: carId }, values, { upsert: true })
+        const newCar = await Vehicle.findOneAndUpdate({ id: carId }, values, { upsert: true })
 
         if (path.includes("/fleet/")) {
             revalidatePath(path);

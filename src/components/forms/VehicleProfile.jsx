@@ -40,8 +40,8 @@ export function VehicleProfile({car}) {
         const success = await updateCar(car?._id, values, pathname)
 		if (success) {
 			if (pathname.includes("/fleet/")) {
-				router.back()}
-			else {
+				router.back()
+			} else {
 				router.push('/fleet')
 			}
 		}
