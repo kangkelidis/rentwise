@@ -15,17 +15,12 @@ export async function getAllCars() {
 }
 
 export async function updateCar(carId, values, path) {
-    console.log(carId, values, path);
     try {
         await dbConnect()
         carId ? await Vehicle.findByIdAndUpdate(carId, values)
         :
         await Vehicle.create(values)
-
-        if (path.includes("/fleet/")) {
-            revalidatePath(path);
-          }
-
+        revalidatePath(path);
         return true;
       } catch (error) {
         console.log(error);
@@ -42,10 +37,12 @@ export async function getCar(id) {
     }
 }
 
-export async function deleteCar(id) {
+export async function deleteCar(id, path) {
     try {
         await dbConnect()
-        await Vehicle.findByIdAndDelete({id})
+        await Vehicle.findByIdAndDelete(id)
+        revalidatePath(path)
+        return true
     } catch (error) {
         console.log(error);
         throw new Error('Could not delete car with id: ' + id)

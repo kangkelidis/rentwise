@@ -9,5 +9,10 @@ export const sidebarLinks = [
       route: "/fleet",
       label: "Fleet",
     },
+    {
+      imgURL: "/assets/bell.svg",
+      route: "/orders",
+      label: "Orders",
+    },
   ];
   

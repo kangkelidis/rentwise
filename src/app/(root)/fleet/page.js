@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
-import { getAllCars } from "@/lib/actions/cars.actions"
+import { columns } from "@/components/tables/car-columns"
+import { DataTable } from "@/components/tables/data-table"
+import { getAllCars } from "@/lib/actions/vehicle.actions"
 import Link from 'next/link'
 
 async function getData() {

@@ -3,8 +3,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
 	Form,
 	FormControl,
@@ -13,13 +11,15 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
-import { updateCar } from '@/lib/actions/cars.actions'
-import { carValidationSchema } from '@/lib/validations/car'
+import { updateCar, deleteCar } from '@/lib/actions/vehicle.actions'
+import { vehicleValidationSchema } from '@/lib/validations/vehicle'
 
 import { useRouter, usePathname } from 'next/navigation'
 
-export function VehicleProfile({car}) {
+export function VehicleForm({car}) {
 	const router = useRouter()
 	const pathname = usePathname()
 	if (car) {
@@ -27,7 +27,7 @@ export function VehicleProfile({car}) {
 	}
 
 	const form = useForm({
-		resolver: zodResolver(carValidationSchema),
+		resolver: zodResolver(vehicleValidationSchema),
 		defaultValues: {
 			make: car?.make || '',
 			model: car?.model || '',
@@ -44,6 +44,15 @@ export function VehicleProfile({car}) {
 			} else {
 				router.push('/fleet')
 			}
+		}
+	}
+
+	async function onDelete() {
+		const success = await deleteCar(car._id, pathname) 
+		if (success) {
+			router.push("/fleet")
+		} else {
+			
 		}
 	}
 
@@ -104,11 +113,14 @@ export function VehicleProfile({car}) {
 				/>
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>
-					<Button 
-						variant='secondary'
-						type='link'
+					{car && 
+						<Button type='button' variant='destructive' 
+							onClick={onDelete}
+						>Delete</Button>
+					}
+					<Button type='button' variant='secondary'
 						onClick={() => (router.back())}
-						>Back</Button>
+					>Back</Button>
 				</div>
 			</form>
 		</Form>

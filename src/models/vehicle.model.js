@@ -62,9 +62,10 @@ const vehicleSchema = new mongoose.Schema({
     current_location: {
 
     },
-    orders: {
-
-    },
+    orders: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Order",
+    }],
     payments: {
 
     },
@@ -80,5 +81,5 @@ const vehicleSchema = new mongoose.Schema({
 
 },{timestamps: true})
 
-const Vehicle =  mongoose.models.Vehicle || mongoose.model('Vehicle', vehicleSchema)
-export default Vehicle
+export default mongoose.models.Vehicle || mongoose.model('Vehicle', vehicleSchema)
+
