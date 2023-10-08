@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const orderSchema = new mongoose.Schema({
-	vehicle: {
+	vehicle_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vehicle",
         required: true,

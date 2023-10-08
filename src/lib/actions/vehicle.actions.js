@@ -14,6 +14,10 @@ export async function getAllCars() {
     }
 }
 
+export async function fetchAvailableCars(fromDate, tillDate) {
+    // mongoose query find many cars where no car.order intersects with form-till
+}
+
 export async function updateCar(carId, values, path) {
     try {
         await dbConnect()

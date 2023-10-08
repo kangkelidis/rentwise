@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
-import Order from "@/models/order.model"
+import orderModel from "@/models/order.model"
+import vehicleModel from "@/models/vehicle.model";
 
 export async function fetchOrders() {
     try {
         await dbConnect()
-        return await Order.find({})
+        return await orderModel.find({}).populate('vehicle_id')
     } catch (error) {
         throw new Error('Failed to fetch orders: ' + error.message)
     }
@@ -16,9 +17,16 @@ export async function fetchOrders() {
 export async function updateOrder(orderID, values, path) {
     try {
         await dbConnect()
-        orderID ? await Order.findByIdAndUpdate(orderID, values)
+        const vehicle = await vehicleModel.findById(values.vehicle_id)
+        
+        
+        const order = orderID ? await orderModel.findByIdAndUpdate(orderID, values)
         :
-        await Order.create(values)
+        await orderModel.create(values)
+        
+        vehicle.orders.push(order)
+        await vehicle.save()
+
         revalidatePath(path);
         return true;
       } catch (error) {
@@ -30,7 +38,7 @@ export async function updateOrder(orderID, values, path) {
 export async function fetchOrder(id) {
     try {
         await dbConnect()
-        return await Order.findById(id)
+        return await orderModel.findById(id)
     } catch (error) {
         throw new Error('Failed to fetch order: ' + error.message)
     }
@@ -39,7 +47,7 @@ export async function fetchOrder(id) {
 export async function deleteOrder(id, path) {
     try {
         await dbConnect()
-        await Order.findByIdAndDelete(id)
+        await orderModel.findByIdAndDelete(id)
         revalidatePath(path)
         return true
     } catch (error) {

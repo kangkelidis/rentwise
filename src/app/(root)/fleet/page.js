@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { columns } from "@/components/tables/car-columns"
+import { carColumns } from "@/components/tables/columns"
 import { DataTable } from "@/components/tables/data-table"
 import { getAllCars } from "@/lib/actions/vehicle.actions"
 import Link from 'next/link'
@@ -16,7 +16,7 @@ export default async function Page() {
     <div className="container mx-auto py-10">
       <h2 className="head-text">Fleet</h2>
       <Button><Link href={'/fleet/create'}>Add Vehicle</Link></Button>
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={carColumns} data={data} />
     </div>
   )
 }
