@@ -1,10 +1,12 @@
-import { VehicleForm } from '@/components/forms/VehicleForm'
+import { printAgreement } from "@/lib/pdf/agreement"
+import { Button } from "@/components/ui/button"
 
 export default async function Home() {
+  printAgreement(1)
+  
   return (
-    <main className="flex p-24">
-
-    </main>
+    <div className="flex p-24">
+    </div>
   )
 }
 

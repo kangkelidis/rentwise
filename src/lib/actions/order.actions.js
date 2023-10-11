@@ -4,29 +4,32 @@ import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
 import orderModel from "@/models/order.model"
 import vehicleModel from "@/models/vehicle.model";
+import clientModel from "@/models/client.model";
 
 export async function fetchOrders() {
     try {
         await dbConnect()
-        return await orderModel.find({}).populate('vehicle_id')
+        return await orderModel.find({}).populate('vehicle_id').populate('client_id')
     } catch (error) {
         throw new Error('Failed to fetch orders: ' + error.message)
     }
 }
 
-export async function updateOrder(orderID, values, path) {
+export async function createOrder(values, path) {
     try {
         await dbConnect()
-        const vehicle = await vehicleModel.findById(values.vehicle_id)
-        
-        
-        const order = orderID ? await orderModel.findByIdAndUpdate(orderID, values)
-        :
         await orderModel.create(values)
-        
-        vehicle.orders.push(order)
-        await vehicle.save()
+        revalidatePath(path);
+        return true;
+      } catch (error) {
+        console.log(error);
+        return false
+      }
+}
 
+export async function updateOrder(orderId, values, path) {
+    try {
+        await orderModel.findByIdAndUpdate(orderId, values)
         revalidatePath(path);
         return true;
       } catch (error) {
@@ -38,7 +41,7 @@ export async function updateOrder(orderID, values, path) {
 export async function fetchOrder(id) {
     try {
         await dbConnect()
-        return await orderModel.findById(id)
+        return await orderModel.findById(id).populate('vehicle_id').populate('client_id')
     } catch (error) {
         throw new Error('Failed to fetch order: ' + error.message)
     }

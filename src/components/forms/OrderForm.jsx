@@ -32,29 +32,38 @@ import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
 
-import { updateOrder, deleteOrder } from '@/lib/actions/order.actions'
-import { orderValidationSchema } from '@/lib/validations/order'
+import { createOrder, deleteOrder, updateOrder } from '@/lib/actions/order.actions'
+import { orderValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 
-export function OrderForm({ vehicles, order }) {
+export function OrderForm({ vehicles, clients, order }) {
 	const router = useRouter()
 	const pathname = usePathname()
 	if (order) {
 		order = JSON.parse(order)
 	}
+	
 	vehicles = JSON.parse(vehicles)
+	clients = JSON.parse(clients)
+
 	const form = useForm({
 		resolver: zodResolver(orderValidationSchema),
 		defaultValues: {
-			vehicle_id: order?.vehicle_id || '',
-			pick_up_date: order?.pick_up_date || '',
-			drop_off_date: order?.drop_off_date || '',
+			vehicle_id: order?.vehicle_id.id || '',
+			client_id: order?.client_id.id || '',
+			pick_up_date: order ? new Date(order.pick_up_date) : '',
+			drop_off_date: order ? new Date(order.drop_off_date) : '',
 		},
 	})
 
 	async function onSubmit(values) {
-		const success = await updateOrder(order?._id, values, pathname)
+		let success
+		if (order) {
+			success = await updateOrder(order._id, values, pathname)
+		} else {
+			success = await createOrder(values, pathname)
+		}
 		if (success) {
 			router.push('/orders')
 		}
@@ -132,6 +141,65 @@ export function OrderForm({ vehicles, order }) {
 
 				<FormField
 					control={form.control}
+					name='client_id'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Client</FormLabel>
+							<Popover>
+								<PopoverTrigger asChild>
+									<FormControl>
+										<Button
+											variant='outline'
+											role='combobox'
+											className={cn(
+												'w-[200px] justify-between',
+												!field.value && 'text-muted-foreground'
+											)}
+										>
+											{field.value
+												? clients.find(
+														(client) => client.value === field.value
+												  )?.label
+												: 'Select client'}
+											<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+										</Button>
+									</FormControl>
+								</PopoverTrigger>
+								<PopoverContent className='w-[200px] p-0'>
+									<Command>
+										<CommandInput placeholder='Search client...' />
+										<CommandEmpty>No client found.</CommandEmpty>
+										<CommandGroup>
+											{clients.map((client) => (
+												<CommandItem
+													value={client.label}
+													key={client.value}
+													onSelect={() => {
+														form.setValue('client_id', client.value)
+													}}
+												>
+													<Check
+														className={cn(
+															'mr-2 h-4 w-4',
+															client.value === field.value
+																? 'opacity-100'
+																: 'opacity-0'
+														)}
+													/>
+													{client.label}
+												</CommandItem>
+											))}
+										</CommandGroup>
+									</Command>
+								</PopoverContent>
+							</Popover>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
 					name='pick_up_date'
 					render={({ field }) => (
 						<FormItem className='flex flex-col'>
@@ -160,9 +228,7 @@ export function OrderForm({ vehicles, order }) {
 										mode='single'
 										selected={field.value}
 										onSelect={field.onChange}
-										disabled={(date) =>
-											date < new Date() || date < new Date('1900-01-01')
-										}
+										disabled={(date) => date < new Date('1900-01-01')}
 										initialFocus
 									/>
 								</PopoverContent>
@@ -171,7 +237,7 @@ export function OrderForm({ vehicles, order }) {
 						</FormItem>
 					)}
 				/>
-				
+
 				<FormField
 					control={form.control}
 					name='drop_off_date'
@@ -202,9 +268,7 @@ export function OrderForm({ vehicles, order }) {
 										mode='single'
 										selected={field.value}
 										onSelect={field.onChange}
-										disabled={(date) =>
-											date < new Date() || date < new Date('1900-01-01')
-										}
+										disabled={(date) => date < new Date('1900-01-01')}
 										initialFocus
 									/>
 								</PopoverContent>

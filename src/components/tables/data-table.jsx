@@ -17,9 +17,11 @@ import {
 } from "@/components/ui/table"
 
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 export function DataTable({ columns, data }) {
   const router = useRouter()
+  const pathname = usePathname()
 
   const table = useReactTable({
     data,
@@ -54,7 +56,7 @@ export function DataTable({ columns, data }) {
               className={'cursor-pointer'}
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                onClick={() => router.push(`/fleet/${row.original.id}`)}
+                onClick={() => router.push(`${pathname}/${row.original.id}`)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>

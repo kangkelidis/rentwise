@@ -22,11 +22,11 @@ export default function RootLayout({ children }) {
 			}}
 		>
 			<html lang='en'>
-				<body className={inter.className}>
+				<body className={`${inter.className}`}>
 					<Topbar />
 					<main className='flex flex-row'>
 						<LeftSidebar />
-						<section className='main-container'>
+						<section className='main-container w-full'>
 							<div className='w-full max-w-4xl'>{children}</div>
 						</section>
 					</main>

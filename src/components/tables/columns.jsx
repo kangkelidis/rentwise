@@ -5,7 +5,7 @@
 // You can use a Zod schema here if you want.
 
 
-export const carColumns = [
+export const vehicleColumns = [
   {
     accessorKey: "make",
     header: "Make",
@@ -40,5 +40,20 @@ export const orderColumns = [
   {
     accessorKey: "vehicle",
     header: "Car",
+  },
+  {
+    accessorKey: "client",
+    header: "Client",
+  },
+]
+
+export const clientColumns = [
+  {
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
+    accessorKey: "name",
+    header: "Name",
   },
 ]

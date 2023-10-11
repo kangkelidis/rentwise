@@ -3,25 +3,41 @@
 import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
 import Vehicle from "@/models/vehicle.model";
+import vehicleModel from "@/models/vehicle.model";
+import orderModel from "@/models/order.model";
 
-export async function getAllCars() {
+export async function fetchVehicles() {
     try {
         await dbConnect()
-        const cars = await Vehicle.find({})
-        return cars
+        return await Vehicle.find({})
     } catch (error) {
         console.log(err);
     }
 }
 
-export async function fetchAvailableCars(fromDate, tillDate) {
-    // mongoose query find many cars where no car.order intersects with form-till
+// Used as data for comboBox
+export async function fetchVehiclesList(availableFrom, availableTill) { 
+    const vehicles = availableFrom && availableTill ?
+    await fetchAvailableVehicles(availableFrom, availableTill)
+    :
+    await fetchVehicles()
+	
+    return vehicles.map((vehicle) => ({
+		label: `${vehicle.make} ${vehicle.model}, ${vehicle.registration}`,
+		value: vehicle._id,
+	}))
+}
+export async function fetchAvailableVehicles(fromDate, tillDate) {
+    const allVehicles = await vehicleModel.find({})
+    const boolArray = await Promise.all(allVehicles.map(v => v.isAvailableDuring(fromDate, tillDate)));
+    const availableVehicles = allVehicles.filter((_, index) => boolArray[index])
+    return availableVehicles
 }
 
-export async function updateCar(carId, values, path) {
+export async function updateVehicle(vehicleId, values, path) {
     try {
         await dbConnect()
-        carId ? await Vehicle.findByIdAndUpdate(carId, values)
+        vehicleId ? await Vehicle.findByIdAndUpdate(vehicleId, values)
         :
         await Vehicle.create(values)
         revalidatePath(path);
@@ -32,16 +48,16 @@ export async function updateCar(carId, values, path) {
       }
 }
 
-export async function getCar(id) {
+export async function getVehicle(id) {
     try {
         await dbConnect()
         return await Vehicle.findById(id)
     } catch (error) {
-        throw new Error('Failed to fetch car: ' + error.message)
+        throw new Error('Failed to fetch vehicle: ' + error.message)
     }
 }
 
-export async function deleteCar(id, path) {
+export async function deleteVehicle(id, path) {
     try {
         await dbConnect()
         await Vehicle.findByIdAndDelete(id)
@@ -49,6 +65,6 @@ export async function deleteCar(id, path) {
         return true
     } catch (error) {
         console.log(error);
-        throw new Error('Could not delete car with id: ' + id)
+        throw new Error('Could not delete vehicle with id: ' + id)
     }
 }

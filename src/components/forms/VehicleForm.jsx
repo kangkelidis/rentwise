@@ -14,8 +14,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-import { updateCar, deleteCar } from '@/lib/actions/vehicle.actions'
-import { vehicleValidationSchema } from '@/lib/validations/vehicle'
+import { updateVehicle, deleteVehicle } from '@/lib/actions/vehicle.actions'
+import { vehicleValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 
@@ -37,7 +37,7 @@ export function VehicleForm({car}) {
 	})
 
 	async function onSubmit(values) {
-        const success = await updateCar(car?._id, values, pathname)
+        const success = await updateVehicle(car?._id, values, pathname)
 		if (success) {
 			if (pathname.includes("/fleet/")) {
 				router.back()
@@ -48,7 +48,7 @@ export function VehicleForm({car}) {
 	}
 
 	async function onDelete() {
-		const success = await deleteCar(car._id, pathname) 
+		const success = await deleteVehicle(car._id, pathname) 
 		if (success) {
 			router.push("/fleet")
 		} else {

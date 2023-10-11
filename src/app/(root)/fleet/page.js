@@ -1,22 +1,29 @@
 import { Button } from "@/components/ui/button"
-import { carColumns } from "@/components/tables/columns"
+import { vehicleColumns } from "@/components/tables/columns"
 import { DataTable } from "@/components/tables/data-table"
-import { getAllCars } from "@/lib/actions/vehicle.actions"
+import { fetchAvailableVehicles, fetchVehicles } from "@/lib/actions/vehicle.actions"
 import Link from 'next/link'
 
 async function getData() {
-  const cars = await getAllCars()
-  return cars.map(car => ({id: car.id, make: car.make, model: car.model, year:car.year, registration: car.registration}))
+  const vehicles = await fetchVehicles()
+  return vehicles.map(vehicle => ({id: vehicle.id, make: vehicle.make, model: vehicle.model, year:vehicle.year, registration: vehicle.registration}))
 }
 
 export default async function Page() {
   const data = await getData()
 
+
+  const from = new Date("2023-10-09T21:00:00.000+00:00")
+  const till = new Date("2023-10-15T21:00:00.000+00:00")
+  await fetchAvailableVehicles(from, till)
+
+
+
   return (
     <div className="container mx-auto py-10">
       <h2 className="head-text">Fleet</h2>
       <Button><Link href={'/fleet/create'}>Add Vehicle</Link></Button>
-      <DataTable columns={carColumns} data={data} />
+      <DataTable columns={vehicleColumns} data={data} />
     </div>
   )
 }
