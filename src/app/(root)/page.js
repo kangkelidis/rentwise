@@ -1,11 +1,12 @@
 import { printAgreement } from "@/lib/pdf/agreement"
-import { Button } from "@/components/ui/button"
+import Agreement from "@/components/shared/Agreement"
 
 export default async function Home() {
-  printAgreement(1)
+
   
   return (
     <div className="flex p-24">
+      <Agreement />
     </div>
   )
 }
