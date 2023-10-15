@@ -8,7 +8,7 @@ export default function Agreement(props) {
 
     return (
         <>
-            <Button onClick={() => printAgreement(1)} />            
+            <Button onClick={() => printAgreement(1)}>test</Button>            
         </>
     )
 }
