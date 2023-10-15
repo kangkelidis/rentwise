@@ -477,5 +477,5 @@ export function printAgreement(agreement) {
     doc.text(PAGE_MARGIN, lastY, splitTerms)
     doc.text(PAGE_MARGIN, 250, splitAccept)
 
-    doc.save()
+    doc.save(`${agreement.number}.pdf`)
 }
