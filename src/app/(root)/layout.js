@@ -2,6 +2,7 @@ import '@/styles/globals.css'
 import { Inter } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
+import {Providers} from "./providers";
 
 import Topbar from '@/components/shared/Topbar'
 import LeftSidebar from '@/components/shared/LeftSidebar'
@@ -21,8 +22,9 @@ export default function RootLayout({ children }) {
 				baseTheme: dark,
 			}}
 		>
-			<html lang='en'>
+			<html lang='en' className='dark'>
 				<body className={`${inter.className}`}>
+					<Providers>
 					<Topbar />
 					<main className='flex flex-row'>
 						<LeftSidebar />
@@ -31,6 +33,7 @@ export default function RootLayout({ children }) {
 						</section>
 					</main>
 					<Bottombar />
+					</Providers>
 				</body>
 			</html>
 		</ClerkProvider>

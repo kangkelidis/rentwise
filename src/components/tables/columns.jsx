@@ -1,59 +1,60 @@
-"use client"
-
+'use client'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-
 export const vehicleColumns = [
-  {
-    accessorKey: "make",
-    header: "Make",
-  },
-  {
-    accessorKey: "model",
-    header: "Model",
-  },
-  {
-    accessorKey: "year",
-    header: "Year",
-  },
-  {
-    accessorKey: "registration",
-    header: "Registration",
-  },
+	{
+		key: 'number',
+		label: 'Id',
+	},
+	{
+		key: 'vehicle',
+		label: 'Vehicle',
+	},
 ]
 
 export const orderColumns = [
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "pickup",
-    header: "Pick Up Date",
-  },
-  {
-    accessorKey: "dropoff",
-    header: "Drop of Date",
-  },
-  {
-    accessorKey: "vehicle",
-    header: "Car",
-  },
-  {
-    accessorKey: "client",
-    header: "Client",
-  },
+	{
+		key: 'id',
+		label: 'ID',
+	},
+	{
+		key: 'pickup',
+		label: 'Pick Up Date',
+	},
+	{
+		key: 'dropoff',
+		label: 'Drop of Date',
+	},
+	{
+		key: 'vehicle',
+		label: 'Car',
+	},
+	{
+		key: 'client',
+		label: 'Client',
+	},
 ]
 
 export const clientColumns = [
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
+	{
+		key: 'id',
+		label: 'ID',
+	},
+	{
+		key: 'name',
+		label: 'Name',
+	},
+]
+
+export const ownerColumns = [
+	{
+		key: 'code',
+		label: 'Id',
+	},
+	{
+		key: 'name',
+		label: 'Name',
+	},
 ]

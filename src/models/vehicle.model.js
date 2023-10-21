@@ -1,18 +1,15 @@
 import mongoose from 'mongoose'
 import orderModel from './order.model'
+import { 
+    TRANSMISSION, 
+    BODY_TYPES,
+    NUM_SEATS,
+    NUM_DOORS,
+    COLORS,
+    EXTRAS, 
+    FUEL_TYPES, } from '@/constants'
 
 const vehicleSchema = new mongoose.Schema({
-	registration: {
-		type: String,
-        required: true,
-        unique: true
-	},
-    year: {
-		type: Number,
-        min: [1900, 'Must be after 1900'],
-        max: [2100, 'Must be before 2100'],
-        required: true,
-	},
     make: {
         type: String,
         required: true,
@@ -21,61 +18,79 @@ const vehicleSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    year: {
+        type: Number,
+        min: [1900, 'Must be after 1900'],
+        max: [2100, 'Must be before 2100'],
+        required: true,
+    },
+	registration: {
+		type: String,
+        required: true,
+        unique: true
+	},
     group: {
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Group",
+        required: true,
+    },
+    transmission: {
+        type: String,
+        enum: [...TRANSMISSION]
     },
     body_type: {
         type: [String],
+        enum: [...BODY_TYPES]
     },
-    fuel: {
-
+    fuel_type: {
+        type: String,
+        enum: [...FUEL_TYPES]
+    },
+    fuel_amount: {
+        type: Number
     },
     vol_engine: {
-
-    },
-    transmission: {
-
+        type: Number,
     },
     num_seats: {
-
+        type: Number,
     },
     num_doors: {
-
+        type: Number,
     },
     color: {
-
+        type: String,
     },
-    options: {
-
+    extras: {
+        type: [String],
+        enum: [...EXTRAS]
     },
     photos: {
+        type: [String]
 
     },
     thumb: {
-
+        type: Number
     },
     owner: {
-
+        type: String,
+        // required: true, 
     },
     insurance: {
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Insurance",
     },
     current_location: {
-
+        type: String
     },
-    // orders: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Order",
-    //     unique: true
-    // }],
     payments: {
 
     },
     fuel_level: {
-
+        type: Number
     },
     odometer: {
-
+        type: Number
     },
     notes: {
 

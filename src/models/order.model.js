@@ -23,6 +23,41 @@ const orderSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    pick_up_location: {
+        type: String,
+        required: true
+    },
+    drop_off_location: {
+        type: String,
+        required: true
+    },
+    number: {
+        type: Number
+    },
+    price_per_day: {
+        type: Number
+    },
+    extras: {
+        drivers: [
+            {first_name: {
+                type: String,
+                
+            },
+            last_name: {
+                type: String
+            },
+            license: {
+                type: String
+            }
+        }],
+        other: {}
+    },
+    insurance: {
+
+    },
+    deposit: {
+        
+    }
 
 },{timestamps: true,
     toJSON: { virtuals: true }, toObject: { virtuals: true },

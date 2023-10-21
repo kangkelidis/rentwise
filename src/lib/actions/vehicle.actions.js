@@ -6,10 +6,19 @@ import Vehicle from "@/models/vehicle.model";
 import vehicleModel from "@/models/vehicle.model";
 import orderModel from "@/models/order.model";
 
-export async function fetchVehicles() {
+export async function fetchVehicles( page, limit ) {
     try {
         await dbConnect()
-        return await Vehicle.find({})
+        return await Vehicle.find({}).limit(limit).skip((page-1) * limit)
+    } catch (error) {
+        console.log(err);
+    }
+}
+
+export async function totalCountVehicles() {
+    try {
+        await dbConnect()
+        return await Vehicle.countDocuments({})
     } catch (error) {
         console.log(err);
     }
@@ -35,6 +44,8 @@ export async function fetchAvailableVehicles(fromDate, tillDate) {
 }
 
 export async function updateVehicle(vehicleId, values, path) {
+    console.log(values);
+
     try {
         await dbConnect()
         vehicleId ? await Vehicle.findByIdAndUpdate(vehicleId, values)

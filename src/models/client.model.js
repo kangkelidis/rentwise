@@ -9,11 +9,32 @@ const clientSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // orders: [{
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Order",
-    //     unique: true
-    // }],
+    dob: {
+        type: Date,
+
+    },
+    tel: {
+        type: String
+    },
+    email: {
+        type: String
+    },
+    passport: {
+        type: String
+    },
+    id: {
+        type: String,
+    },
+    license: {
+        type: String,
+    },
+    nationality: {
+        type: String
+    },
+    address: {
+        type: String
+    },
+
 
 },{timestamps: true,
     toJSON: { virtuals: true }, toObject: { virtuals: true },

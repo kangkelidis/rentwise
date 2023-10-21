@@ -1,4 +1,4 @@
-import { VehicleForm } from "@/components/forms/VehicleForm";
+import { SettingsForm } from "@/components/forms/SettingsForm";
 import { fetchGroups } from "@/lib/actions/group.actions";
 
 export default async function Page(props) {
@@ -8,8 +8,8 @@ export default async function Page(props) {
 
     return (
         <main>
-            <h2 className="head-text">Add a new Vehicle</h2>
-            <VehicleForm data={JSON.stringify(data)}/>
+            <h2 className="head-text">Settings</h2>
+            <SettingsForm data={JSON.stringify(data)}/>
         </main>
     )
 }

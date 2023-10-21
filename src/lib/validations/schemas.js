@@ -5,6 +5,15 @@ export const vehicleValidationSchema = z.object({
 	model: z.string(),
 	year: z.coerce.number(),
 	registration: z.string(),
+	group: z.string(),
+	transmission: z.string(),
+	body_type: z.string().or(z.array(z.string())),
+	fuel_type: z.string(),
+	fuel_amount: z.coerce.number(),
+	vol_engine: z.coerce.number(),
+	num_seats: z.coerce.number(),
+	num_doors: z.coerce.number(),
+	color: z.string(),
 })
 
 export const orderValidationSchema = z.object({
@@ -17,4 +26,12 @@ export const orderValidationSchema = z.object({
 export const clientValidationSchema = z.object({
 	first_name: z.string(),
     last_name: z.string(),
+})
+
+export const settingsValidationSchema = z.object({
+	group: z.string(),
+})
+
+export const ownerValidationSchema = z.object({
+	name: z.string(),
 })

@@ -6,40 +6,71 @@ import { useForm } from 'react-hook-form'
 import {
 	Form,
 	FormControl,
-    FormField,
+	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form'
+import { Select, SelectSection, SelectItem } from '@nextui-org/select'
+// import {
+// 	Select,
+// 	SelectContent,
+// 	SelectItem,
+// 	SelectTrigger,
+// 	SelectValue,
+//   } from "@/components/ui/select"
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Input } from '@nextui-org/input'
 
 import { updateVehicle, deleteVehicle } from '@/lib/actions/vehicle.actions'
 import { vehicleValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 
-export function VehicleForm({car}) {
+import {
+	TRANSMISSION,
+	BODY_TYPES,
+	NUM_SEATS,
+	NUM_DOORS,
+	COLORS,
+	EXTRAS,
+	FUEL_TYPES,
+} from '@/constants'
+
+export function VehicleForm({ data, vehicle }) {
 	const router = useRouter()
 	const pathname = usePathname()
-	if (car) {
-		car = JSON.parse(car)
+	if (vehicle) {
+		vehicle = JSON.parse(vehicle)
+	}
+
+	if (data) {
+		data = JSON.parse(data)
 	}
 
 	const form = useForm({
 		resolver: zodResolver(vehicleValidationSchema),
 		defaultValues: {
-			make: car?.make || '',
-			model: car?.model || '',
-			year: car?.year || '',
-			registration: car?.registration || '',
+			make: vehicle?.make || '',
+			model: vehicle?.model || '',
+			year: vehicle?.year || '',
+			registration: vehicle?.registration || '',
+			group: vehicle?.group || '',
+			transmission: vehicle?.transmission || '',
+			body_type: vehicle?.body_type || '',
+			fuel_type: vehicle?.fuel_type || '',
+			fuel_amount: vehicle?.fuel_amount || '',
+			vol_engine: vehicle?.vol_engine || '',
+			num_seats: vehicle?.num_seats && !isNaN(vehicle.num_seats) ? String(vehicle.num_seats) : '',
+			num_doors: vehicle?.num_doors && !isNaN(vehicle.num_doors) ? String(vehicle.num_doors) : '',
+			color: vehicle?.color || '',
 		},
 	})
 
 	async function onSubmit(values) {
-        const success = await updateVehicle(car?._id, values, pathname)
+		const success = await updateVehicle(vehicle?._id, values, pathname)
 		if (success) {
-			if (pathname.includes("/fleet/")) {
+			if (pathname.includes('/fleet/')) {
 				router.back()
 			} else {
 				router.push('/fleet')
@@ -48,12 +79,19 @@ export function VehicleForm({car}) {
 	}
 
 	async function onDelete() {
-		const success = await deleteVehicle(car._id, pathname) 
+		const success = await deleteVehicle(vehicle._id, pathname)
 		if (success) {
-			router.push("/fleet")
+			router.push('/fleet')
 		} else {
-			
 		}
+	}
+
+	function handleBodyTypeChange(event, onChange) {
+		if (event.target.value[0] === '') {
+			return
+		}
+		event.target.value = event.target.value.split(',')
+		onChange(event)
 	}
 
 	return (
@@ -64,63 +102,307 @@ export function VehicleForm({car}) {
 					name='make'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Make</FormLabel>
 							<FormControl>
-								<Input placeholder='Mercedes-Benz' {...field} />
+								<Input
+									label='Make'
+									isRequired
+									placeholder='Mercedes-Benz'
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
+
 				<FormField
 					control={form.control}
 					name='model'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Model</FormLabel>
 							<FormControl>
-								<Input placeholder='E220' {...field} />
+								<Input label='Model' isRequired placeholder='E220' {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
+
 				<FormField
 					control={form.control}
 					name='year'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Year</FormLabel>
 							<FormControl>
-								<Input type='number' min={1990} max={2040} placeholder={2023} {...field} />
+								<Input
+									isRequired
+									label='Year'
+									type='number'
+									min={1990}
+									max={2040}
+									placeholder={2023}
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
+
 				<FormField
 					control={form.control}
 					name='registration'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Registration</FormLabel>
 							<FormControl>
-								<Input placeholder='ABC123' {...field} />
+								<Input
+									isRequired
+									label='Registration'
+									placeholder='ABC123'
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
+
+				<FormField
+					control={form.control}
+					name='group'
+					render={({ field }) => (
+						<FormItem>
+							<Select
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Group'
+								isRequired
+								size='sm'
+							>
+								{data.map((group) => (
+									<SelectItem key={group.id} value={group.id}>
+										{group.group}
+									</SelectItem>
+								))}
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='transmission'
+					render={({ field }) => (
+						<FormItem>
+							<Select
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Transmission'
+								isRequired
+								size='sm'
+							>
+								{TRANSMISSION.map((type) => (
+									<SelectItem key={type} value={type}>
+										{type}
+									</SelectItem>
+								))}
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='body_type'
+					render={({ field }) => (
+						<FormItem>
+							<Select
+								onChange={(e) => handleBodyTypeChange(e, field.onChange)}
+								defaultSelectedKeys={
+									field.value.length && field.value[0] !== ''
+										? new Set(field.value)
+										: undefined
+								}
+								selectionMode='multiple'
+								label='Body Type'
+								size='sm'
+							>
+								{BODY_TYPES.map((type) => (
+									<SelectItem key={type} value={type}>
+										{type}
+									</SelectItem>
+								))}
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='fuel_type'
+					render={({ field }) => (
+						<FormItem>
+							<Select
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Fuel Type'
+								size='sm'
+							>
+								{FUEL_TYPES.map((type) => (
+									<SelectItem key={type} value={type}>
+										{type}
+									</SelectItem>
+								))}
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='fuel_amount'
+					render={({ field }) => (
+						<FormItem>
+							<FormControl>
+								<Input label='Fuel Percentage' placeholder='60' {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='vol_engine'
+					render={({ field }) => (
+						<FormItem>
+							<FormControl>
+								<Input label='Engine size' placeholder='1600cc' {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='num_seats'
+					render={({ field }) => 
+
+						{
+
+						return (
+						<FormItem>
+							<Select
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Num of Seats'
+								size='sm'
+								items={NUM_SEATS}
+							>
+								{NUM_SEATS.map((type) => (
+									<SelectItem key={type.id} textValue={type.id}>
+										{type.id}
+									</SelectItem>
+								))}
+							</Select>
+							<FormMessage />
+						</FormItem>
+						)
+								}
+					}
+				/>
+
+				<FormField
+					control={form.control}
+					name='num_doors'
+					render={({ field }) => (
+						<FormItem>
+							<Select
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Num of Doors'
+								size='sm'
+							>
+									<SelectItem key={2} value={2} textValue='2'>
+										{2}
+									</SelectItem>
+									<SelectItem key={4} value={4} textValue=''>
+										{4}
+									</SelectItem>
+								
+
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='color'
+					render={({ field }) => 
+					{
+
+					return (
+						<FormItem>
+							<Select
+								items={COLORS}
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Color'
+								size='sm'
+								renderValue={(items) => {
+									return items.map((item) => {
+										return(
+										<div key={item.data.id} className='flex gap-2'>
+											<div
+												className='w-4 h-4 rounded-full mt-[0.8px]'
+												style={{ backgroundColor: item.data.name }}
+											></div>
+											{item.data.name}
+										</div>
+									)})
+								}}
+							>
+								{(color) => {
+									return (
+									<SelectItem key={color.name} textValue={color.name} value={color.name} >
+										<div className='flex gap-2'>
+											<div
+												className='w-4 h-4 rounded-full mt-[0.8px]'
+												style={{ backgroundColor: color.name }}
+											></div>
+											{color.name}
+										</div>
+									</SelectItem>
+								)}}
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)
+									}
+				}
+				/>
+
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>
-					{car && 
-						<Button type='button' variant='destructive' 
-							onClick={onDelete}
-						>Delete</Button>
-					}
-					<Button type='button' variant='secondary'
-						onClick={() => (router.back())}
-					>Back</Button>
+					{vehicle && (
+						<Button type='button' variant='destructive' onClick={onDelete}>
+							Delete
+						</Button>
+					)}
+					<Button
+						type='button'
+						variant='secondary'
+						onClick={() => router.back()}
+					>
+						Back
+					</Button>
 				</div>
 			</form>
 		</Form>
