@@ -12,15 +12,10 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 import { Select, SelectSection, SelectItem } from '@nextui-org/select'
-// import {
-// 	Select,
-// 	SelectContent,
-// 	SelectItem,
-// 	SelectTrigger,
-// 	SelectValue,
-//   } from "@/components/ui/select"
+
 import { Button } from '@/components/ui/button'
-import { Input } from '@nextui-org/input'
+import { Input, Textarea } from '@nextui-org/input'
+import { CheckboxGroup, Checkbox } from '@nextui-org/checkbox'
 
 import { updateVehicle, deleteVehicle } from '@/lib/actions/vehicle.actions'
 import { vehicleValidationSchema } from '@/lib/validations/schemas'
@@ -37,16 +32,14 @@ import {
 	FUEL_TYPES,
 } from '@/constants'
 
-export function VehicleForm({ data, vehicle }) {
+export function VehicleForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
-	if (vehicle) {
-		vehicle = JSON.parse(vehicle)
-	}
 
-	if (data) {
-		data = JSON.parse(data)
-	}
+	data = JSON.parse(data)
+	const groups = data.groups
+	const owners = data.owners
+	const vehicle = data.vehicle
 
 	const form = useForm({
 		resolver: zodResolver(vehicleValidationSchema),
@@ -61,9 +54,17 @@ export function VehicleForm({ data, vehicle }) {
 			fuel_type: vehicle?.fuel_type || '',
 			fuel_amount: vehicle?.fuel_amount || '',
 			vol_engine: vehicle?.vol_engine || '',
-			num_seats: vehicle?.num_seats && !isNaN(vehicle.num_seats) ? String(vehicle.num_seats) : '',
-			num_doors: vehicle?.num_doors && !isNaN(vehicle.num_doors) ? String(vehicle.num_doors) : '',
+			odometer: vehicle?.odometer || '',
+			num_seats:
+				vehicle?.num_seats && !isNaN(vehicle.num_seats)
+					? String(vehicle.num_seats)
+					: '',
+			num_doors:
+				vehicle?.num_doors && !isNaN(vehicle.num_doors)
+					? String(vehicle.num_doors)
+					: '',
 			color: vehicle?.color || '',
+			extras: vehicle?.extras || '',
 		},
 	})
 
@@ -179,8 +180,8 @@ export function VehicleForm({ data, vehicle }) {
 								isRequired
 								size='sm'
 							>
-								{data.map((group) => (
-									<SelectItem key={group.id} value={group.id}>
+								{groups.map((group) => (
+									<SelectItem key={group.id} textValue={group.group}>
 										{group.group}
 									</SelectItem>
 								))}
@@ -203,7 +204,7 @@ export function VehicleForm({ data, vehicle }) {
 								size='sm'
 							>
 								{TRANSMISSION.map((type) => (
-									<SelectItem key={type} value={type}>
+									<SelectItem key={type} textValue={type}>
 										{type}
 									</SelectItem>
 								))}
@@ -230,7 +231,7 @@ export function VehicleForm({ data, vehicle }) {
 								size='sm'
 							>
 								{BODY_TYPES.map((type) => (
-									<SelectItem key={type} value={type}>
+									<SelectItem key={type} textValue={type}>
 										{type}
 									</SelectItem>
 								))}
@@ -252,7 +253,7 @@ export function VehicleForm({ data, vehicle }) {
 								size='sm'
 							>
 								{FUEL_TYPES.map((type) => (
-									<SelectItem key={type} value={type}>
+									<SelectItem key={type} textValue={type}>
 										{type}
 									</SelectItem>
 								))}
@@ -290,31 +291,45 @@ export function VehicleForm({ data, vehicle }) {
 
 				<FormField
 					control={form.control}
-					name='num_seats'
-					render={({ field }) => 
-
-						{
-
-						return (
+					name='odometer'
+					render={({ field }) => (
 						<FormItem>
-							<Select
-								onChange={field.onChange}
-								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Num of Seats'
-								size='sm'
-								items={NUM_SEATS}
-							>
-								{NUM_SEATS.map((type) => (
-									<SelectItem key={type.id} textValue={type.id}>
-										{type.id}
-									</SelectItem>
-								))}
-							</Select>
+							<FormControl>
+								<Input
+									label='Odometer'
+									placeholder=''
+									type='number'
+									{...field}
+								/>
+							</FormControl>
 							<FormMessage />
 						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='num_seats'
+					render={({ field }) => {
+						return (
+							<FormItem>
+								<Select
+									onChange={field.onChange}
+									defaultSelectedKeys={field.value ? [field.value] : undefined}
+									label='Num of Seats'
+									size='sm'
+									items={NUM_SEATS}
+								>
+									{NUM_SEATS.map((type) => (
+										<SelectItem key={type.id} textValue={type.id}>
+											{type.id}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
 						)
-								}
-					}
+					}}
 				/>
 
 				<FormField
@@ -328,14 +343,11 @@ export function VehicleForm({ data, vehicle }) {
 								label='Num of Doors'
 								size='sm'
 							>
-									<SelectItem key={2} value={2} textValue='2'>
-										{2}
+								{NUM_DOORS.map((type) => (
+									<SelectItem key={type.id} textValue={type.id}>
+										{type.id}
 									</SelectItem>
-									<SelectItem key={4} value={4} textValue=''>
-										{4}
-									</SelectItem>
-								
-
+								))}
 							</Select>
 							<FormMessage />
 						</FormItem>
@@ -344,49 +356,113 @@ export function VehicleForm({ data, vehicle }) {
 
 				<FormField
 					control={form.control}
-					name='color'
-					render={({ field }) => 
-					{
-
-					return (
+					name='owner'
+					render={({ field }) => (
 						<FormItem>
 							<Select
-								items={COLORS}
 								onChange={field.onChange}
 								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Color'
+								label='Owner'
 								size='sm'
-								renderValue={(items) => {
-									return items.map((item) => {
-										return(
-										<div key={item.data.id} className='flex gap-2'>
-											<div
-												className='w-4 h-4 rounded-full mt-[0.8px]'
-												style={{ backgroundColor: item.data.name }}
-											></div>
-											{item.data.name}
-										</div>
-									)})
-								}}
 							>
-								{(color) => {
-									return (
-									<SelectItem key={color.name} textValue={color.name} value={color.name} >
-										<div className='flex gap-2'>
-											<div
-												className='w-4 h-4 rounded-full mt-[0.8px]'
-												style={{ backgroundColor: color.name }}
-											></div>
-											{color.name}
-										</div>
+								{owners.map((item) => (
+									<SelectItem key={item.id} textValue={item.name}>
+										{item.name}
 									</SelectItem>
-								)}}
+								))}
 							</Select>
 							<FormMessage />
 						</FormItem>
-					)
-									}
-				}
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='color'
+					render={({ field }) => {
+						return (
+							<FormItem>
+								<Select
+									items={COLORS}
+									onChange={field.onChange}
+									defaultSelectedKeys={field.value ? [field.value] : undefined}
+									label='Color'
+									size='sm'
+									renderValue={(items) => {
+										return items.map((item) => {
+											return (
+												<div key={item.data.id} className='flex gap-2'>
+													<div
+														className='w-4 h-4 rounded-full mt-[0.8px]'
+														style={{ backgroundColor: item.data.name }}
+													></div>
+													{item.data.name}
+												</div>
+											)
+										})
+									}}
+								>
+									{(color) => {
+										return (
+											<SelectItem
+												key={color.name}
+												textValue={color.name}
+												value={color.name}
+											>
+												<div className='flex gap-2'>
+													<div
+														className='w-4 h-4 rounded-full mt-[0.8px]'
+														style={{ backgroundColor: color.name }}
+													></div>
+													{color.name}
+												</div>
+											</SelectItem>
+										)
+									}}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)
+					}}
+				/>
+
+				<FormField
+					control={form.control}
+					name='extras'
+					render={({ field }) => (
+						<FormItem>
+							<Select
+								onChange={(e) => handleBodyTypeChange(e, field.onChange)}
+								defaultSelectedKeys={
+									field.value.length && field.value[0] !== ''
+										? new Set(field.value)
+										: undefined
+								}
+								selectionMode='multiple'
+								label='Extras'
+								size='sm'
+							>
+								{EXTRAS.map((item) => (
+									<SelectItem key={item} textValue={item}>
+										{item}
+									</SelectItem>
+								))}
+							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name='notes'
+					render={({ field }) => (
+						<FormItem>
+							<FormControl>
+								<Textarea label='Notes' placeholder='' {...field} />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
 				/>
 
 				<div className='flex place-content-between'>

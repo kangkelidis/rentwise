@@ -47,7 +47,7 @@ export const FUEL_TYPES = ['Diesel', 'Petrol', 'Hybrid', 'Electric']
 
 export const NUM_SEATS = [{id:2}, {id:4}, {id:5}, {id:6}, {id:7}]
 
-export const NUM_DOORS = [2, 4]
+export const NUM_DOORS = [{id:2}, {id:4}]
 
 export const COLORS = [
 	{ name: 'Black', id: 1 },

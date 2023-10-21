@@ -10,10 +10,13 @@ export const vehicleValidationSchema = z.object({
 	body_type: z.string().or(z.array(z.string())),
 	fuel_type: z.string(),
 	fuel_amount: z.coerce.number(),
+	odometer: z.coerce.number(),
 	vol_engine: z.coerce.number(),
 	num_seats: z.coerce.number(),
 	num_doors: z.coerce.number(),
 	color: z.string(),
+	extras: z.string().or(z.array(z.string())),
+	notes: z.string()
 })
 
 export const orderValidationSchema = z.object({

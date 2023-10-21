@@ -3,8 +3,13 @@ import { fetchGroups } from "@/lib/actions/group.actions";
 
 export default async function Page(props) {
     const groups = fetchGroups()
+    const owners = fetchOwners()
 
-    const [data] = await Promise.all([groups])
+    const result = await Promise.all([groups, owners])
+    const data = {
+        groups: result[0],
+        owners: result[1]
+    }
 
     return (
         <main>
