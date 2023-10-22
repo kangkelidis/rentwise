@@ -9,24 +9,16 @@ import Link from 'next/link'
 import TableUI from '@/components/tables/table'
 
 async function getData(page, limit) {
-	const vehicles = await fetchVehicles(page, limit)
-	return vehicles.map((vehicle) => ({
-		id: vehicle.id,
-    	number: vehicle.number,
-		make: vehicle.make,
-		model: vehicle.model,
-		year: vehicle.year,
-		registration: vehicle.registration,
-	}))
+	return await fetchVehicles(page, limit)
 }
 
 export default async function Page({params, searchParams}) {
   
-  const page = searchParams.page || 1
-  const limit = searchParams.limit || 10
+	const page = searchParams.page || 1
+	const limit = searchParams.limit || 10
 
-	const data = await getData(page, limit)
-  const count = await totalCountVehicles()
+	const data = JSON.stringify(await getData(page, limit))
+  	const count = await totalCountVehicles()
 
 
 	const from = new Date('2023-10-09T21:00:00.000+00:00')

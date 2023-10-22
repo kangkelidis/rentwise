@@ -21,6 +21,7 @@ import { useCallback, useState, useMemo } from 'react';
 import VehicleDetails from '../elements/vehicle-details';
 
 export default function TableUI({ columns, data, count, selectionMode='single' }) {
+	data = JSON.parse(data)
 	const [isLoading, setIsLoading] = useState(true);
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]));
 
