@@ -3,9 +3,6 @@ import orderModel from './order.model'
 import { 
     TRANSMISSION, 
     BODY_TYPES,
-    NUM_SEATS,
-    NUM_DOORS,
-    COLORS,
     EXTRAS, 
     FUEL_TYPES, } from '@/constants'
 
@@ -36,15 +33,15 @@ const vehicleSchema = new mongoose.Schema({
     },
     transmission: {
         type: String,
-        enum: [...TRANSMISSION]
+        enum: [...TRANSMISSION, '']
     },
     body_type: {
         type: [String],
-        enum: [...BODY_TYPES]
+        enum: [...BODY_TYPES, '']
     },
     fuel_type: {
         type: String,
-        enum: [...FUEL_TYPES]
+        enum: [...FUEL_TYPES, '']
     },
     fuel_amount: {
         type: Number
@@ -63,7 +60,7 @@ const vehicleSchema = new mongoose.Schema({
     },
     extras: {
         type: [String],
-        enum: [...EXTRAS]
+        enum: [...EXTRAS, '']
     },
     photos: {
         type: [String]

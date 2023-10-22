@@ -16,6 +16,5 @@ export function toCurrency(number, withoutCents) {
 }
 
 export function zeroPad(num, places) {
-  console.log(num);
   return String(num).padStart(places, '0')
 }

@@ -22,6 +22,9 @@ import { vehicleValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 
+import Upload from '@/components/elements/Upload'
+import Carousel from '@/components/elements/Carousel'
+
 import {
 	TRANSMISSION,
 	BODY_TYPES,
@@ -31,15 +34,18 @@ import {
 	EXTRAS,
 	FUEL_TYPES,
 } from '@/constants'
+import { useState } from 'react'
 
 export function VehicleForm({ data }) {
+	
 	const router = useRouter()
 	const pathname = usePathname()
-
+	
 	data = JSON.parse(data)
 	const groups = data.groups
 	const owners = data.owners
 	const vehicle = data.vehicle
+	const [photos, setPhotos] = useState(vehicle?.photos ? vehicle.photos : [])
 
 	const form = useForm({
 		resolver: zodResolver(vehicleValidationSchema),
@@ -65,10 +71,13 @@ export function VehicleForm({ data }) {
 					: '',
 			color: vehicle?.color || '',
 			extras: vehicle?.extras || '',
+			notes: vehicle?.notes || ''
 		},
 	})
 
 	async function onSubmit(values) {
+		values.photos = photos
+		console.log(values);
 		const success = await updateVehicle(vehicle?._id, values, pathname)
 		if (success) {
 			if (pathname.includes('/fleet/')) {
@@ -452,13 +461,21 @@ export function VehicleForm({ data }) {
 					)}
 				/>
 
+<div>
+	<Upload setPhotos={setPhotos}/>
+</div>
+
+<div>
+	<Carousel photos={photos}/>
+</div>
+
 				<FormField
 					control={form.control}
 					name='notes'
 					render={({ field }) => (
 						<FormItem>
 							<FormControl>
-								<Textarea label='Notes' placeholder='' {...field} />
+								<Textarea required={false} label='Notes' placeholder='' {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>

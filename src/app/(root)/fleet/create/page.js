@@ -1,5 +1,6 @@
 import { VehicleForm } from "@/components/forms/VehicleForm";
 import { fetchGroups } from "@/lib/actions/group.actions";
+import { fetchOwners } from "@/lib/actions/owner.actions";
 
 export default async function Page(props) {
     const groups = fetchGroups()
