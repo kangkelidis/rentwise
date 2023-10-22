@@ -7,11 +7,10 @@ import { CldImage } from 'next-cloudinary'
 import { Link } from '@nextui-org/link'
 
 export default function VehicleDetails({ vehicle }) {
-	console.log(vehicle.photos[0])
 	return (
 		<div className='flex gap-3 w-fit'>
             <div className='rounded-full w-16 h-16 bg-zinc-700 flex items-center  justify-center'>
-                {vehicle.photos[0] ? (
+                {vehicle?.photos?.length && vehicle.photos[0] ? (
                     <CldImage
                         className='rounded-full w-16 h-16'
                         width={30}
