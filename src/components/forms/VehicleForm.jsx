@@ -37,10 +37,9 @@ import {
 import { useState } from 'react'
 
 export function VehicleForm({ data }) {
-	
 	const router = useRouter()
 	const pathname = usePathname()
-	
+
 	data = JSON.parse(data)
 	const groups = data.groups
 	const owners = data.owners
@@ -71,13 +70,13 @@ export function VehicleForm({ data }) {
 					: '',
 			color: vehicle?.color || '',
 			extras: vehicle?.extras || '',
-			notes: vehicle?.notes || ''
+			notes: vehicle?.notes || '',
 		},
 	})
 
 	async function onSubmit(values) {
 		values.photos = photos
-		console.log(values);
+		console.log(values)
 		const success = await updateVehicle(vehicle?._id, values, pathname)
 		if (success) {
 			if (pathname.includes('/fleet/')) {
@@ -107,229 +106,281 @@ export function VehicleForm({ data }) {
 	return (
 		<Form {...form}>
 			<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
-				<FormField
-					control={form.control}
-					name='make'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input
-									label='Make'
-									isRequired
-									placeholder='Mercedes-Benz'
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				<div className='form-container'>
+					<FormField
+						control={form.control}
+						name='make'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										label='Make'
+										isRequired
+										placeholder='Mercedes-Benz'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-				<FormField
-					control={form.control}
-					name='model'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input label='Model' isRequired placeholder='E220' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+					<FormField
+						control={form.control}
+						name='model'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										label='Model'
+										isRequired
+										placeholder='E220'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-				<FormField
-					control={form.control}
-					name='year'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input
-									isRequired
-									label='Year'
-									type='number'
-									min={1990}
-									max={2040}
-									placeholder={2023}
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+					<FormField
+						control={form.control}
+						name='year'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										label='Year'
+										type='number'
+										min={1990}
+										max={2040}
+										placeholder={2023}
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-				<FormField
-					control={form.control}
-					name='registration'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input
-									isRequired
-									label='Registration'
-									placeholder='ABC123'
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+					<FormField
+						control={form.control}
+						name='registration'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										label='Registration'
+										placeholder='ABC123'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-				<FormField
-					control={form.control}
-					name='group'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={field.onChange}
-								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Group'
-								isRequired
-								size='sm'
-							>
-								{groups.map((group) => (
-									<SelectItem key={group.id} textValue={group.group}>
-										{group.group}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='transmission'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={field.onChange}
-								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Transmission'
-								isRequired
-								size='sm'
-							>
-								{TRANSMISSION.map((type) => (
-									<SelectItem key={type} textValue={type}>
-										{type}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='body_type'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={(e) => handleBodyTypeChange(e, field.onChange)}
-								defaultSelectedKeys={
-									field.value.length && field.value[0] !== ''
-										? new Set(field.value)
-										: undefined
-								}
-								selectionMode='multiple'
-								label='Body Type'
-								size='sm'
-							>
-								{BODY_TYPES.map((type) => (
-									<SelectItem key={type} textValue={type}>
-										{type}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='fuel_type'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={field.onChange}
-								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Fuel Type'
-								size='sm'
-							>
-								{FUEL_TYPES.map((type) => (
-									<SelectItem key={type} textValue={type}>
-										{type}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='fuel_amount'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input label='Fuel Percentage' placeholder='60' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='vol_engine'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input label='Engine size' placeholder='1600cc' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='odometer'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Input
-									label='Odometer'
-									placeholder=''
-									type='number'
-									{...field}
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='num_seats'
-					render={({ field }) => {
-						return (
+					<FormField
+						control={form.control}
+						name='group'
+						render={({ field }) => (
 							<FormItem>
 								<Select
+									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Num of Seats'
+									label='Group'
+									isRequired
 									size='sm'
-									items={NUM_SEATS}
 								>
-									{NUM_SEATS.map((type) => (
+									{groups.map((group) => (
+										<SelectItem key={group.id} textValue={group.group}>
+											{group.group}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='transmission'
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									className='form-input'
+									onChange={field.onChange}
+									defaultSelectedKeys={field.value ? [field.value] : undefined}
+									label='Transmission'
+									isRequired
+									size='sm'
+								>
+									{TRANSMISSION.map((type) => (
+										<SelectItem key={type} textValue={type}>
+											{type}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='body_type'
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									className='form-input'
+									onChange={(e) => handleBodyTypeChange(e, field.onChange)}
+									defaultSelectedKeys={
+										field.value.length && field.value[0] !== ''
+											? new Set(field.value)
+											: undefined
+									}
+									selectionMode='multiple'
+									label='Body Type'
+									size='sm'
+								>
+									{BODY_TYPES.map((type) => (
+										<SelectItem key={type} textValue={type}>
+											{type}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='fuel_type'
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									className='form-input'
+									onChange={field.onChange}
+									defaultSelectedKeys={field.value ? [field.value] : undefined}
+									label='Fuel Type'
+									size='sm'
+								>
+									{FUEL_TYPES.map((type) => (
+										<SelectItem key={type} textValue={type}>
+											{type}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='fuel_amount'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										label='Fuel Percentage'
+										placeholder='60'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='vol_engine'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										label='Engine size'
+										placeholder='1600cc'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='odometer'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Input
+										className='form-input'
+										label='Odometer'
+										placeholder=''
+										type='number'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='num_seats'
+						render={({ field }) => {
+							return (
+								<FormItem>
+									<Select
+										className='form-input'
+										onChange={field.onChange}
+										defaultSelectedKeys={
+											field.value ? [field.value] : undefined
+										}
+										label='Num of Seats'
+										size='sm'
+										items={NUM_SEATS}
+									>
+										{NUM_SEATS.map((type) => (
+											<SelectItem key={type.id} textValue={type.id}>
+												{type.id}
+											</SelectItem>
+										))}
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)
+						}}
+					/>
+
+					<FormField
+						control={form.control}
+						name='num_doors'
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									className='form-input'
+									onChange={field.onChange}
+									defaultSelectedKeys={field.value ? [field.value] : undefined}
+									label='Num of Doors'
+									size='sm'
+								>
+									{NUM_DOORS.map((type) => (
 										<SelectItem key={type.id} textValue={type.id}>
 											{type.id}
 										</SelectItem>
@@ -337,151 +388,136 @@ export function VehicleForm({ data }) {
 								</Select>
 								<FormMessage />
 							</FormItem>
-						)
-					}}
-				/>
+						)}
+					/>
 
-				<FormField
-					control={form.control}
-					name='num_doors'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={field.onChange}
-								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Num of Doors'
-								size='sm'
-							>
-								{NUM_DOORS.map((type) => (
-									<SelectItem key={type.id} textValue={type.id}>
-										{type.id}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name='owner'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={field.onChange}
-								defaultSelectedKeys={field.value ? [field.value] : undefined}
-								label='Owner'
-								size='sm'
-							>
-								{owners.map((item) => (
-									<SelectItem key={item.id} textValue={item.name}>
-										{item.name}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name='color'
-					render={({ field }) => {
-						return (
+					<FormField
+						control={form.control}
+						name='owner'
+						render={({ field }) => (
 							<FormItem>
 								<Select
-									items={COLORS}
+									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Color'
+									label='Owner'
 									size='sm'
-									renderValue={(items) => {
-										return items.map((item) => {
-											return (
-												<div key={item.data.id} className='flex gap-2'>
-													<div
-														className='w-4 h-4 rounded-full mt-[0.8px]'
-														style={{ backgroundColor: item.data.name }}
-													></div>
-													{item.data.name}
-												</div>
-											)
-										})
-									}}
 								>
-									{(color) => {
-										return (
-											<SelectItem
-												key={color.name}
-												textValue={color.name}
-												value={color.name}
-											>
-												<div className='flex gap-2'>
-													<div
-														className='w-4 h-4 rounded-full mt-[0.8px]'
-														style={{ backgroundColor: color.name }}
-													></div>
-													{color.name}
-												</div>
-											</SelectItem>
-										)
-									}}
+									{owners.map((item) => (
+										<SelectItem key={item.id} textValue={item.name}>
+											{item.name}
+										</SelectItem>
+									))}
 								</Select>
 								<FormMessage />
 							</FormItem>
-						)
-					}}
-				/>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name='color'
+						render={({ field }) => {
+							return (
+								<FormItem>
+									<Select
+										className='form-input'
+										items={COLORS}
+										onChange={field.onChange}
+										defaultSelectedKeys={
+											field.value ? [field.value] : undefined
+										}
+										label='Color'
+										size='sm'
+										renderValue={(items) => {
+											return items.map((item) => {
+												return (
+													<div key={item.data.id} className='flex gap-2'>
+														<div
+															className='w-4 h-4 rounded-full mt-[0.8px]'
+															style={{ backgroundColor: item.data.name }}
+														></div>
+														{item.data.name}
+													</div>
+												)
+											})
+										}}
+									>
+										{(color) => {
+											return (
+												<SelectItem
+													key={color.name}
+													textValue={color.name}
+													value={color.name}
+												>
+													<div className='flex gap-2'>
+														<div
+															className='w-4 h-4 rounded-full mt-[0.8px]'
+															style={{ backgroundColor: color.name }}
+														></div>
+														{color.name}
+													</div>
+												</SelectItem>
+											)
+										}}
+									</Select>
+									<FormMessage />
+								</FormItem>
+							)
+						}}
+					/>
 
-				<FormField
-					control={form.control}
-					name='extras'
-					render={({ field }) => (
-						<FormItem>
-							<Select
-								onChange={(e) => handleBodyTypeChange(e, field.onChange)}
-								defaultSelectedKeys={
-									field.value.length && field.value[0] !== ''
-										? new Set(field.value)
-										: undefined
-								}
-								selectionMode='multiple'
-								label='Extras'
-								size='sm'
-							>
-								{EXTRAS.map((item) => (
-									<SelectItem key={item} textValue={item}>
-										{item}
-									</SelectItem>
-								))}
-							</Select>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+					<FormField
+						control={form.control}
+						name='extras'
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									className='form-input'
+									onChange={(e) => handleBodyTypeChange(e, field.onChange)}
+									defaultSelectedKeys={
+										field.value.length && field.value[0] !== ''
+											? new Set(field.value)
+											: undefined
+									}
+									selectionMode='multiple'
+									label='Extras'
+									size='sm'
+								>
+									{EXTRAS.map((item) => (
+										<SelectItem key={item} textValue={item}>
+											{item}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-<div>
-	<Upload setPhotos={setPhotos}/>
-</div>
+					<FormField
+						control={form.control}
+						name='notes'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Textarea
+										className=' form-input sm:!w-[550px]'
+										required={false}
+										label='Notes'
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<div className='carousel-container'>
+						<Carousel photos={photos} />
+						<Upload setPhotos={setPhotos} />
+					</div>
 
-<div>
-	<Carousel photos={photos}/>
-</div>
-
-				<FormField
-					control={form.control}
-					name='notes'
-					render={({ field }) => (
-						<FormItem>
-							<FormControl>
-								<Textarea required={false} label='Notes' placeholder='' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
+				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>
 					{vehicle && (

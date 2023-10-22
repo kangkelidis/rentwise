@@ -96,6 +96,18 @@
   .pagination {
     @apply mt-10 flex w-full items-center justify-center gap-5;
   }
+
+  .form-container {
+    @apply flex flex-wrap max-sm:flex-col sm:gap-10 gap-2 p-4 bg-zinc-900 rounded-xl justify-center
+  }
+  .form-input {
+    @apply !w-[250px] max-sm:!w-full
+
+  }
+  .carousel-container {
+    @apply w-2/3 bg-zinc-700 p-5 rounded-xl
+  }
+
 }
 
 @layer utilities {

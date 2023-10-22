@@ -55,14 +55,14 @@ export default function Carousel({ photos }) {
 	)
 
 	return (
-		<div>
+		<div className=''>
 			<div ref={sliderRef} className='keen-slider'>
 				{photos.map((img, i) => {
 					return (
 						<div key={i} className={`keen-slider__slide number-slide${i}`}>
 							<CldImage
-								width='960'
-								height='600'
+								width='400'
+								height='300'
 								src={img}
 								sizes='100vw'
 								alt='Description of my image'
@@ -72,13 +72,13 @@ export default function Carousel({ photos }) {
 				})}
 			</div>
 
-			<div ref={thumbnailRef} className='keen-slider thumbnail'>
+			<div ref={thumbnailRef} className='keen-slider thumbnail mt-1'>
 				{photos.map((img, i) => {
 					return (
 						<div key={i} className={`keen-slider__slide number-slide${i}`}>
 							<CldImage
-								width='960'
-								height='600'
+								width='100'
+								height='75'
 								src={img}
 								sizes='100vw'
 								alt='Description of my image'
