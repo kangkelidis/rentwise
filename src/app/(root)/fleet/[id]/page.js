@@ -18,7 +18,7 @@ export default async function Page({ params }) {
     return (
         <>
             <h2 className="head-text">Edit</h2>
-            <VehicleForm vehicle={JSON.stringify(vehicle)} data={JSON.stringify(data)} />
+            <VehicleForm data={JSON.stringify(data)} />
         </>
     )
 }

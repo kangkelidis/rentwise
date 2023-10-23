@@ -26,26 +26,30 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Calendar } from '@/components/ui/calendar'
+import { Select, SelectItem } from '@nextui-org/select'
 
 import { cn } from '@/lib/utils'
 // import { toast } from '@/components/ui/use-toast'
 import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
+import VehicleDetails from '../elements/vehicle-details'
 
-import { createOrder, deleteOrder, updateOrder } from '@/lib/actions/order.actions'
+import {
+	createOrder,
+	deleteOrder,
+	updateOrder,
+} from '@/lib/actions/order.actions'
 import { orderValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 
-export function OrderForm({ vehicles, clients, order }) {
+export function OrderForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
-	if (order) {
-		order = JSON.parse(order)
-	}
-	
-	vehicles = JSON.parse(vehicles)
-	clients = JSON.parse(clients)
+	data = JSON.parse(data)
+	const vehicles = data.vehicles
+	const clients = data.clients
+	const order = data.order
 
 	const form = useForm({
 		resolver: zodResolver(orderValidationSchema),
@@ -80,63 +84,104 @@ export function OrderForm({ vehicles, clients, order }) {
 	return (
 		<Form {...form}>
 			<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
+			<div className='form-container'>
+
+				
 				<FormField
 					control={form.control}
 					name='vehicle_id'
-					render={({ field }) => (
+					render={({ field }) => {
+						console.log(vehicles);
+						return (
 						<FormItem>
-							<FormLabel>Vehicle</FormLabel>
-							<Popover>
-								<PopoverTrigger asChild>
-									<FormControl>
-										<Button
-											variant='outline'
-											role='combobox'
-											className={cn(
-												'w-[200px] justify-between',
-												!field.value && 'text-muted-foreground'
-											)}
+							<Select
+								className='form-input'
+								items={vehicles}
+								onChange={field.onChange}
+								defaultSelectedKeys={field.value ? [field.value] : undefined}
+								label='Vehicle'
+								labelPlacement='inside'
+								size='lg'
+								renderValue={(items) => {
+									return items.map((item) => {
+										return (
+											<div className='p-4 mt-2'>
+												<VehicleDetails size={2} vehicle={item.data} />
+											</div>
+										)
+									})
+								}}
+							>
+								{(vehicle) => {
+									return (
+										<SelectItem
+											key={vehicle.id}
+											textValue={vehicle.make}
+											value={vehicle.id}
 										>
-											{field.value
-												? vehicles.find(
-														(vehicle) => vehicle.value === field.value
-												  )?.label
-												: 'Select car'}
-											<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-										</Button>
-									</FormControl>
-								</PopoverTrigger>
-								<PopoverContent className='w-[200px] p-0'>
-									<Command>
-										<CommandInput placeholder='Search car...' />
-										<CommandEmpty>No car found.</CommandEmpty>
-										<CommandGroup>
-											{vehicles.map((vehicle) => (
-												<CommandItem
-													value={vehicle.label}
-													key={vehicle.value}
-													onSelect={() => {
-														form.setValue('vehicle_id', vehicle.value)
-													}}
-												>
-													<Check
-														className={cn(
-															'mr-2 h-4 w-4',
-															vehicle.value === field.value
-																? 'opacity-100'
-																: 'opacity-0'
-														)}
-													/>
-													{vehicle.label}
-												</CommandItem>
-											))}
-										</CommandGroup>
-									</Command>
-								</PopoverContent>
-							</Popover>
+											<VehicleDetails vehicle={vehicle} />
+										</SelectItem>
+									)
+								}}
+							</Select>
 							<FormMessage />
 						</FormItem>
-					)}
+						)
+					}
+
+						// <FormItem>
+						// 	<FormLabel>Vehicle</FormLabel>
+						// 	<Popover>
+						// 		<PopoverTrigger asChild>
+						// 			<FormControl>
+						// 				<Button
+						// 					variant='outline'
+						// 					role='combobox'
+						// 					className={cn(
+						// 						'w-[200px] justify-between',
+						// 						!field.value && 'text-muted-foreground'
+						// 					)}
+						// 				>
+						// 					{field.value
+						// 						? vehicles.find(
+						// 								(vehicle) => vehicle.value === field.value
+						// 						  )?.label
+						// 						: 'Select car'}
+						// 					<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+						// 				</Button>
+						// 			</FormControl>
+						// 		</PopoverTrigger>
+						// 		<PopoverContent className='w-[200px] p-0'>
+						// 			<Command>
+						// 				<CommandInput placeholder='Search car...' />
+						// 				<CommandEmpty>No car found.</CommandEmpty>
+						// 				<CommandGroup>
+						// 					{vehicles.map((vehicle) => (
+						// 						<CommandItem
+						// 							value={vehicle.label}
+						// 							key={vehicle.value}
+						// 							onSelect={() => {
+						// 								form.setValue('vehicle_id', vehicle.value)
+						// 							}}
+						// 						>
+						// 							<Check
+						// 								className={cn(
+						// 									'mr-2 h-4 w-4',
+						// 									vehicle.value === field.value
+						// 										? 'opacity-100'
+						// 										: 'opacity-0'
+						// 								)}
+						// 							/>
+						// 							{vehicle.label}
+						// 						</CommandItem>
+						// 					))}
+						// 				</CommandGroup>
+						// 			</Command>
+						// 		</PopoverContent>
+						// 	</Popover>
+						// 	<FormMessage />
+						// </FormItem>
+	}
 				/>
 
 				<FormField
@@ -157,9 +202,8 @@ export function OrderForm({ vehicles, clients, order }) {
 											)}
 										>
 											{field.value
-												? clients.find(
-														(client) => client.value === field.value
-												  )?.label
+												? clients.find((client) => client.value === field.value)
+														?.label
 												: 'Select client'}
 											<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
 										</Button>
@@ -277,6 +321,7 @@ export function OrderForm({ vehicles, clients, order }) {
 						</FormItem>
 					)}
 				/>
+				</div>
 
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>

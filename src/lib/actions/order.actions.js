@@ -39,6 +39,7 @@ export async function createOrder(values, path) {
 
 export async function updateOrder(orderId, values, path) {
     try {
+        console.log(await orderModel.findById(orderId));
         await orderModel.findByIdAndUpdate(orderId, values)
         revalidatePath(path);
         return true;

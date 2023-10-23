@@ -4,7 +4,7 @@ export default async function Page(props) {
 	return (
 		<main>
 			<h2 className='head-text'>Add a new Owner</h2>
-			<OwnerForm />
+			<OwnerForm data={JSON.stringify({})} />
 		</main>
 	)
 }

@@ -24,7 +24,7 @@ import {
 	PopoverTrigger,
 } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Input } from '@nextui-org/input'
 import { Calendar } from '@/components/ui/calendar'
 
 import { cn } from '@/lib/utils'
@@ -36,12 +36,12 @@ import { clientValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 
-export function ClientForm({ vehicles, client }) {
+export function ClientForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
-	if (client) {
-		client = JSON.parse(client)
-	}
+	data = JSON.parse(data)
+	const client = data.client
+
 	const form = useForm({
 		resolver: zodResolver(clientValidationSchema),
 		defaultValues: {
@@ -68,34 +68,35 @@ export function ClientForm({ vehicles, client }) {
 	return (
 		<Form {...form}>
 			<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
-				<FormField
-					control={form.control}
-					name='first_name'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>First Name</FormLabel>
-							<FormControl>
-								<Input placeholder='' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				<div className='form-container'>
+					<FormField
+						control={form.control}
+						name='first_name'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>First Name</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 
-				<FormField
-					control={form.control}
-					name='last_name'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Last Name</FormLabel>
-							<FormControl>
-								<Input placeholder='' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
+					<FormField
+						control={form.control}
+						name='last_name'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Last Name</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>
 					{client && (

@@ -77,9 +77,7 @@ export function VehicleForm({ data }) {
 
 	async function onSubmit(values) {
 		values.photos = photos
-		console.log(values)
 		const success = await updateVehicle(vehicle?._id, values, pathname)
-		console.log('success', success);
 		if (success) {
 			if (pathname.includes('/fleet/')) {
 				router.back()

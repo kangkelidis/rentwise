@@ -8,13 +8,11 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vehicle",
         required: true,
-        unique: true
     },
     client_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Client",
         required: true,
-        unique: true
     },
     pick_up_date: {
         type: Date,
