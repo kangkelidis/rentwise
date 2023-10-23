@@ -84,18 +84,23 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 
 		switch (columnKey) {
 			case 'number':
-				return <Link href={`${pathname}/${item._id}`} underline='hover'>
-				{cellValue}
-			</Link>
+				return (
+					<Link href={`${pathname}/${item._id}`} underline='hover'>
+						{cellValue}
+					</Link>
+				)
 			case 'vehicle':
 				return <VehicleDetails vehicle={item}></VehicleDetails>
-
 			case 'vehicle_id':
 				return <VehicleDetails vehicle={item.vehicle_id}></VehicleDetails>
 			case 'client_id':
 				return <p>{item.client_id?.full_name}</p>
 			case 'owner':
 				return <p>{item.owner?.name}</p>
+			case 'pick_up_date':
+				return <p>{new Date(item[columnKey]).toLocaleDateString('en-UK')}</p>
+			case 'drop_off_date':
+				return <p>{new Date(item[columnKey]).toLocaleDateString('en-UK')}</p>
 			default:
 				return cellValue
 		}

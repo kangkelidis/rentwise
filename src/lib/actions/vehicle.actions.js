@@ -24,18 +24,6 @@ export async function totalCountVehicles() {
     }
 }
 
-// Used as data for comboBox
-export async function fetchVehiclesList(availableFrom, availableTill) { 
-    const vehicles = availableFrom && availableTill ?
-    await fetchAvailableVehicles(availableFrom, availableTill)
-    :
-    await fetchVehicles()
-	
-    return vehicles.map((vehicle) => ({
-		label: `${vehicle.make} ${vehicle.model}, ${vehicle.registration}`,
-		value: vehicle._id,
-	}))
-}
 export async function fetchAvailableVehicles(fromDate, tillDate) {
     const allVehicles = await vehicleModel.find({})
     const boolArray = await Promise.all(allVehicles.map(v => v.isAvailableDuring(fromDate, tillDate)));

@@ -32,6 +32,10 @@ export const orderColumns = [
 		label: 'Drop of Date',
 	},
 	{
+		key: 'num_days',
+		label: 'Total Days',
+	},
+	{
 		key: 'vehicle_id',
 		label: 'Car',
 	},

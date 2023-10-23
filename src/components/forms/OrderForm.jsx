@@ -91,7 +91,7 @@ export function OrderForm({ data }) {
 					control={form.control}
 					name='vehicle_id'
 					render={({ field }) => {
-						console.log(vehicles);
+						console.log('vehicles', vehicles);
 						return (
 						<FormItem>
 							<Select
@@ -105,7 +105,7 @@ export function OrderForm({ data }) {
 								renderValue={(items) => {
 									return items.map((item) => {
 										return (
-											<div className='p-4 mt-2'>
+											<div key={item.data.id} className='p-4 mt-2'>
 												<VehicleDetails size={2} vehicle={item.data} />
 											</div>
 										)

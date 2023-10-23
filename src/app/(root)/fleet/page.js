@@ -1,9 +1,9 @@
-import {Button} from '@nextui-org/button'
+import { Button } from '@nextui-org/button'
 import { vehicleColumns } from '@/components/tables/columns'
 import {
 	fetchAvailableVehicles,
 	fetchVehicles,
-  totalCountVehicles
+	totalCountVehicles,
 } from '@/lib/actions/vehicle.actions'
 import Link from 'next/link'
 import TableUI from '@/components/tables/table'
@@ -11,7 +11,7 @@ import { DEFAULT_LIMIT } from '@/constants'
 
 async function getData(page, limit) {
 	const result = await fetchVehicles(page, limit)
-	const vehicles = {items: result, count: await totalCountVehicles()}
+	const vehicles = { items: result, count: await totalCountVehicles() }
 	return JSON.stringify(vehicles)
 }
 
@@ -26,11 +26,13 @@ export default async function Page({ searchParams }) {
 
 	return (
 		<div className=''>
-			<h2 className='head-text'>Fleet</h2> 
-			<Button color='secondary' className='mb-4'>
-				<Link href={'/fleet/create'}>Add Vehicle</Link>
-			</Button>
-			<TableUI columns={vehicleColumns} data={data} />
+			<div className='flex place-content-between mb-3 items-baseline'>
+				<h2 className='head-text'>Fleet</h2>
+				<Button color='secondary' className='mb-4'>
+					<Link href={'/fleet/create'}>Add Vehicle</Link>
+				</Button>
+			</div>
+				<TableUI columns={vehicleColumns} data={data} />
 		</div>
 	)
 }

@@ -22,15 +22,6 @@ export async function totalCountOwners() {
     }
 }
 
-// Used as data for comboBox
-export async function fetchOwnersList() {
-    const owners = await fetchOwners()
-    return owners.map(owner => ({
-        label: owner.name,
-        value: owner._id
-    }))
-}
-
 export async function updateOwner(ownerID, values, path) {
     try {
         await dbConnect()        

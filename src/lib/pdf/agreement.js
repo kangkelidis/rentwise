@@ -4,7 +4,6 @@ import { test_agreement } from "./test.js";
 
 //TODO: multiple pages and pagination,
 //      do totals
-//      add signature area
 //      add parameters - double check
 //      figure out signature
 //      limit text in its box
@@ -417,6 +416,11 @@ function printTotal(yPos, order) {
     xPos += COL_WIDTH
     doc.line(PAGE_MARGIN,  TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
 
+
+    doc.line(PAGE_MARGIN, TOP_LINE, PAGE_MARGIN, yPos)
+    doc.line(PAGE_WIDTH-PAGE_MARGIN, TOP_LINE, PAGE_WIDTH-PAGE_MARGIN, yPos)
+    doc.line(PAGE_MARGIN, yPos, PAGE_WIDTH-PAGE_MARGIN, yPos)
+    
     return yPos
 }
 
@@ -459,6 +463,7 @@ function printTax(topY, tax) {
     return topY + (CELL_HEIGHT * cell_num) 
 }
 
+
 export function printAgreement(agreement) {
     agreement = test_agreement.order
 
@@ -471,11 +476,22 @@ export function printAgreement(agreement) {
     lastY = printTotal(lastY, agreement)
 
     doc.setFont("Helvetica", "normal");
-    doc.setFontSize(5);
+    doc.setFontSize(9);
     const splitTerms = doc.splitTextToSize(TERMS, 185);
     const splitAccept = doc.splitTextToSize(accept, 185)
-    doc.text(PAGE_MARGIN, lastY, splitTerms)
-    doc.text(PAGE_MARGIN, 250, splitAccept)
+    doc.addPage()
+    doc.text(PAGE_MARGIN, PAGE_MARGIN, splitTerms)
+    doc.text(PAGE_MARGIN, 130, splitAccept)
+
+    lastY = 160
+    doc.line(PAGE_MARGIN, lastY, PAGE_WIDTH-PAGE_MARGIN, lastY)
+    doc.line(PAGE_MARGIN, lastY + 2*CELL_HEIGHT, PAGE_WIDTH-PAGE_MARGIN, lastY + 2*CELL_HEIGHT)
+    doc.line(PAGE_MARGIN, lastY, PAGE_MARGIN, lastY + 2*CELL_HEIGHT)
+    doc.line(PAGE_WIDTH - PAGE_MARGIN, lastY, PAGE_WIDTH-PAGE_MARGIN, lastY + 2*CELL_HEIGHT)
+    doc.line(PAGE_WIDTH / 2, lastY, PAGE_WIDTH / 2, lastY + 2*CELL_HEIGHT)
+
+    doc.setFontSize(5)
+    doc.text("HIRER'S SIGNATURE", PAGE_MARGIN+1, lastY + LINE_SPACE)
 
     doc.save(`${agreement.number}.pdf`)
 }

@@ -1,6 +1,6 @@
 import { OrderForm } from "@/components/forms/OrderForm";
 import { fetchClientsList } from "@/lib/actions/client.actions";
-import { fetchVehicles, fetchVehiclesList } from "@/lib/actions/vehicle.actions";
+import { fetchVehicles } from "@/lib/actions/vehicle.actions";
 
 
 export default async function Page(props) {

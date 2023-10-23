@@ -19,10 +19,12 @@ export default async function Page({ searchParams }) {
 
 	return (
 		<div className=''>
-			<h2 className='head-text'>Owners</h2>
-			<Button color='secondary' className='mb-4'>
-				<Link href={'/owners/create'}>Add Owner</Link>
-			</Button>
+			<div className='flex place-content-between mb-3 items-baseline'>
+				<h2 className='head-text'>Owners</h2>
+				<Button color='secondary' className='mb-4'>
+					<Link href={'/owners/create'}>Add Owner</Link>
+				</Button>
+			</div>
 			<TableUI columns={ownerColumns} data={data} />
 		</div>
 	)
