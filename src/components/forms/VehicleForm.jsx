@@ -54,6 +54,7 @@ export function VehicleForm({ data }) {
 			year: vehicle?.year || '',
 			registration: vehicle?.registration || '',
 			group: vehicle?.group || '',
+			owner: vehicle?.owner || '',
 			transmission: vehicle?.transmission || '',
 			body_type: vehicle?.body_type || '',
 			fuel_type: vehicle?.fuel_type || '',
@@ -78,6 +79,7 @@ export function VehicleForm({ data }) {
 		values.photos = photos
 		console.log(values)
 		const success = await updateVehicle(vehicle?._id, values, pathname)
+		console.log('success', success);
 		if (success) {
 			if (pathname.includes('/fleet/')) {
 				router.back()
@@ -402,6 +404,7 @@ export function VehicleForm({ data }) {
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
 									label='Owner'
 									size='sm'
+									isRequired
 								>
 									{owners.map((item) => (
 										<SelectItem key={item.id} textValue={item.name}>

@@ -6,6 +6,9 @@ import {
     EXTRAS, 
     FUEL_TYPES, } from '@/constants'
 
+import { autoIncrement } from 'mongoose-plugin-autoinc';
+
+
 const vehicleSchema = new mongoose.Schema({
     make: {
         type: String,
@@ -70,8 +73,9 @@ const vehicleSchema = new mongoose.Schema({
         type: Number
     },
     owner: {
-        type: String,
-        // required: true, 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Owner",
+        required: true, 
     },
     insurance: {
         type: mongoose.Schema.Types.ObjectId,
@@ -92,10 +96,14 @@ const vehicleSchema = new mongoose.Schema({
     notes: {
 
     },
+    number: {
+        type: Number,
+    }
 
 }, {timestamps: true,
     toJSON: { virtuals: true }, toObject: { virtuals: true },
     virtuals: {
+
         // orders: { async get() {
         //     return await orderModel.find({vehicle_id: this._id}).select(["pick_up_date", "drop_off_date"]).exec()
         // }},
@@ -151,6 +159,8 @@ vehicleSchema.methods.isAvailableDuring = async function (from, till) {
         return !conflict
     }
 }
+
+vehicleSchema.plugin(autoIncrement, { model: 'Vehicle', field: 'number' });
 
 export default mongoose.models.Vehicle || mongoose.model('Vehicle', vehicleSchema)
 

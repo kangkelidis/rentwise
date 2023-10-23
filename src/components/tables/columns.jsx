@@ -12,45 +12,49 @@ export const vehicleColumns = [
 		key: 'vehicle',
 		label: 'Vehicle',
 	},
+	{
+		key: 'owner',
+		label: 'Owner',
+	},
 ]
 
 export const orderColumns = [
 	{
-		key: 'id',
+		key: 'number',
 		label: 'ID',
 	},
 	{
-		key: 'pickup',
+		key: 'pick_up_date',
 		label: 'Pick Up Date',
 	},
 	{
-		key: 'dropoff',
+		key: 'drop_off_date',
 		label: 'Drop of Date',
 	},
 	{
-		key: 'vehicle',
+		key: 'vehicle_id',
 		label: 'Car',
 	},
 	{
-		key: 'client',
+		key: 'client_id',
 		label: 'Client',
 	},
 ]
 
 export const clientColumns = [
 	{
-		key: 'id',
+		key: 'number',
 		label: 'ID',
 	},
 	{
-		key: 'name',
+		key: 'full_name',
 		label: 'Name',
 	},
 ]
 
 export const ownerColumns = [
 	{
-		key: 'code',
+		key: 'number',
 		label: 'Id',
 	},
 	{

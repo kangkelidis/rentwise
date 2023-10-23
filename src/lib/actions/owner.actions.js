@@ -4,12 +4,21 @@ import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
 import ownerModel from "@/models/owner.model";
 
-export async function fetchOwners() {
+export async function fetchOwners(page, limit) {
     try {
         await dbConnect()
-        return await ownerModel.find({})
+        return await ownerModel.find({}).limit(limit).skip((page-1) * limit)
     } catch (error) {
         throw new Error('Failed to fetch owners: ' + error.message)
+    }
+}
+
+export async function totalCountOwners() {
+    try {
+        await dbConnect()
+        return await ownerModel.countDocuments({})
+    } catch (error) {
+        console.log(error);
     }
 }
 

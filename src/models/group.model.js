@@ -15,6 +15,5 @@ const groupSchema = new mongoose.Schema({
 
 })
 
-
 export default mongoose.models.Group || mongoose.model('Group', groupSchema)
 

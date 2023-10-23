@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { autoIncrement } from 'mongoose-plugin-autoinc';
 
 const ownerSchema = new mongoose.Schema({
     name: {
@@ -15,6 +16,7 @@ const ownerSchema = new mongoose.Schema({
 
 })
 
+ownerSchema.plugin(autoIncrement, { model: 'Owner', field: 'number' });
 
 export default mongoose.models.Owner || mongoose.model('Owner', ownerSchema)
 

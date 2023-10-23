@@ -15,6 +15,16 @@ export async function fetchOrders() {
     }
 }
 
+export async function totalCountOrders() {
+    try {
+        await dbConnect()
+        return await orderModel.countDocuments({})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
 export async function createOrder(values, path) {
     try {
         await dbConnect()

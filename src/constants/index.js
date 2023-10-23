@@ -82,3 +82,5 @@ export const EXTRAS = [
 	'Collision Warning',
 	'Automatic Emergency Breaking',
 ]
+
+export const DEFAULT_LIMIT = 25 

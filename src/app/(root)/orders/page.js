@@ -1,27 +1,34 @@
-import { orderColumns } from "@/components/tables/columns";
-import { DataTable } from "@/components/tables/data-table"
-import { Button } from "@/components/ui/button";
-import { fetchOrders } from "@/lib/actions/order.actions";
+import { orderColumns } from '@/components/tables/columns'
+import { Button } from '@nextui-org/button'
+import { fetchOrders, totalCountOrders } from '@/lib/actions/order.actions'
 import Link from 'next/link'
+import { DEFAULT_LIMIT } from '@/constants'
+import TableUI from '@/components/tables/table'
 
-async function getData() {
-    const orders = await fetchOrders()
-    return orders.map(order =>
-        ({id: order.id,
-            pickup: order.pick_up_date, dropoff: order.drop_off_date,
-            vehicle: order.vehicle_id.make + " " + order.vehicle_id.model + ", " + order.vehicle_id.registration,
-            client: order.client_id.first_name + ' ' + order.client_id.last_name    
-        }))
+async function getData(page, limit) {
+	const result = await fetchOrders(page, limit)
+    const orders = {items: result, count: await totalCountOrders()}
+	return JSON.stringify(orders)
+	// return orders.map(order =>
+	//     ({id: order.id,
+	//         pickup: order.pick_up_date, dropoff: order.drop_off_date,
+	//         vehicle: order.vehicle_id.make + " " + order.vehicle_id.model + ", " + order.vehicle_id.registration,
+	//         client: order.client_id.first_name + ' ' + order.client_id.last_name
+	//     }))
 }
 
-export default async function Page() {
-    const data = await getData()
+export default async function Page({ searchParams }) {
+	const page = searchParams.page || 1
+	const limit = searchParams.limit || DEFAULT_LIMIT
+	const data = await getData(page, limit)
 
-    return (
-        <main>
-            <h2 className="head-text">Orders</h2>
-            <Button><Link href={'/orders/create'}>Add Order</Link></Button>
-            <DataTable columns={orderColumns} data={data} />
-        </main>
-    )
+	return (
+		<div className=''>
+			<h2 className='head-text'>Orders</h2>
+			<Button color='secondary' className='mb-4'>
+				<Link href={'/orders/create'}>Add Order</Link>
+			</Button>
+			<TableUI columns={orderColumns} data={data} />
+		</div>
+	)
 }

@@ -4,12 +4,21 @@ import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
 import clientModel from "@/models/client.model";
 
-export async function fetchClients() {
+export async function fetchClients(page, limit) {
     try {
         await dbConnect()
-        return await clientModel.find({})
+        return await clientModel.find({}).limit(limit).skip((page-1) * limit)
     } catch (error) {
         throw new Error('Failed to fetch clients: ' + error.message)
+    }
+}
+
+export async function totalCountClients() {
+    try {
+        await dbConnect()
+        return await clientModel.countDocuments({})
+    } catch (error) {
+        console.log(error);
     }
 }
 

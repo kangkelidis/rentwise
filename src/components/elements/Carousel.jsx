@@ -39,7 +39,6 @@ function ThumbnailPlugin(mainRef) {
 }
 
 export default function Carousel({ photos }) {
-	console.log(photos)
 	const [sliderRef, instanceRef] = useKeenSlider({
 		initial: 0,
 	})

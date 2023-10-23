@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import vehicleModel from './vehicle.model';
 import clientModel from './client.model';
+import { autoIncrement } from 'mongoose-plugin-autoinc';
 
 const orderSchema = new mongoose.Schema({
 	vehicle_id: {
@@ -25,11 +26,11 @@ const orderSchema = new mongoose.Schema({
     },
     pick_up_location: {
         type: String,
-        required: true
+        // required: true
     },
     drop_off_location: {
         type: String,
-        required: true
+        // required: true
     },
     number: {
         type: Number
@@ -66,6 +67,9 @@ const orderSchema = new mongoose.Schema({
 orderSchema.post("validate", async function (doc, next) {
 
   });
+
+orderSchema.plugin(autoIncrement, { model: 'Order', field: 'number' });
+
 
 export default mongoose.models.Order || mongoose.model('Order', orderSchema)
 

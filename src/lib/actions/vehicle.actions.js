@@ -2,25 +2,25 @@
 
 import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
-import Vehicle from "@/models/vehicle.model";
 import vehicleModel from "@/models/vehicle.model";
 import orderModel from "@/models/order.model";
+import ownerModel from "@/models/owner.model";
 
-export async function fetchVehicles( page, limit ) {
+export async function fetchVehicles(page, limit ) {
     try {
         await dbConnect()
-        return await Vehicle.find({}).limit(limit).skip((page-1) * limit)
+        return await vehicleModel.find({}).limit(limit).skip((page-1) * limit).populate('owner')
     } catch (error) {
-        console.log(err);
+        console.log(error);
     }
 }
 
 export async function totalCountVehicles() {
     try {
         await dbConnect()
-        return await Vehicle.countDocuments({})
+        return await vehicleModel.countDocuments({})
     } catch (error) {
-        console.log(err);
+        console.log(error);
     }
 }
 
@@ -44,13 +44,11 @@ export async function fetchAvailableVehicles(fromDate, tillDate) {
 }
 
 export async function updateVehicle(vehicleId, values, path) {
-    console.log(values);
-
     try {
         await dbConnect()
-        vehicleId ? await Vehicle.findByIdAndUpdate(vehicleId, values)
+        vehicleId ? await vehicleModel.findByIdAndUpdate(vehicleId, values)
         :
-        await Vehicle.create(values)
+        await vehicleModel.create(values)
         revalidatePath(path);
         return true;
       } catch (error) {
@@ -62,7 +60,7 @@ export async function updateVehicle(vehicleId, values, path) {
 export async function getVehicle(id) {
     try {
         await dbConnect()
-        return await Vehicle.findById(id)
+        return await vehicleModel.findById(id)
     } catch (error) {
         throw new Error('Failed to fetch vehicle: ' + error.message)
     }
@@ -71,7 +69,7 @@ export async function getVehicle(id) {
 export async function deleteVehicle(id, path) {
     try {
         await dbConnect()
-        await Vehicle.findByIdAndDelete(id)
+        await vehicleModel.findByIdAndDelete(id)
         revalidatePath(path)
         return true
     } catch (error) {

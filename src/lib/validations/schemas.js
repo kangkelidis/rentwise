@@ -16,6 +16,7 @@ export const vehicleValidationSchema = z.object({
 	num_doors: z.coerce.number(),
 	color: z.string(),
 	extras: z.string().or(z.array(z.string())),
+	owner: z.string(),
 	notes: z.string()
 })
 

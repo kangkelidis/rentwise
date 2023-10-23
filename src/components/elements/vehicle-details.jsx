@@ -29,17 +29,16 @@ export default function VehicleDetails({ vehicle }) {
             </div>
 
 			<div className='flex flex-col gap-1 whitespace-nowrap'>
-				<Link href={`/fleet/${vehicle.id}`} underline='hover'>
-					{vehicle.make + ' ' + vehicle.model}
+				<Link href={`/fleet/${vehicle?.id}`} underline='hover'>
+					{vehicle?.make + ' ' + vehicle?.model}
 				</Link>
 				<div className=' border-black border-2 bg-red-300 flex w-fit text-shadow '>
 					<div className='w-2 h-full flex bg-blue'>
-						<div className='mt-4 w-2 h-1 py-1 bg-yellow-300'></div>
 					</div>
 					<p className='px-2 text-black font-bold p-[0.5px] whitespace-nowrap'>
-						{vehicle.registration.slice(0, 3) +
+						{vehicle?.registration.slice(0, 3) +
 							' ' +
-							vehicle.registration.slice(3)}
+							vehicle?.registration.slice(3)}
 					</p>
 				</div>
 			</div>
