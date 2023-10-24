@@ -3,6 +3,8 @@ import Agreement from "@/components/shared/Agreement"
 import Upload from "@/components/elements/Upload"
 
 import VehicleDetails from "@/components/elements/vehicle-details"
+import Signature from "@/components/elements/Signature"
+
 
 export default async function Home() {
 
@@ -12,6 +14,7 @@ export default async function Home() {
       <Agreement />
       <VehicleDetails vehicle={{registration: 'NAT142', thumb: '', group: 'economy' }}/>
       <Upload />
+    <Signature />
     </div>
   )
 }

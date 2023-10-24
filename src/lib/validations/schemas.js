@@ -17,7 +17,8 @@ export const vehicleValidationSchema = z.object({
 	color: z.string(),
 	extras: z.string().or(z.array(z.string())),
 	owner: z.string(),
-	notes: z.string()
+	notes: z.string(),
+	basic_day_rate: z.coerce.number()
 })
 
 export const orderValidationSchema = z.object({
@@ -25,6 +26,8 @@ export const orderValidationSchema = z.object({
     client_id: z.string(),
 	pick_up_date: z.date(),
 	drop_off_date: z.date(),
+	pick_up_location: z.string(),
+	drop_off_location: z.string(),
 })
 
 export const clientValidationSchema = z.object({

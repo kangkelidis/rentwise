@@ -5,11 +5,12 @@ import dbConnect from "../dbConnect";
 import vehicleModel from "@/models/vehicle.model";
 import orderModel from "@/models/order.model";
 import ownerModel from "@/models/owner.model";
+import groupModel from "@/models/group.model";
 
 export async function fetchVehicles(page, limit ) {
     try {
         await dbConnect()
-        return await vehicleModel.find({}).limit(limit).skip((page-1) * limit).populate('owner')
+        return await vehicleModel.find({}).limit(limit).skip((page-1) * limit).populate('owner').populate('group')
     } catch (error) {
         console.log(error);
     }
@@ -45,10 +46,10 @@ export async function updateVehicle(vehicleId, values, path) {
       }
 }
 
-export async function getVehicle(id) {
+export async function fetchVehicle(id) {
     try {
         await dbConnect()
-        return await vehicleModel.findById(id)
+        return JSON.stringify(await vehicleModel.findById(id))
     } catch (error) {
         throw new Error('Failed to fetch vehicle: ' + error.message)
     }

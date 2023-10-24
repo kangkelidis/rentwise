@@ -20,6 +20,7 @@ export function zeroPad(num, places) {
 }
 
 export function dateDiffInDays(a, b) {
+  if (typeof a !== 'object' || typeof b !== 'object') return
   const _MS_PER_DAY = 1000 * 60 * 60 * 24;
   // Discard the time and time-zone information.
   const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());

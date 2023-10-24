@@ -96,6 +96,10 @@ const vehicleSchema = new mongoose.Schema({
     notes: {
 
     },
+    basic_day_rate: {
+        type: Number,
+        required: true
+    },
     number: {
         type: Number,
     }

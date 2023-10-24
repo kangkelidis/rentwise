@@ -26,15 +26,16 @@ const orderSchema = new mongoose.Schema(
 		},
 		pick_up_location: {
 			type: String,
-			// required: true
+			required: true
 		},
 		drop_off_location: {
 			type: String,
-			// required: true
+			required: true
 		},
 		number: {
 			type: Number,
 		},
+		// saves only price per day and use num_days * this to calculate car_price
 		price_per_day: {
 			type: Number,
 		},

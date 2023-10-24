@@ -46,6 +46,7 @@ export function VehicleForm({ data }) {
 	const vehicle = data.vehicle
 	const [photos, setPhotos] = useState(vehicle?.photos ? vehicle.photos : [])
 
+	console.log(vehicle);
 	const form = useForm({
 		resolver: zodResolver(vehicleValidationSchema),
 		defaultValues: {
@@ -71,6 +72,7 @@ export function VehicleForm({ data }) {
 					: '',
 			color: vehicle?.color || '',
 			extras: vehicle?.extras || '',
+			basic_day_rate: vehicle?.basic_day_rate || '',
 			notes: vehicle?.notes || '',
 		},
 	})
@@ -178,6 +180,26 @@ export function VehicleForm({ data }) {
 										isRequired
 										label='Registration'
 										placeholder='ABC123'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='basic_day_rate'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+										<Input
+										className='form-input'
+										isRequired
+										label='Basic Day Rate'
+										placeholder='100'
+										type='number'
 										{...field}
 									/>
 								</FormControl>
@@ -517,7 +539,6 @@ export function VehicleForm({ data }) {
 						<Carousel photos={photos} />
 						<Upload setPhotos={setPhotos} />
 					</div>
-
 				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>

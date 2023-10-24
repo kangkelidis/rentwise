@@ -21,6 +21,8 @@ import { useCallback, useState, useMemo } from 'react'
 import VehicleDetails from '../elements/vehicle-details'
 import { DEFAULT_LIMIT } from '@/constants'
 import { Link } from '@nextui-org/link'
+import { toCurrency } from '@/lib/utils'
+import DateDisplay from '../shared/DateDisplay'
 
 export default function TableUI({ columns, data, selectionMode = 'single' }) {
 	data = JSON.parse(data)
@@ -81,7 +83,6 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 	// find a way to make this work for all
 	const renderCell = useCallback((item, columnKey) => {
 		const cellValue = item[columnKey]
-
 		switch (columnKey) {
 			case 'number':
 				return (
@@ -94,13 +95,36 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 			case 'vehicle_id':
 				return <VehicleDetails vehicle={item.vehicle_id}></VehicleDetails>
 			case 'client_id':
-				return <p>{item.client_id?.full_name}</p>
+				return (
+					<Link href={`/clients/${item.client_id._id}`}>
+						<p>{item.client_id?.full_name}</p>
+
+					</Link>
+				)
+
 			case 'owner':
 				return <p>{item.owner?.name}</p>
 			case 'pick_up_date':
-				return <p>{new Date(item[columnKey]).toLocaleDateString('en-UK')}</p>
+				return (
+					<div className='flex gap-3'>
+						<DateDisplay date={item[columnKey]} />
+						<p>{item.pick_up_location}</p>
+					</div>
+				)
 			case 'drop_off_date':
-				return <p>{new Date(item[columnKey]).toLocaleDateString('en-UK')}</p>
+				return (
+					<div className='flex gap-3'>
+						<DateDisplay date={item[columnKey]} />
+						<p>{item.drop_off_location}</p>
+					</div>
+				)
+			case 'price_per_day':
+				return (
+					<div>
+						<p>Total</p>
+						<p>{toCurrency(item.price_per_day * item.num_days)}</p>
+					</div>
+				)
 			default:
 				return cellValue
 		}
@@ -123,7 +147,7 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 			</TableHeader>
 			<TableBody emptyContent={'No rows to display.'} items={items}>
 				{(item) => (
-					<TableRow key={item.key}>
+					<TableRow className='' key={item.key}>
 						{(columnKey) => (
 							<TableCell>{renderCell(item, columnKey)}</TableCell>
 						)}

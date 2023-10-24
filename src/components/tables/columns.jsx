@@ -25,11 +25,11 @@ export const orderColumns = [
 	},
 	{
 		key: 'pick_up_date',
-		label: 'Pick Up Date',
+		label: 'Pick Up',
 	},
 	{
 		key: 'drop_off_date',
-		label: 'Drop of Date',
+		label: 'Drop off',
 	},
 	{
 		key: 'num_days',
@@ -42,6 +42,10 @@ export const orderColumns = [
 	{
 		key: 'client_id',
 		label: 'Client',
+	},
+	{
+		key: 'price_per_day',
+		label: 'Amount',
 	},
 ]
 
