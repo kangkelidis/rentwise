@@ -32,9 +32,9 @@ export default function Total({
 	})
 
 	extrasTotal +=
-		insurance.price_type === 'day'
-			? insurance.price_per_day * num_days
-			: insurance.price_per_day
+		insurance?.price_type === 'day'
+			? insurance?.price_per_day * num_days
+			: insurance?.price_per_day
 
 	setPricePerDay(vehicleTotal / num_days)
 
