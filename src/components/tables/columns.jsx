@@ -70,3 +70,64 @@ export const ownerColumns = [
 		label: 'Name',
 	},
 ]
+
+export const groupColumns = [
+	{
+		key: 'name',
+		label: 'Name',
+	},
+	{
+		key: 'vehicles',
+		label: 'Vehicles',
+	},
+	{
+		key: 'actions',
+		label: 'Actions',
+	},
+]
+
+export const insuranceColumns = [
+	{
+		key: 'name',
+		label: 'Name',
+	},
+	{
+		key: 'price_per_day',
+		label: 'Price',
+	},
+	{
+		key: 'price_type',
+		label: 'Price Type',
+	},
+	{
+		key: 'deposit_amount',
+		label: 'Deposit',
+	},
+	{
+		key: 'deposit_excess',
+		label: 'Excess',
+	},
+	{
+		key: 'actions',
+		label: 'Actions',
+	},
+]
+
+export const equipmentColumns = [
+	{
+		key: 'name',
+		label: 'Name',
+	},
+	{
+		key: 'price_per_day',
+		label: 'Price',
+	},
+	{
+		key: 'price_type',
+		label: 'Price Type',
+	},
+	{
+		key: 'actions',
+		label: 'Actions',
+	},
+]

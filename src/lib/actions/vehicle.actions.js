@@ -16,6 +16,15 @@ export async function fetchVehicles(page, limit ) {
     }
 }
 
+export async function fetchVehiclesInGroup(groupId) {
+    try {
+        await dbConnect()
+        return await vehicleModel.find({group: groupId})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export async function totalCountVehicles() {
     try {
         await dbConnect()

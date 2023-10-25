@@ -24,6 +24,11 @@ export const sidebarLinks = [
 		route: '/owners',
 		label: 'Owners',
 	},
+	{
+		imgURL: '/assets/settings.svg',
+		route: '/settings',
+		label: 'Settings',
+	},
 ]
 
 export const TRANSMISSION = ['Automatic', 'Manual']

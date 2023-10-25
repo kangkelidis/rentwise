@@ -1,9 +1,10 @@
 import mongoose from 'mongoose'
 
 const groupSchema = new mongoose.Schema({
-    group: {
+    name: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
 
     notes: {
@@ -16,4 +17,3 @@ const groupSchema = new mongoose.Schema({
 })
 
 export default mongoose.models.Group || mongoose.model('Group', groupSchema)
-

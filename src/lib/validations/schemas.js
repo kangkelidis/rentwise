@@ -28,6 +28,8 @@ export const orderValidationSchema = z.object({
 	drop_off_date: z.date(),
 	pick_up_location: z.string(),
 	drop_off_location: z.string(),
+	extras: z.array(z.string()),
+	insurance: z.string(),
 })
 
 export const clientValidationSchema = z.object({
@@ -35,10 +37,26 @@ export const clientValidationSchema = z.object({
     last_name: z.string(),
 })
 
-export const settingsValidationSchema = z.object({
-	group: z.string(),
-})
-
 export const ownerValidationSchema = z.object({
 	name: z.string(),
+})
+
+export const groupValidationSchema = z.object({
+	name: z.string(),
+})
+
+export const equipValidationSchema = z.object({
+	name: z.string(),
+	category: z.enum(['equipment']),
+	price_per_day: z.coerce.number(),
+	price_type: z.enum(['fix', 'day']),
+})
+
+export const insuranceValidationSchema = z.object({
+	name: z.string(),
+	category: z.enum(['insurance']),
+	price_per_day: z.coerce.number(),
+	price_type: z.enum(['fix', 'day']),
+	deposit_amount: z.coerce.number(),
+	deposit_excess: z.coerce.number(),
 })

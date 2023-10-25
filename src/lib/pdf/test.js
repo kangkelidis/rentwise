@@ -38,6 +38,7 @@ export const test_agreement = {
             drivers: [
                 // money per day?
                 {
+                    // just use full name
                     first_name: "firsr",
                     last_name: "last",
                     license: "driving license",
@@ -51,7 +52,7 @@ export const test_agreement = {
 
             other: []
         },
-
+        // use name
         insurance: {
             type: "SDW",
             price_per_day: 0,

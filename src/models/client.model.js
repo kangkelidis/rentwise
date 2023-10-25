@@ -28,6 +28,7 @@ const clientSchema = new mongoose.Schema({
     },
     license: {
         type: String,
+        required: true
     },
     nationality: {
         type: String

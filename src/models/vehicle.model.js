@@ -79,7 +79,7 @@ const vehicleSchema = new mongoose.Schema({
     },
     insurance: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Insurance",
+        ref: "Extras",
     },
     current_location: {
         type: String

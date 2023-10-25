@@ -27,7 +27,9 @@ import { Button } from '@/components/ui/button'
 import { Input, Textarea } from '@nextui-org/input'
 import { Calendar } from '@/components/ui/calendar'
 import { Select, SelectItem } from '@nextui-org/select'
-import { Checkbox } from '@nextui-org/checkbox'
+import { Checkbox, CheckboxGroup } from '@nextui-org/checkbox'
+import {RadioGroup, Radio} from "@nextui-org/radio";
+
 import { cn } from '@/lib/utils'
 // import { toast } from '@/components/ui/use-toast'
 import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
@@ -42,7 +44,7 @@ import {
 import { orderValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Total from '../shared/Total'
 
 export function OrderForm({ data }) {
@@ -52,6 +54,8 @@ export function OrderForm({ data }) {
 	const vehicles = data.vehicles
 	const clients = data.clients
 	const order = data.order
+	const equipment = data.equipment
+	const insurances = data.insurances
 
 	const [isDifferentReturnSelected, setDifferentReturnSelected] =
 		useState(false)
@@ -65,14 +69,23 @@ export function OrderForm({ data }) {
 			pick_up_date: order ? new Date(order.pick_up_date) : '',
 			drop_off_date: order ? new Date(order.drop_off_date) : '',
 			pick_up_location: order?.pick_up_location || '',
-			drop_off_location: order?.drop_off_location || ''
+			drop_off_location: order?.drop_off_location || '',
+			extras: order?.extras || [],
+			insurance: order?.insurance || '', 
 		},
 	})
 
 	const watchAll = form.watch()
 
 	async function onSubmit(values) {
-		const newValues = {...values, price_per_day: pricePerDay, drop_off_location: isDifferentReturnSelected ? values.drop_off_location : values.pick_up_location}
+		console.log('Values', values);
+		const newValues = {
+			...values,
+			price_per_day: pricePerDay,
+			drop_off_location: isDifferentReturnSelected
+				? values.drop_off_location
+				: values.pick_up_location,
+		}
 		let success
 		if (order) {
 			success = await updateOrder(order._id, newValues, pathname)
@@ -101,103 +114,45 @@ export function OrderForm({ data }) {
 							<FormField
 								control={form.control}
 								name='vehicle_id'
-								render={
-									({ field }) => {
-										return (
-											<FormItem>
-												<Select
-													className='form-input'
-													items={vehicles}
-													onChange={field.onChange}
-													defaultSelectedKeys={
-														field.value ? [field.value] : undefined
-													}
-													label='Vehicle'
-													labelPlacement='inside'
-													size='lg'
-													renderValue={(items) => {
-														return items.map((item) => {
-															return (
-																<div key={item.data.id} className='p-4 mt-2'>
-																	<VehicleDetails
-																		size={2}
-																		vehicle={item.data}
-																	/>
-																</div>
-															)
-														})
-													}}
-												>
-													{(vehicle) => {
+								render={({ field }) => {
+									return (
+										<FormItem>
+											<Select
+												className='form-input'
+												items={vehicles}
+												onChange={field.onChange}
+												defaultSelectedKeys={
+													field.value ? [field.value] : undefined
+												}
+												label='Vehicle'
+												labelPlacement='inside'
+												size='lg'
+												renderValue={(items) => {
+													return items.map((item) => {
 														return (
-															<SelectItem
-																key={vehicle.id}
-																textValue={vehicle.make}
-																value={vehicle.id}
-															>
-																<VehicleDetails vehicle={vehicle} />
-															</SelectItem>
+															<div key={item.data.id} className='p-4 mt-2'>
+																<VehicleDetails size={2} vehicle={item.data} />
+															</div>
 														)
-													}}
-												</Select>
-												<FormMessage />
-											</FormItem>
-										)
-									}
-
-									// <FormItem>
-									// 	<FormLabel>Vehicle</FormLabel>
-									// 	<Popover>
-									// 		<PopoverTrigger asChild>
-									// 			<FormControl>
-									// 				<Button
-									// 					variant='outline'
-									// 					role='combobox'
-									// 					className={cn(
-									// 						'w-[200px] justify-between',
-									// 						!field.value && 'text-muted-foreground'
-									// 					)}
-									// 				>
-									// 					{field.value
-									// 						? vehicles.find(
-									// 								(vehicle) => vehicle.value === field.value
-									// 						  )?.label
-									// 						: 'Select car'}
-									// 					<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-									// 				</Button>
-									// 			</FormControl>
-									// 		</PopoverTrigger>
-									// 		<PopoverContent className='w-[200px] p-0'>
-									// 			<Command>
-									// 				<CommandInput placeholder='Search car...' />
-									// 				<CommandEmpty>No car found.</CommandEmpty>
-									// 				<CommandGroup>
-									// 					{vehicles.map((vehicle) => (
-									// 						<CommandItem
-									// 							value={vehicle.label}
-									// 							key={vehicle.value}
-									// 							onSelect={() => {
-									// 								form.setValue('vehicle_id', vehicle.value)
-									// 							}}
-									// 						>
-									// 							<Check
-									// 								className={cn(
-									// 									'mr-2 h-4 w-4',
-									// 									vehicle.value === field.value
-									// 										? 'opacity-100'
-									// 										: 'opacity-0'
-									// 								)}
-									// 							/>
-									// 							{vehicle.label}
-									// 						</CommandItem>
-									// 					))}
-									// 				</CommandGroup>
-									// 			</Command>
-									// 		</PopoverContent>
-									// 	</Popover>
-									// 	<FormMessage />
-									// </FormItem>
-								}
+													})
+												}}
+											>
+												{(vehicle) => {
+													return (
+														<SelectItem
+															key={vehicle.id}
+															textValue={vehicle.make}
+															value={vehicle.id}
+														>
+															<VehicleDetails vehicle={vehicle} />
+														</SelectItem>
+													)
+												}}
+											</Select>
+											<FormMessage />
+										</FormItem>
+									)
+								}}
 							/>
 
 							<FormField
@@ -258,6 +213,52 @@ export function OrderForm({ data }) {
 									</FormItem>
 								)}
 							/>
+
+							<FormField
+								control={form.control}
+								name='extras'
+								render={({ field }) => (
+									<FormItem>
+										<CheckboxGroup
+											value={field.value}
+											onValueChange={field.onChange}
+											label='Equipment'
+										>
+											{equipment?.map((equip) => (
+												<Checkbox key={equip.id} value={equip.id}>
+													{equip.name}
+												</Checkbox>
+											))}
+										</CheckboxGroup>
+
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+
+<FormField
+								control={form.control}
+								name='insurance'
+								render={({ field }) => (
+									<FormItem>
+										<RadioGroup
+											value={field.value}
+											onValueChange={field.onChange}
+											label='Insurance'
+										>
+											{insurances?.map((ins) => (
+												<Radio key={ins.id} value={ins.id} description={ins.deposit_amount}>
+													{ins.name}
+												</Radio >
+											))}
+										</RadioGroup>
+
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
 
 							<FormField
 								control={form.control}
@@ -408,7 +409,13 @@ export function OrderForm({ data }) {
 				</Form>
 			</div>
 			<div className='w-1/4'>
-				<Total setPricePerDay={setPricePerDay} watch={watchAll} vehicles={vehicles} />
+				<Total
+					setPricePerDay={setPricePerDay}
+					watch={watchAll}
+					vehicles={vehicles}
+					equipment={equipment}
+					insurances={insurances}
+				/>
 			</div>
 		</div>
 	)

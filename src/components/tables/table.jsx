@@ -16,13 +16,15 @@ import useSWR from 'swr'
 import { Button } from '@nextui-org/button'
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useAsyncList } from '@react-stately/data'
 import { useCallback, useState, useMemo } from 'react'
 import VehicleDetails from '../elements/vehicle-details'
 import { DEFAULT_LIMIT } from '@/constants'
 import { Link } from '@nextui-org/link'
 import { toCurrency } from '@/lib/utils'
 import DateDisplay from '../shared/DateDisplay'
+import { deleteExtra } from '@/lib/actions/extras.actions'
+import { deleteGroup } from '@/lib/actions/group.actions'
+import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
 
 export default function TableUI({ columns, data, selectionMode = 'single' }) {
 	data = JSON.parse(data)
@@ -67,15 +69,17 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 							: `${selectedKeys.size} of ${count.length} selected`}
 					</span>
 				)}
-				<Pagination
-					isCompact
-					showControls
-					showShadow
-					color='primary'
-					page={page}
-					total={pages}
-					onChange={(page) => onChangePage(page)}
-				/>
+				{count && (
+					<Pagination
+						isCompact
+						showControls
+						showShadow
+						color='primary'
+						page={page}
+						total={pages}
+						onChange={(page) => onChangePage(page)}
+					/>
+				)}
 			</div>
 		)
 	}, [selectedKeys, page, pages])
@@ -98,31 +102,71 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 				return (
 					<Link href={`/clients/${item.client_id._id}`}>
 						<p>{item.client_id?.full_name}</p>
-
 					</Link>
 				)
 
 			case 'owner':
 				return <p>{item.owner?.name}</p>
 			case 'pick_up_date':
-				return (
-					<div className='flex gap-3'>
-						<DateDisplay date={item[columnKey]} />
-						<p>{item.pick_up_location}</p>
-					</div>
-				)
 			case 'drop_off_date':
 				return (
 					<div className='flex gap-3'>
 						<DateDisplay date={item[columnKey]} />
-						<p>{item.drop_off_location}</p>
+						<p>{item[columnKey === 'pick_up_date' ? 'pick_up_location' : 'drop_off_location']}</p>
 					</div>
 				)
 			case 'price_per_day':
+				if (item.category === 'insurance' || item.category === 'equipment') {
+					return toCurrency(cellValue)
+				} else {
+					return (
+						<div>
+							<p>Total</p>
+							<p>{toCurrency(item.price_per_day * item.num_days)}</p>
+						</div>
+					)
+				}
+			case 'deposit_amount':
+			case 'deposit_excess':
+				return toCurrency(cellValue)
+			// groups
+			case 'vehicles':
+				return (
+					<div className='flex flex-wrap gap-1'>
+						{item.vehicles.map((v) => (
+							<div key={v.id} className='bg-slate-700 px-2 text-tiny-medium rounded-md'>{v.make} {v.model}</div>
+						))}
+					</div>
+				)
+			case 'actions':
 				return (
 					<div>
-						<p>Total</p>
-						<p>{toCurrency(item.price_per_day * item.num_days)}</p>
+						<Button
+							isIconOnly
+							size='sm'
+							className='bg-transparent'
+							onPress={() => {
+								router.push(pathname + '?' + createQueryString('id', item.id))
+							}}
+						>
+							<img src='/assets/edit.svg'></img>
+						</Button>
+
+						<Button
+							isIconOnly
+							size='sm'
+							className='bg-transparent'
+							onPress={async () => {
+								// TODO: add confirmation
+								if (item.category) {
+									await deleteExtra(item._id, pathname)
+								} else {
+									await deleteGroup(item._id, pathname)
+								}
+							}}
+						>
+							<img src='/assets/delete.svg'></img>
+						</Button>
 					</div>
 				)
 			default:

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import dbConnect from "../dbConnect";
 import groupModel from "@/models/group.model";
 
+// TODO: total groups needed?
 export async function fetchGroups() {
     try {
         await dbConnect()

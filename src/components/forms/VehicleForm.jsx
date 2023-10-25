@@ -15,7 +15,6 @@ import { Select, SelectSection, SelectItem } from '@nextui-org/select'
 
 import { Button } from '@/components/ui/button'
 import { Input, Textarea } from '@nextui-org/input'
-import { CheckboxGroup, Checkbox } from '@nextui-org/checkbox'
 
 import { updateVehicle, deleteVehicle } from '@/lib/actions/vehicle.actions'
 import { vehicleValidationSchema } from '@/lib/validations/schemas'
@@ -46,7 +45,6 @@ export function VehicleForm({ data }) {
 	const vehicle = data.vehicle
 	const [photos, setPhotos] = useState(vehicle?.photos ? vehicle.photos : [])
 
-	console.log(vehicle);
 	const form = useForm({
 		resolver: zodResolver(vehicleValidationSchema),
 		defaultValues: {
@@ -222,8 +220,8 @@ export function VehicleForm({ data }) {
 									size='sm'
 								>
 									{groups.map((group) => (
-										<SelectItem key={group.id} textValue={group.group}>
-											{group.group}
+										<SelectItem key={group.id} textValue={group.name}>
+											{group.name}
 										</SelectItem>
 									))}
 								</Select>

@@ -26,11 +26,11 @@ const orderSchema = new mongoose.Schema(
 		},
 		pick_up_location: {
 			type: String,
-			required: true
+			required: true,
 		},
 		drop_off_location: {
 			type: String,
-			required: true
+			required: true,
 		},
 		number: {
 			type: Number,
@@ -39,33 +39,40 @@ const orderSchema = new mongoose.Schema(
 		price_per_day: {
 			type: Number,
 		},
-		extras: {
-			drivers: [
-				{
-					first_name: {
-						type: String,
-					},
-					last_name: {
-						type: String,
-					},
-					license: {
-						type: String,
-					},
+		extra_drivers: {
+			type: [{
+				full_name: {
+					type: String,
 				},
-			],
-			other: {},
+				license: {
+					type: String,
+				},
+
+			}]
 		},
-		insurance: {},
-		deposit: {},
+		extras: {
+				type: [mongoose.Schema.Types.ObjectId],
+				ref: 'Extra',
+			},
+		insurance: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Extra',
+		},
+		deposit: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Extra',
+		},
 	},
 	{
 		timestamps: true,
 		toJSON: { virtuals: true },
 		toObject: { virtuals: true },
 		virtuals: {
-			num_days: { get() {
-                return dateDiffInDays(this.pick_up_date, this.drop_off_date)
-            }},
+			num_days: {
+				get() {
+					return dateDiffInDays(this.pick_up_date, this.drop_off_date)
+				},
+			},
 		},
 	}
 )
