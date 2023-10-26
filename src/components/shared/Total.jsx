@@ -1,6 +1,5 @@
 'use client'
 
-import { fetchVehicle } from '@/lib/actions/vehicle.actions'
 // TODO use server action
 import { getPrice } from '@/lib/price/rates'
 import { dateDiffInDays, toCurrency } from '@/lib/utils'
@@ -13,7 +12,6 @@ export default function Total({
 	equipment,
 	insurances,
 }) {
-	console.log(watch)
 	const num_days = dateDiffInDays(watch.pick_up_date, watch.drop_off_date)
 	const vehicle = vehicles.find((a) => a._id === watch.vehicle_id)
 	const equip = equipment.filter((e) => watch.extras.includes(e.id))
@@ -39,7 +37,7 @@ export default function Total({
 	setPricePerDay(vehicleTotal / num_days)
 
 	return (
-		<div className='max-lg:hidden'>
+		<div className=''>
 			<div className=' bg-primary-500 p-3 w-full rounded-t-lg'>
 				<h2 className=' text-heading3-bold'>Summary</h2>
 			</div>
@@ -50,7 +48,7 @@ export default function Total({
 				{vehicle && (
 					<div className='bg-slate-700 -mx-4 p-4 flex gap-3 flex-col'>
 						<p className='text-heading4-medium'>{vehicle.group.name}</p>
-						<span className=' w-full flex justify-between gap-3'>
+						<span className=' w-full flex justify-between gap-10'>
 							<p>{vehicle.make + ' ' + vehicle.model}</p>
 							<p className='text-body-semibold'>{toCurrency(vehicleTotal)}</p>
 						</span>
@@ -106,7 +104,7 @@ export default function Total({
 						<Divider className='my-1' />
 
 						<div>
-						<p className='text-heading4-medium'>Deposit</p>
+							<p className='text-heading4-medium'>Deposit</p>
 
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>Security deposit</p>
@@ -117,7 +115,6 @@ export default function Total({
 								<p>{toCurrency(insurance?.deposit_excess)}</p>
 							</div>
 						</div>
-
 					</div>
 				)}
 				<div className='flex justify-between'>

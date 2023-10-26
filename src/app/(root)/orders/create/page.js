@@ -18,7 +18,7 @@ export default async function Page(props) {
 	}
 
 	return (
-		<div>
+		<div className=''>
 			<h2 className='head-text'>Add a new Order</h2>
 			<OrderForm data={JSON.stringify(data)} />
 		</div>
