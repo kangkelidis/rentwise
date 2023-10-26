@@ -84,12 +84,12 @@ export default function Total({
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>{insurance?.name}</p>
 								<p className='text-tiny'>
-									{toCurrency(insurance.price_per_day)}
+									{toCurrency(insurance?.price_per_day)}
 								</p>
 								<p>
-									{insurance.price_type === 'day'
-										? toCurrency(insurance.price_per_day * num_days)
-										: toCurrency(insurance.price_per_day)}
+									{insurance?.price_type === 'day'
+										? toCurrency(insurance?.price_per_day * num_days)
+										: toCurrency(insurance?.price_per_day)}
 								</p>
 							</div>
 						</div>
