@@ -22,8 +22,8 @@ export const vehicleValidationSchema = z.object({
 })
 
 export const orderValidationSchema = z.object({
-	vehicle_id: z.string(),
-    client_id: z.string(),
+	vehicle: z.string(),
+    client: z.string(),
 	pick_up_date: z.date(),
 	drop_off_date: z.date(),
 	pick_up_location: z.string(),

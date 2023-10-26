@@ -6,12 +6,12 @@ import { dateDiffInDays } from '@/lib/utils'
 
 const orderSchema = new mongoose.Schema(
 	{
-		vehicle_id: {
+		vehicle: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Vehicle',
 			required: true,
 		},
-		client_id: {
+		client: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Client',
 			required: true,
@@ -58,10 +58,7 @@ const orderSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Extra',
 		},
-		deposit: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Extra',
-		},
+
 	},
 	{
 		timestamps: true,

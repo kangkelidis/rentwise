@@ -5,21 +5,21 @@ import { useEffect, useState } from 'react'
 import { Button } from '@nextui-org/button'
 
 export default function UsePopover({ children }) {
-	const [isMobile, setIsMobile] = useState(false)
-	const [isOpen, setIsOpen] = useState(false)
-	//choose the screen size
-	const handleResize = () => {
-		if (window.innerWidth < 768) {
-			setIsMobile(true)
-		} else {
-			setIsMobile(false)
-		}
-	}
+	// const [isMobile, setIsMobile] = useState(false)
+	// const [isOpen, setIsOpen] = useState(false)
+	// //choose the screen size
+	// const handleResize = () => {
+	// 	if (window.innerWidth < 768) {
+	// 		setIsMobile(true)
+	// 	} else {
+	// 		setIsMobile(false)
+	// 	}
+	// }
 
-	// create an event listener
-	useEffect(() => {
-		window.addEventListener('resize', handleResize)
-	})
+	// // create an event listener
+	// useEffect(() => {
+	// 	window.addEventListener('resize', handleResize)
+	// })
 
 	return (
         <div className='max-md:absolute max-md:-right-6 max-md:top-[6rem] max-md:-rotate-90 z-30'>

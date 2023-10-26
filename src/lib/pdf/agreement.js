@@ -465,7 +465,9 @@ function printTax(topY, tax) {
 
 
 export function printAgreement(agreement) {
-    agreement = test_agreement.order
+    agreement = JSON.parse(agreement)
+    console.log('server',agreement);
+    // agreement = test_agreement.order
 
     printTitle(agreement.number)
     doc.setLineWidth(0.8)

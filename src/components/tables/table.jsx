@@ -27,6 +27,7 @@ import { deleteGroup } from '@/lib/actions/group.actions'
 import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
 
 export default function TableUI({ columns, data, selectionMode = 'single' }) {
+	console.log('table', data, columns);
 	data = JSON.parse(data)
 	const count = data.count
 	const items = data.items
@@ -95,13 +96,11 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 					</Link>
 				)
 			case 'vehicle':
-				return <VehicleDetails vehicle={item}></VehicleDetails>
-			case 'vehicle_id':
-				return <VehicleDetails vehicle={item.vehicle_id}></VehicleDetails>
-			case 'client_id':
+				return <VehicleDetails vehicle={item.vehicle ? item.vehicle : item}></VehicleDetails>
+			case 'client':
 				return (
-					<Link href={`/clients/${item.client_id._id}`}>
-						<p>{item.client_id?.full_name}</p>
+					<Link href={`/clients/${item.client._id}`}>
+						<p>{item.client?.full_name}</p>
 					</Link>
 				)
 

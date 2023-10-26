@@ -13,7 +13,7 @@ export default function Total({
 	insurances,
 }) {
 	const num_days = dateDiffInDays(watch.pick_up_date, watch.drop_off_date)
-	const vehicle = vehicles.find((a) => a._id === watch.vehicle_id)
+	const vehicle = vehicles.find((a) => a._id === watch.vehicle)
 	const equip = equipment.filter((e) => watch.extras.includes(e.id))
 	const insurance = insurances.find((i) => i.id === watch.insurance)
 

@@ -9,7 +9,7 @@ import clientModel from "@/models/client.model";
 export async function fetchOrders() {
     try {
         await dbConnect()
-        return await orderModel.find({}).populate('vehicle_id').populate('client_id')
+        return await orderModel.find({}).populate('vehicle').populate('client')
     } catch (error) {
         throw new Error('Failed to fetch orders: ' + error.message)
     }
@@ -26,6 +26,7 @@ export async function totalCountOrders() {
 
 
 export async function createOrder(values, path) {
+
     try {
         await dbConnect()
         await orderModel.create(values)
@@ -38,7 +39,6 @@ export async function createOrder(values, path) {
 }
 
 export async function updateOrder(orderId, values, path) {
-    console.log('ACTION VALUES', values);
     try {
         await orderModel.findByIdAndUpdate(orderId, values)
         revalidatePath(path);
@@ -52,7 +52,7 @@ export async function updateOrder(orderId, values, path) {
 export async function fetchOrder(id) {
     try {
         await dbConnect()
-        return await orderModel.findById(id).populate('vehicle_id').populate('client_id')
+        return await orderModel.findById(id).populate('vehicle').populate('client')
     } catch (error) {
         throw new Error('Failed to fetch order: ' + error.message)
     }

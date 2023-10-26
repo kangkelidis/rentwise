@@ -9,12 +9,6 @@ async function getData(page, limit) {
 	const result = await fetchOrders(page, limit)
     const orders = {items: result, count: await totalCountOrders()}
 	return JSON.stringify(orders)
-	// return orders.map(order =>
-	//     ({id: order.id,
-	//         pickup: order.pick_up_date, dropoff: order.drop_off_date,
-	//         vehicle: order.vehicle_id.make + " " + order.vehicle_id.model + ", " + order.vehicle_id.registration,
-	//         client: order.client_id.first_name + ' ' + order.client_id.last_name
-	//     }))
 }
 
 export default async function Page({ searchParams }) {

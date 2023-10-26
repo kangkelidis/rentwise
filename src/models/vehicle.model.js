@@ -109,7 +109,7 @@ const vehicleSchema = new mongoose.Schema({
     virtuals: {
 
         // orders: { async get() {
-        //     return await orderModel.find({vehicle_id: this._id}).select(["pick_up_date", "drop_off_date"]).exec()
+        //     return await orderModel.find({vehicle: this._id}).select(["pick_up_date", "drop_off_date"]).exec()
         // }},
         // current_active_order: { async get() {
         //     const today = new Date()
@@ -139,7 +139,7 @@ const vehicleSchema = new mongoose.Schema({
 
 // TODO refactor / simplify logic
 vehicleSchema.methods.isAvailableDuring = async function (from, till) {
-    const orders = await orderModel.find({vehicle_id: this._id}).select(["pick_up_date", "drop_off_date"]).exec()
+    const orders = await orderModel.find({vehicle: this._id}).select(["pick_up_date", "drop_off_date"]).exec()
     
     const today = new Date()
     const current_active_order = orders

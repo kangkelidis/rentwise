@@ -66,8 +66,8 @@ export function OrderForm({ data }) {
 	const form = useForm({
 		resolver: zodResolver(orderValidationSchema),
 		defaultValues: {
-			vehicle_id: order?.vehicle_id.id || '',
-			client_id: order?.client_id.id || '',
+			vehicle: order?.vehicle || '',
+			client: order?.client || '',
 			pick_up_date: order ? new Date(order.pick_up_date) : '',
 			drop_off_date: order ? new Date(order.drop_off_date) : '',
 			pick_up_location: order?.pick_up_location || '',
@@ -80,7 +80,6 @@ export function OrderForm({ data }) {
 	const watchAll = form.watch()
 
 	async function onSubmit(values) {
-		console.log('Values', values)
 		const newValues = {
 			...values,
 			price_per_day: pricePerDay,
@@ -134,7 +133,7 @@ export function OrderForm({ data }) {
 					<div className='form-container'>
 						<FormField
 							control={form.control}
-							name='vehicle_id'
+							name='vehicle'
 							render={({ field }) => {
 								return (
 									<FormItem>
@@ -178,7 +177,7 @@ export function OrderForm({ data }) {
 
 						<FormField
 							control={form.control}
-							name='client_id'
+							name='client'
 							render={({ field }) => (
 								<FormItem>
 									<FormLabel>Client</FormLabel>
@@ -212,7 +211,7 @@ export function OrderForm({ data }) {
 															value={client.label}
 															key={client.value}
 															onSelect={() => {
-																form.setValue('client_id', client.value)
+																form.setValue('client', client.value)
 															}}
 														>
 															<Check

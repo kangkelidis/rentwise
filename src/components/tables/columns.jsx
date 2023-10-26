@@ -36,11 +36,11 @@ export const orderColumns = [
 		label: 'Total Days',
 	},
 	{
-		key: 'vehicle_id',
+		key: 'vehicle',
 		label: 'Car',
 	},
 	{
-		key: 'client_id',
+		key: 'client',
 		label: 'Client',
 	},
 	{
