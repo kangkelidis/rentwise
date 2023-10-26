@@ -110,11 +110,11 @@ export default function Total({
 
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>Security deposit</p>
-								<p>{toCurrency(insurance.deposit_amount)}</p>
+								<p>{toCurrency(insurance?.deposit_amount)}</p>
 							</div>
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>Damage excess:</p>
-								<p>{toCurrency(insurance.deposit_excess)}</p>
+								<p>{toCurrency(insurance?.deposit_excess)}</p>
 							</div>
 						</div>
 
