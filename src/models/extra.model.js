@@ -19,7 +19,6 @@ const extraSchema = new mongoose.Schema({
         type: String,
         enum: ['fix', 'day']
     },
-
     // for deposit
     deposit_amount: {
         type: Number
@@ -34,6 +33,9 @@ const extraSchema = new mongoose.Schema({
 
 }, {timestamps: true,
     toJSON: { virtuals: true }, toObject: { virtuals: true },
+    virtuals: {
+
+    }
 
 })
 

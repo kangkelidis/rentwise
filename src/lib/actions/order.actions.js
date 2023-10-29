@@ -5,11 +5,13 @@ import dbConnect from "../dbConnect";
 import orderModel from "@/models/order.model"
 import vehicleModel from "@/models/vehicle.model";
 import clientModel from "@/models/client.model";
+import extraModel from "@/models/extra.model";
+import groupModel from "@/models/group.model";
 
 export async function fetchOrders() {
     try {
         await dbConnect()
-        return await orderModel.find({}).populate('vehicle').populate('client')
+        return await orderModel.find({}).populate('vehicle').populate('client').populate('insurance').populate('extras')
     } catch (error) {
         throw new Error('Failed to fetch orders: ' + error.message)
     }
@@ -52,7 +54,7 @@ export async function updateOrder(orderId, values, path) {
 export async function fetchOrder(id) {
     try {
         await dbConnect()
-        return await orderModel.findById(id).populate('vehicle').populate('client')
+        return await orderModel.findById(id).populate({path: 'vehicle', model:'Vehicle', populate: {path: 'group', model:'Group'}}).populate('client').populate('insurance').populate('extras')
     } catch (error) {
         throw new Error('Failed to fetch order: ' + error.message)
     }

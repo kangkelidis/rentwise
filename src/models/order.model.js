@@ -52,11 +52,11 @@ const orderSchema = new mongoose.Schema(
 		},
 		extras: {
 				type: [mongoose.Schema.Types.ObjectId],
-				ref: 'Extra',
+				ref: 'Extras',
 			},
 		insurance: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Extra',
+			ref: 'Extras',
 		},
 
 	},
@@ -70,6 +70,17 @@ const orderSchema = new mongoose.Schema(
 					return dateDiffInDays(this.pick_up_date, this.drop_off_date)
 				},
 			},
+			total: {
+				get() {
+					return this.price_per_day * this.num_days
+				}
+			},
+			car_vat: {
+				get() {
+					return this.total * 19/100
+				}
+			}
+
 		},
 	}
 )

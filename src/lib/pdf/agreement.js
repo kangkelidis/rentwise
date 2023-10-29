@@ -1,5 +1,5 @@
 import * as jsPDF from "jspdf";
-import { toCurrency } from "../utils.js";
+import { toCurrency, zeroPad } from "../utils.js";
 import { test_agreement } from "./test.js";
 
 //TODO: multiple pages and pagination,
@@ -55,7 +55,7 @@ ALL COMPLAINS MUST BE NOTIFIED TO THE MANAGEMENT BEFORE THE END OF THE RENTAL PE
 function printTitle(number) {
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(13);
-    doc.text(`CAR HIRE AGREEMENT No: ${number}`, PAGE_WIDTH - PAGE_MARGIN, PAGE_MARGIN, null, null, 'right' )
+    doc.text(`CAR HIRE AGREEMENT No: ${zeroPad(number, 3)}`, PAGE_WIDTH - PAGE_MARGIN, PAGE_MARGIN, null, null, 'right' )
 } 
 
 function printHeader() {
@@ -127,7 +127,7 @@ function printVehicleInfo(order) {
     doc.text(vehicle.registration, xPos, yPos)
     xPos += VEHICLE_COL_WIDTH
     doc.line(xPos-1, VEHICLE_Y + LINE_SPACE, xPos-1, VEHICLE_Y + LINE_SPACE + 5*CELL_HEIGHT )
-    doc.text(vehicle.group, xPos, yPos)
+    doc.text(vehicle.group.name, xPos, yPos)
     xPos += VEHICLE_COL_WIDTH
     doc.line(xPos-1, VEHICLE_Y + LINE_SPACE, xPos-1, VEHICLE_Y + LINE_SPACE + 5*CELL_HEIGHT )
     
@@ -147,7 +147,7 @@ function printVehicleInfo(order) {
     doc.text(vehicle.model, xPos, yPos)
     doc.line(PAGE_MARGIN, VEHICLE_Y + LINE_SPACE + CELL_HEIGHT, VEHICLE_COL_WIDTH * 3 + PAGE_MARGIN, VEHICLE_Y + LINE_SPACE + CELL_HEIGHT)
     xPos += VEHICLE_COL_WIDTH
-    doc.text(vehicle.year, xPos, yPos)
+    doc.text(String(vehicle.year), xPos, yPos)
     xPos += VEHICLE_COL_WIDTH
     doc.text(vehicle.color, xPos, yPos)
     doc.line(PAGE_MARGIN, VEHICLE_Y + LINE_SPACE + 2*CELL_HEIGHT, VEHICLE_COL_WIDTH * 3 + PAGE_MARGIN, VEHICLE_Y + LINE_SPACE + 2*CELL_HEIGHT)
@@ -166,7 +166,7 @@ function printVehicleInfo(order) {
     xPos = PAGE_MARGIN +1
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(vehicle.odometer, xPos, yPos)
+    doc.text(String(vehicle.odometer), xPos, yPos)
     xPos += VEHICLE_COL_WIDTH
     doc.text(vehicle.fuel_type, xPos, yPos)
     xPos += VEHICLE_COL_WIDTH
@@ -257,7 +257,7 @@ function printDriver(yPos, client, drivers) {
     doc.text(client.last_name, xPos, yPos)
     xPos += COL_WIDTH
     doc.line(xPos-1, TOP_LINE, xPos-1, TOP_LINE + 2* CELL_HEIGHT )
-    doc.text(new Date(client.dob).toLocaleDateString(), xPos, yPos)
+    doc.text(client.dob ? new Date(client.dob).toLocaleDateString() : '', xPos, yPos)
     doc.line(PAGE_MARGIN,  TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
 
     yPos = TOP_LINE + CELL_HEIGHT
@@ -274,11 +274,11 @@ function printDriver(yPos, client, drivers) {
     yPos += LINE_SPACE +1.5
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(client.tel, xPos, yPos)
+    doc.text(client.tel ? client.tel : '', xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(client.email, xPos, yPos)
+    doc.text(client.email || '', xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(client.license, xPos, yPos)
+    doc.text(client.license || '', xPos, yPos)
     xPos += COL_WIDTH
     doc.line(PAGE_MARGIN, TOP_LINE + 2*CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + 2*CELL_HEIGHT)
 
@@ -295,13 +295,13 @@ function printDriver(yPos, client, drivers) {
     yPos += LINE_SPACE +1.5
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(`${client.nationality} | ${client.id ? client.id : client.passport}`, xPos, yPos)
+    doc.text(`${client.nationality || ''} | ${client.identification ? client.identification : client.passport || ''}`, xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(client.address, xPos, yPos)
+    doc.text(client.address || '', xPos, yPos)
     doc.line(PAGE_MARGIN, TOP_LINE + 3*CELL_HEIGHT, COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + 3*CELL_HEIGHT)
     yPos = TOP_LINE + 3*CELL_HEIGHT
 
-    if (drivers.length > 0) {
+    if (drivers) {
         yPos += 3*LINE_SPACE
         xPos = PAGE_MARGIN
         const topLine = yPos + LINE_SPACE
@@ -353,8 +353,8 @@ function printDriver(yPos, client, drivers) {
     return yPos
 }
 
-function printTotal(yPos, order) {
-    const money = order.money
+function printTotal(yPos, order, equip_total, ins_total) {
+    const car_total = order.num_days * order.price_per_day
 
     let xPos = PAGE_MARGIN
     yPos = yPos + 3*LINE_SPACE
@@ -385,20 +385,20 @@ function printTotal(yPos, order) {
     xPos += COL_WIDTH
     doc.text(toCurrency(order.price_per_day), xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(toCurrency(money.total), xPos, yPos)
+    doc.text(toCurrency(car_total), xPos, yPos)
     xPos += COL_WIDTH
     doc.line(PAGE_MARGIN,  TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
 
-    yPos = printExtras(yPos, order.extras)
+    yPos = TOP_LINE + CELL_HEIGHT
+    yPos = printExtras(yPos, order.extras, order.extra_drivers, order.num_days)
     yPos = printInsurance(yPos, order.insurance, order.num_days)
-    yPos = printTax(yPos, money.tax)
+    yPos = printTax(yPos, order, equip_total, ins_total)
 
-
+    const bottom_line = yPos + CELL_HEIGHT
     yPos = yPos + LINE_SPACE
-
+    xPos = PAGE_MARGIN
     doc.setFont("Helvetica", "normal");
     doc.setFontSize(5);
-    yPos = yPos + LINE_SPACE
     doc.text('SECURITY DEPOSIT', xPos + 1, yPos)
     xPos += COL_WIDTH
     doc.text('DAMAGE EXCESS', xPos + 1, yPos)
@@ -408,18 +408,23 @@ function printTotal(yPos, order) {
     yPos += LINE_SPACE +1.5
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(toCurrency(order.deposit.amount), xPos, yPos)
+    doc.text(toCurrency(order.insurance.deposit_amount), xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(toCurrency(order.deposit.excess), xPos, yPos)
+    doc.text(toCurrency(order.insurance.deposit_excess), xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(toCurrency(order.money.total), xPos, yPos)
+    doc.text(toCurrency(car_total + equip_total + ins_total), xPos, yPos)
     xPos += COL_WIDTH
-    doc.line(PAGE_MARGIN,  TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
+    doc.line(PAGE_MARGIN, TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
 
 
-    doc.line(PAGE_MARGIN, TOP_LINE, PAGE_MARGIN, yPos)
-    doc.line(PAGE_WIDTH-PAGE_MARGIN, TOP_LINE, PAGE_WIDTH-PAGE_MARGIN, yPos)
-    doc.line(PAGE_MARGIN, yPos, PAGE_WIDTH-PAGE_MARGIN, yPos)
+    doc.line(PAGE_MARGIN, TOP_LINE, PAGE_MARGIN, bottom_line)
+    doc.line(PAGE_WIDTH-PAGE_MARGIN, TOP_LINE, PAGE_WIDTH-PAGE_MARGIN, bottom_line)
+    doc.line(PAGE_MARGIN, bottom_line, PAGE_WIDTH-PAGE_MARGIN, bottom_line)
+
+    // column lines
+    doc.line(PAGE_MARGIN + COL_WIDTH, TOP_LINE, PAGE_MARGIN + COL_WIDTH, bottom_line)
+    doc.line(PAGE_MARGIN + 2* COL_WIDTH, TOP_LINE, PAGE_MARGIN + 2*COL_WIDTH, bottom_line)
+
     
     return yPos
 }
@@ -427,38 +432,97 @@ function printTotal(yPos, order) {
 function printInsurance(topY, insurance, num_days) {
     let yPos = topY + LINE_SPACE
     let xPos = PAGE_MARGIN
-    const TOP_LINE = topY + LINE_SPACE
 
     doc.setFont("Helvetica", "normal");
     doc.setFontSize(5);
-    yPos = yPos + LINE_SPACE
     doc.text('TYPE OF INSURANCE', xPos + 1, yPos)
     xPos += COL_WIDTH
-    doc.text('PRICE PER DAY', xPos + 1, yPos)
+    doc.text(`${insurance.price_type === 'fix' ? 'PRICE PER DAY' : 'FIX PRICE'}`, xPos + 1, yPos)
     xPos += COL_WIDTH
     doc.text('TOTAL', xPos + 1, yPos)
     xPos = PAGE_MARGIN +1
     yPos += LINE_SPACE +1.5
     doc.setFont("Helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(insurance.type, xPos, yPos)
+    doc.text(insurance.name, xPos, yPos)
     xPos += COL_WIDTH
     doc.text(toCurrency(insurance.price_per_day), xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(toCurrency(insurance.price_per_day * num_days), xPos, yPos)
+    doc.text(toCurrency(insurance.price_type === 'fix' ? insurance.price_per_day : insurance.price_per_day * num_days), xPos, yPos)
     xPos += COL_WIDTH
-    doc.line(PAGE_MARGIN, TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
+    doc.line(PAGE_MARGIN, topY + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, topY + CELL_HEIGHT )
 
     return topY + CELL_HEIGHT 
 }
-function printExtras(topY, extras) {
-    let cell_num = extras.other.length + extras.drivers.length > 0 ? 1 : 0
+function printExtras(topY, extras, extra_drivers, num_days) {
+    let total_cell_num = extras.length + extra_drivers.length > 0 ? extras.length + extra_drivers.length : 0
+    let yPos = topY 
+    let xPos = PAGE_MARGIN
+    extras.forEach((extra, i) => {
+        yPos = i * CELL_HEIGHT + LINE_SPACE + topY
+        xPos = PAGE_MARGIN
+        // bottom line
+        doc.line(PAGE_MARGIN, topY + (CELL_HEIGHT * (i+1)) , PAGE_WIDTH-PAGE_MARGIN, topY + (CELL_HEIGHT * (i+1)) )
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(5);
+        // yPos = yPos + LINE_SPACE
+        doc.text(`TYPE OF EXTRA ${i+1}`, xPos + 1, yPos)
+        xPos += COL_WIDTH
+        doc.text(`${extra.price_type === 'fix' ? 'PRICE PER DAY' : 'FIX PRICE'}`, xPos + 1, yPos)
+        xPos += COL_WIDTH
+        doc.text('TOTAL', xPos + 1, yPos)
+        xPos = PAGE_MARGIN +1
+        yPos += LINE_SPACE +1.5
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text(extra.name, xPos, yPos)
+        xPos += COL_WIDTH
+        doc.text(toCurrency(extra.price_per_day), xPos, yPos)
+        xPos += COL_WIDTH
+        doc.text(toCurrency(extra.price_type === 'fix' ? extra.price_per_day : extra.price_per_day * num_days), xPos+1, yPos)
+        xPos += COL_WIDTH
+    })
 
-    return topY + (CELL_HEIGHT * cell_num)
+    return topY + (CELL_HEIGHT * total_cell_num)
 }
 
-function printTax(topY, tax) {
-    let cell_num = tax.equipment_vat ? 3 : 2
+function printTax(topY, order, equip_total, ins_total) {
+    let cell_num = order.extras?.length > 0 ? 3 : 2
+    let xPos = PAGE_MARGIN
+    let yPos = topY + LINE_SPACE
+    let total = order.car_vat
+
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(5);
+            doc.text(`TYPE`, xPos + 1, yPos)
+            xPos += COL_WIDTH
+            doc.text('VEHICLE VAT', xPos + 1, yPos)
+            doc.line(xPos, topY+CELL_HEIGHT, xPos+COL_WIDTH, topY+CELL_HEIGHT )
+            if(order.extras?.length) {
+                doc.text('EQUIPMENT VAT', xPos +1, yPos + CELL_HEIGHT) 
+                doc.line(xPos, topY+2*CELL_HEIGHT, xPos+COL_WIDTH, topY+2*CELL_HEIGHT )
+                total += equip_total *19/100
+                doc.setFont("Helvetica", "bold");
+                doc.setFontSize(11);
+                doc.text(toCurrency(equip_total * 19/100), xPos+1, yPos + CELL_HEIGHT + LINE_SPACE+1.5 )     
+                doc.setFont("Helvetica", "normal");
+                doc.setFontSize(5);
+            }
+            doc.text('INSURANCE VAT', xPos +1, yPos + (cell_num-1)* CELL_HEIGHT)
+            xPos += COL_WIDTH
+            doc.text('TOTAL', xPos + 1, yPos)
+            xPos = PAGE_MARGIN +1
+            yPos += LINE_SPACE +1.5
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(11);
+            doc.text('TAX', xPos, yPos)
+            xPos += COL_WIDTH
+            doc.text(toCurrency(order.car_vat), xPos, yPos)
+            doc.text(toCurrency(ins_total * 19/100), xPos, yPos + (cell_num-1)*CELL_HEIGHT)
+            total += ins_total * 19/100
+            doc.line(PAGE_MARGIN, topY+cell_num*CELL_HEIGHT, PAGE_WIDTH-PAGE_MARGIN, topY+cell_num*CELL_HEIGHT)
+            xPos += COL_WIDTH
+            doc.text(toCurrency(total), xPos, yPos)
 
     return topY + (CELL_HEIGHT * cell_num) 
 }
@@ -468,14 +532,16 @@ export function printAgreement(agreement) {
     agreement = JSON.parse(agreement)
     console.log('server',agreement);
     // agreement = test_agreement.order
+    const equip_total = agreement.extras.reduce((prev, curr) => {return curr.price_type === 'fix' ? curr.price_per_day : curr.price_per_day * agreement.num_days + prev}, 0)
+    const ins_total = agreement.insurance.price_type === 'fix' ? agreement.insurance.price_per_day : agreement.insurance.price_per_day*agreement.num_days
 
     printTitle(agreement.number)
     doc.setLineWidth(0.8)
     doc.line(PAGE_MARGIN, PAGE_MARGIN + TITLE_HEIGHT, PAGE_WIDTH-PAGE_MARGIN, PAGE_MARGIN + TITLE_HEIGHT);
     printHeader()
     let lastY = printVehicleInfo(agreement)
-    lastY = printDriver(lastY, agreement.client, agreement.extras.drivers)
-    lastY = printTotal(lastY, agreement)
+    lastY = printDriver(lastY, agreement.client, agreement.extra_drivers)
+    lastY = printTotal(lastY, agreement, equip_total, ins_total)
 
     doc.setFont("Helvetica", "normal");
     doc.setFontSize(9);
@@ -495,5 +561,5 @@ export function printAgreement(agreement) {
     doc.setFontSize(5)
     doc.text("HIRER'S SIGNATURE", PAGE_MARGIN+1, lastY + LINE_SPACE)
 
-    doc.save(`${agreement.number}.pdf`)
+    doc.save(`${zeroPad(agreement.number,3)}.pdf`)
 }

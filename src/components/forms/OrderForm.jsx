@@ -66,14 +66,14 @@ export function OrderForm({ data }) {
 	const form = useForm({
 		resolver: zodResolver(orderValidationSchema),
 		defaultValues: {
-			vehicle: order?.vehicle || '',
-			client: order?.client || '',
+			vehicle: order?.vehicle.id || '',
+			client: order?.client.id || '',
 			pick_up_date: order ? new Date(order.pick_up_date) : '',
 			drop_off_date: order ? new Date(order.drop_off_date) : '',
 			pick_up_location: order?.pick_up_location || '',
 			drop_off_location: order?.drop_off_location || '',
-			extras: order?.extras || [],
-			insurance: order?.insurance || '',
+			extras: order?.extras.map(e => e.id) || [],
+			insurance: order?.insurance.id || '',
 		},
 	})
 

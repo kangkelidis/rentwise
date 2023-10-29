@@ -87,6 +87,7 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 
 	// find a way to make this work for all
 	const renderCell = useCallback((item, columnKey) => {
+		console.log('item', item)
 		const cellValue = item[columnKey]
 		switch (columnKey) {
 			case 'number':
