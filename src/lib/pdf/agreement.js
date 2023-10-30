@@ -31,6 +31,8 @@ const CELL_HEIGHT = 8
 const SPACING = 3.5
 const LINE_SPACE = 2.7
 
+
+
 const TERMS = `TERMS AND CONDITIONS
 
 1. In case the hirer paid for the insurance and in the event of an accident, the Hirer/Driver remains responsible for the first €.
@@ -528,9 +530,11 @@ function printTax(topY, order, equip_total, ins_total) {
 }
 
 
-export function printAgreement(agreement) {
+export function printAgreement(settings, agreement) {
     agreement = JSON.parse(agreement)
-    console.log('server',agreement);
+    settings = JSON.parse(settings)
+    console.log(settings);
+    // console.log('server',agreement);
     // agreement = test_agreement.order
     const equip_total = agreement.extras.reduce((prev, curr) => {return curr.price_type === 'fix' ? curr.price_per_day : curr.price_per_day * agreement.num_days + prev}, 0)
     const ins_total = agreement.insurance.price_type === 'fix' ? agreement.insurance.price_per_day : agreement.insurance.price_per_day*agreement.num_days
@@ -560,6 +564,9 @@ export function printAgreement(agreement) {
 
     doc.setFontSize(5)
     doc.text("HIRER'S SIGNATURE", PAGE_MARGIN+1, lastY + LINE_SPACE)
+    doc.text("MANAGER'S SIGNATURE", PAGE_WIDTH/2 +1, lastY + LINE_SPACE)
+
+    doc.addImage(settings.company_signature, "png", PAGE_MARGIN+6 + PAGE_WIDTH/2, lastY + LINE_SPACE +1, 25, 10);
 
     doc.save(`${zeroPad(agreement.number,3)}.pdf`)
 }

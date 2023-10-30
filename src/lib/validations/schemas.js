@@ -60,3 +60,8 @@ export const insuranceValidationSchema = z.object({
 	deposit_amount: z.coerce.number(),
 	deposit_excess: z.coerce.number(),
 })
+
+export const settingsValidationSchema = z.object({
+	company_name: z.string(),
+	// company_signature: z.string()
+})

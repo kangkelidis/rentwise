@@ -15,6 +15,7 @@ export default async function Home() {
       <VehicleDetails vehicle={{registration: 'NAT142', thumb: '', group: 'economy' }}/>
       <Upload />
     <Signature />
+
     </div>
   )
 }

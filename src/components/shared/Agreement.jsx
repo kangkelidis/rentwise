@@ -3,11 +3,11 @@
 import { Button } from "../ui/button"
 import { printAgreement } from "@/lib/pdf/agreement"
 
-export default function Agreement({ order }) {
+export default function Agreement({ settings, order }) {
     
     return (
         <>
-            <Button onClick={() => printAgreement(order)}>test</Button>            
+            <Button onClick={() => printAgreement(settings, order)}>test</Button>            
         </>
     )
 }

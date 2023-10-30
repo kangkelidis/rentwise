@@ -27,7 +27,6 @@ import { deleteGroup } from '@/lib/actions/group.actions'
 import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
 
 export default function TableUI({ columns, data, selectionMode = 'single' }) {
-	console.log('table', data, columns);
 	data = JSON.parse(data)
 	const count = data.count
 	const items = data.items
@@ -87,7 +86,6 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 
 	// find a way to make this work for all
 	const renderCell = useCallback((item, columnKey) => {
-		console.log('item', item)
 		const cellValue = item[columnKey]
 		switch (columnKey) {
 			case 'number':
