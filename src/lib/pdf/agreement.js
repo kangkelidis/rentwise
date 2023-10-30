@@ -311,6 +311,7 @@ function printDriver(yPos, client, drivers) {
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(11);
         doc.setLineWidth(0.1)
+    
         doc.text(`EXTRA DRIVER${drivers.length > 1 ? 'S' : ''}`, PAGE_MARGIN, yPos)
         
         let i = 0
@@ -564,9 +565,10 @@ export function printAgreement(settings, agreement) {
 
     doc.setFontSize(5)
     doc.text("HIRER'S SIGNATURE", PAGE_MARGIN+1, lastY + LINE_SPACE)
+    doc.addImage(agreement.client_signature, "png", PAGE_MARGIN+6, lastY + LINE_SPACE +1, 25, 10);
     doc.text("MANAGER'S SIGNATURE", PAGE_WIDTH/2 +1, lastY + LINE_SPACE)
-
     doc.addImage(settings.company_signature, "png", PAGE_MARGIN+6 + PAGE_WIDTH/2, lastY + LINE_SPACE +1, 25, 10);
+
 
     doc.save(`${zeroPad(agreement.number,3)}.pdf`)
 }

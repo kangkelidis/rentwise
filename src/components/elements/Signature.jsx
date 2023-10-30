@@ -16,19 +16,21 @@ import { createSettings, updateSettings } from '@/lib/actions/settings.action'
 
 import { useAuth } from "@clerk/nextjs";
 
-export default function Signature({ field, form }) {
+export default function Signature({ field, form, clientSignature }) {
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 	const { isLoaded, userId, sessionId, getToken } = useAuth();
 
 	let sigCanvas = {}
-	const [trimmedSignature, setTrimmedSignature] = useState()
 
 	async function saveSignature() {
-		const signature = sigCanvas?.getTrimmedCanvas().toDataURL('image/png')
+		const ts = sigCanvas?.getTrimmedCanvas().toDataURL('image/png')
 
-		form.setValue(field.name, signature)
+		form.setValue(field.name, ts)
 		onClose()
-		await updateSettings(userId, {[field.name]: signature})
+		// TODO: change to company
+		if(!clientSignature) {
+			await updateSettings(userId, {[field.name]: ts})
+		}
 	}
 
 	return (
@@ -38,9 +40,9 @@ export default function Signature({ field, form }) {
 				<ModalContent>
 					{(onClose) => (
 						<div>
-							{/* <ModalHeader className='flex flex-col gap-1'>
-								Modal Title
-							</ModalHeader> */}
+							<ModalHeader className=''>
+								Signature
+							</ModalHeader>
 							<ModalBody>
 								<div className='w-[500px] h-[200px]'>
 									<SignatureCanvas
@@ -50,18 +52,12 @@ export default function Signature({ field, form }) {
 										ref={(ref) => {
 											sigCanvas = ref
 										}}
+										
 									/>
 									<Button onClick={() => sigCanvas?.clear()}>clear</Button>
 									<Button onClick={saveSignature}>save</Button>
 
-									{trimmedSignature && (
-										<Image
-											width={100}
-											height={100}
-											alt='sign'
-											src={trimmedSignature}
-										/>
-									)}
+	
 								</div>
 							</ModalBody>
 							<ModalFooter></ModalFooter>

@@ -58,7 +58,9 @@ const orderSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Extras',
 		},
-
+		client_signature: {
+			type: String
+		}
 	},
 	{
 		timestamps: true,

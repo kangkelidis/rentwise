@@ -30,6 +30,7 @@ export const orderValidationSchema = z.object({
 	drop_off_location: z.string(),
 	extras: z.array(z.string()),
 	insurance: z.string(),
+	client_signature: z.string()
 })
 
 export const clientValidationSchema = z.object({
@@ -63,5 +64,5 @@ export const insuranceValidationSchema = z.object({
 
 export const settingsValidationSchema = z.object({
 	company_name: z.string(),
-	// company_signature: z.string()
+	company_signature: z.string()
 })

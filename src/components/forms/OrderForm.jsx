@@ -48,6 +48,52 @@ import { useState } from 'react'
 import Total from '../shared/Total'
 import { tr } from 'date-fns/locale'
 import UsePopover from '../hooks/usePopover'
+import Signature from '../elements/Signature'
+import Image from 'next/image'
+
+function ExtraDriver(form, driver, index) {
+	// TODO: useFieldArray?
+	// or just form setValue
+	return (
+		<div>
+		<FormField
+		control={form.control}
+		name={`extra_drivers[index]['full_name']`}
+		render={({ field }) => (
+			<FormItem>
+				<FormControl>
+					<Input
+						className='form-input'
+						label='Full Name'
+						placeholder=''
+						{...field}
+					/>
+				</FormControl>
+				<FormMessage />
+			</FormItem>
+		)}
+	/>
+	<FormField
+	control={form.control}
+	name='extra_drivers'
+	render={({ field }) => (
+		<FormItem>
+			<FormControl>
+				<Input
+					className='form-input'
+					label='License Number'
+					placeholder=''
+					{...field}
+				/>
+			</FormControl>
+			<FormMessage />
+		</FormItem>
+	)}
+/>
+			
+</div>
+	)
+}
 
 export function OrderForm({ data }) {
 	const router = useRouter()
@@ -74,12 +120,15 @@ export function OrderForm({ data }) {
 			drop_off_location: order?.drop_off_location || '',
 			extras: order?.extras.map(e => e.id) || [],
 			insurance: order?.insurance.id || '',
+			client_signature: order?.client_signature || '',
+			extra_drivers: order?.extra_drivers || []
 		},
 	})
 
 	const watchAll = form.watch()
 
 	async function onSubmit(values) {
+		console.log('submit', values);
 		const newValues = {
 			...values,
 			price_per_day: pricePerDay,
@@ -256,6 +305,13 @@ export function OrderForm({ data }) {
 							)}
 						/>
 
+{
+	order.extra_drivers.map(driver => 
+		<ExtraDriver key={driver.license} driver={driver} form={form} />
+	
+	)
+}
+
 						<FormField
 							control={form.control}
 							name='insurance'
@@ -410,6 +466,28 @@ export function OrderForm({ data }) {
 								)}
 							/>
 						)}
+                    <FormField
+						control={form.control}
+						name='client_signature'
+						render={({ field }) =>  {
+                            const src = field.value !== '' ? field.value : order.client_signature                            
+                            return (
+							<FormItem>
+								<FormLabel>Signature</FormLabel>
+								<FormControl>
+                                    <Signature field={...field} form={form} clientSignature={true} />
+								</FormControl>
+								<FormMessage />
+                                                            
+								<Image 
+                                        width={100}
+                                        height={100}
+                                        alt='signature'
+                                        src={src}
+                                    />
+							</FormItem>
+						)}}
+					/>
 					</div>
 
 					<div className='flex place-content-between'>
