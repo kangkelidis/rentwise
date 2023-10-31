@@ -28,7 +28,7 @@ export const orderValidationSchema = z.object({
 	drop_off_date: z.date(),
 	pick_up_location: z.string(),
 	drop_off_location: z.string(),
-	extras: z.array(z.string()),
+	extras: z.array(z.object({item: z.string(), count: z.number()})),
 	insurance: z.string(),
 	client_signature: z.string(),
 	extra_drivers: z.array(z.object({
@@ -68,5 +68,8 @@ export const insuranceValidationSchema = z.object({
 
 export const settingsValidationSchema = z.object({
 	company_name: z.string(),
-	company_signature: z.string()
+	company_signature: z.string(),
+	extra_driver_price_type:  z.enum(['fix', 'day']),
+	extra_driver_price_per_day: z.coerce.number(),
 })
+

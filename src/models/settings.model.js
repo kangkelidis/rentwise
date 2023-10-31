@@ -14,7 +14,14 @@ const settingSchema = new mongoose.Schema({
     users: {
         // TODO : use array
         type: String
-    }
+    },
+    extra_driver_price_per_day: {
+        type: Number
+    },
+    extra_driver_price_type: {
+        type: String,
+        enum: ['fix', 'day']
+    },
 
 
 }, {timestamps: true,

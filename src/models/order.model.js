@@ -40,27 +40,38 @@ const orderSchema = new mongoose.Schema(
 			type: Number,
 		},
 		extra_drivers: {
-			type: [{
-				full_name: {
-					type: String,
+			type: [
+				{
+					full_name: {
+						type: String,
+					},
+					license: {
+						type: String,
+					},
 				},
-				license: {
-					type: String,
-				},
-
-			}]
+			],
 		},
-		extras: {
-				type: [mongoose.Schema.Types.ObjectId],
-				ref: 'Extras',
+
+		extras: [
+			{
+				item: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: 'Extras',
+				},
+				count: {
+					type: Number,
+					default: 0,
+				},
 			},
+		],
+
 		insurance: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Extras',
 		},
 		client_signature: {
-			type: String
-		}
+			type: String,
+		},
 	},
 	{
 		timestamps: true,
@@ -72,17 +83,16 @@ const orderSchema = new mongoose.Schema(
 					return dateDiffInDays(this.pick_up_date, this.drop_off_date)
 				},
 			},
-			total: {
+			car_total: {
 				get() {
 					return this.price_per_day * this.num_days
-				}
+				},
 			},
 			car_vat: {
 				get() {
-					return this.total * 19/100
-				}
-			}
-
+					return (this.car_total * 19) / 100
+				},
+			},
 		},
 	}
 )

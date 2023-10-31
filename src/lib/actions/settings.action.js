@@ -17,8 +17,9 @@ export async function fetchSettings(userId) {
 }
 
 export async function updateSettings(userId, values, path) {
+
     try {
-        await dbConnect()        
+        await dbConnect()    
         await settingsModel.findOneAndUpdate({users: userId}, values)
         // revalidatePath(path);
         return true;
@@ -29,7 +30,6 @@ export async function updateSettings(userId, values, path) {
 }
 
 export async function createSettings(userId, values, path) {
-    console.log('fuck',values);
     try {
         let newSettings = {
             ...values,

@@ -44,11 +44,12 @@ import {
 import { orderValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Total from '../shared/Total'
 import UsePopover from '../hooks/usePopover'
 import Signature from '../elements/Signature'
 import Image from 'next/image'
+import Counter from '../elements/Counter'
 
 function ExtraDriver({ index, form, extraDrivers, setExtraDrivers, setExtraDriversNum }) {
 	const ed = form.getValues().extra_drivers
@@ -141,8 +142,9 @@ export function OrderForm({ data }) {
 	const vehicles = data.vehicles
 	const clients = data.clients
 	const order = data.order
-	const equipment = data.equipment
+	const equipment = data.equipment.map(e => ({item: e, count: 0}))
 	const insurances = data.insurances
+	const settings = data.settings
 
 	const [isDifferentReturnSelected, setDifferentReturnSelected] =
 		useState(false)
@@ -151,7 +153,6 @@ export function OrderForm({ data }) {
 		order?.extra_drivers?.length || 0
 	)
 	const [extraDrivers, setExtraDrivers] = useState(order?.extra_drivers || [])
-
 	const form = useForm({
 		resolver: zodResolver(orderValidationSchema),
 		defaultValues: {
@@ -161,17 +162,22 @@ export function OrderForm({ data }) {
 			drop_off_date: order ? new Date(order.drop_off_date) : '',
 			pick_up_location: order?.pick_up_location || '',
 			drop_off_location: order?.drop_off_location || '',
-			extras: order?.extras.map((e) => e.id) || [],
+			extras: order?.extras || [],
 			insurance: order?.insurance.id || '',
 			client_signature: order?.client_signature || '',
 			extra_drivers: order?.extra_drivers || [],
 		},
 	})
+	const [equipmentData, setEquipmentData] = useState(order?.extras || equipment)
 
+	useEffect(() => {
+		form.setValue('extras', equipmentData.map(e => ({item: e.item.id, count: e.count})))
+	}, [equipmentData])
+
+	
 	const watchAll = form.watch()
 
 	async function onSubmit(values) {
-		console.log('submit', values)
 		const newValues = {
 			...values,
 			price_per_day: pricePerDay,
@@ -179,6 +185,7 @@ export function OrderForm({ data }) {
 				? values.drop_off_location
 				: values.pick_up_location,
 		}
+		console.log(newValues);
 		let success
 		if (order) {
 			success = await updateOrder(order._id, newValues, pathname)
@@ -205,8 +212,9 @@ export function OrderForm({ data }) {
 					setPricePerDay={setPricePerDay}
 					watch={watchAll}
 					vehicles={vehicles}
-					equipment={equipment}
+					equipment={equipmentData}
 					insurances={insurances}
+					settings={settings}
 				/>
 			</UsePopover>
 			<div className='max-md:hidden w-4/5'>
@@ -214,8 +222,9 @@ export function OrderForm({ data }) {
 					setPricePerDay={setPricePerDay}
 					watch={watchAll}
 					vehicles={vehicles}
-					equipment={equipment}
+					equipment={equipmentData}
 					insurances={insurances}
+					settings={settings}
 				/>
 			</div>
 
@@ -336,17 +345,17 @@ export function OrderForm({ data }) {
 											onValueChange={field.onChange}
 											label='Equipment'
 										>
-											{equipment?.map((equip) => (
-												<Checkbox key={equip.id} value={equip.id}>
-													{equip.name}
-												</Checkbox>
+											{equipmentData.map((equip, index) => (
+												<div key={equip.item.id}>
+													<Counter equip={equip} index={index} setEquipmentData={setEquipmentData} />
+												</div>
 											))}
 										</CheckboxGroup>
 
 										<FormMessage />
 									</FormItem>
 								)}
-							/>
+								/>
 
 							<Button
 								type='button'
@@ -529,7 +538,7 @@ export function OrderForm({ data }) {
 								name='client_signature'
 								render={({ field }) => {
 									const src =
-										field.value !== '' ? field.value : order.client_signature
+										field.value !== '' ? field.value : order?.client_signature || ''
 									return (
 										<FormItem>
 											<FormLabel>Signature</FormLabel>

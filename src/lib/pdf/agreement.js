@@ -303,7 +303,7 @@ function printDriver(yPos, client, drivers) {
     doc.line(PAGE_MARGIN, TOP_LINE + 3*CELL_HEIGHT, COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + 3*CELL_HEIGHT)
     yPos = TOP_LINE + 3*CELL_HEIGHT
 
-    if (drivers) {
+    if (drivers.length > 0) {
         yPos += 3*LINE_SPACE
         xPos = PAGE_MARGIN
         const topLine = yPos + LINE_SPACE
@@ -312,7 +312,9 @@ function printDriver(yPos, client, drivers) {
         doc.setFontSize(11);
         doc.setLineWidth(0.1)
     
+
         doc.text(`EXTRA DRIVER${drivers.length > 1 ? 'S' : ''}`, PAGE_MARGIN, yPos)
+  
         
         let i = 0
         drivers.forEach(driver => {
@@ -353,9 +355,7 @@ function printDriver(yPos, client, drivers) {
     return yPos
 }
 
-function printTotal(yPos, order, equip_total, ins_total) {
-    const car_total = order.num_days * order.price_per_day
-
+function printTotal(yPos, order, settings, equip_total, ins_total, extra_drivers_total) {
     let xPos = PAGE_MARGIN
     yPos = yPos + 3*LINE_SPACE
 
@@ -385,12 +385,12 @@ function printTotal(yPos, order, equip_total, ins_total) {
     xPos += COL_WIDTH
     doc.text(toCurrency(order.price_per_day), xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(toCurrency(car_total), xPos, yPos)
+    doc.text(toCurrency(order.car_total), xPos, yPos)
     xPos += COL_WIDTH
     doc.line(PAGE_MARGIN,  TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
 
     yPos = TOP_LINE + CELL_HEIGHT
-    yPos = printExtras(yPos, order.extras, order.extra_drivers, order.num_days)
+    yPos = printExtras(yPos, order.extras.filter(e => e.count > 0), settings, order.extra_drivers, order.num_days)
     yPos = printInsurance(yPos, order.insurance, order.num_days)
     yPos = printTax(yPos, order, equip_total, ins_total)
 
@@ -412,7 +412,7 @@ function printTotal(yPos, order, equip_total, ins_total) {
     xPos += COL_WIDTH
     doc.text(toCurrency(order.insurance.deposit_excess), xPos, yPos)
     xPos += COL_WIDTH
-    doc.text(toCurrency(car_total + equip_total + ins_total), xPos, yPos)
+    doc.text(toCurrency(order.car_total + equip_total + ins_total + extra_drivers_total), xPos, yPos)
     xPos += COL_WIDTH
     doc.line(PAGE_MARGIN, TOP_LINE + CELL_HEIGHT , COL_WIDTH * 3 + PAGE_MARGIN, TOP_LINE + CELL_HEIGHT)
 
@@ -454,8 +454,8 @@ function printInsurance(topY, insurance, num_days) {
 
     return topY + CELL_HEIGHT 
 }
-function printExtras(topY, extras, extra_drivers, num_days) {
-    let total_cell_num = extras.length + extra_drivers.length > 0 ? extras.length + extra_drivers.length : 0
+function printExtras(topY, extras, settings, extra_drivers, num_days) {
+    let total_cell_num = extra_drivers.length > 0 ? extras.length + 1 : extras.length
     let yPos = topY 
     let xPos = PAGE_MARGIN
     extras.forEach((extra, i) => {
@@ -465,23 +465,48 @@ function printExtras(topY, extras, extra_drivers, num_days) {
         doc.line(PAGE_MARGIN, topY + (CELL_HEIGHT * (i+1)) , PAGE_WIDTH-PAGE_MARGIN, topY + (CELL_HEIGHT * (i+1)) )
         doc.setFont("Helvetica", "normal");
         doc.setFontSize(5);
-        // yPos = yPos + LINE_SPACE
         doc.text(`TYPE OF EXTRA ${i+1}`, xPos + 1, yPos)
         xPos += COL_WIDTH
-        doc.text(`${extra.price_type === 'fix' ? 'PRICE PER DAY' : 'FIX PRICE'}`, xPos + 1, yPos)
+        doc.text(`${extra.item.price_type === 'fix' ? 'FIX PRICE' : 'PRICE PER DAY'}`, xPos + 1, yPos)
         xPos += COL_WIDTH
         doc.text('TOTAL', xPos + 1, yPos)
         xPos = PAGE_MARGIN +1
         yPos += LINE_SPACE +1.5
         doc.setFont("Helvetica", "bold");
         doc.setFontSize(11);
-        doc.text(extra.name, xPos, yPos)
+        doc.text(`${extra.item.name} (x${extra.count})`, xPos, yPos)
         xPos += COL_WIDTH
-        doc.text(toCurrency(extra.price_per_day), xPos, yPos)
+        doc.text(toCurrency(extra.item.price_per_day), xPos, yPos)
         xPos += COL_WIDTH
-        doc.text(toCurrency(extra.price_type === 'fix' ? extra.price_per_day : extra.price_per_day * num_days), xPos+1, yPos)
+        doc.text(toCurrency(extra.item.price_type === 'fix' ? extra.item.price_per_day * extra.count : extra.item.price_per_day * num_days * extra.count), xPos, yPos)
         xPos += COL_WIDTH
     })
+
+    if (extra_drivers.length > 0) {
+        yPos = extras.length * CELL_HEIGHT + topY
+        xPos = PAGE_MARGIN
+        doc.line(PAGE_MARGIN, yPos + CELL_HEIGHT, PAGE_WIDTH-PAGE_MARGIN, yPos + CELL_HEIGHT )
+        yPos += LINE_SPACE
+        doc.setFont("Helvetica", "normal");
+        doc.setFontSize(5);
+        doc.text(`TYPE OF EXTRA`, xPos + 1, yPos)
+        xPos += COL_WIDTH
+        doc.text(`${settings.extra_driver_price_type === 'fix' ? 'FIX PRICE' : 'PRICE PER DAY'}`, xPos + 1, yPos)
+        xPos += COL_WIDTH
+        doc.text('TOTAL', xPos + 1, yPos)
+
+        xPos = PAGE_MARGIN +1
+        yPos += LINE_SPACE +1.5
+        doc.setFont("Helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text(`Extra Driver (x${extra_drivers.length})`, xPos, yPos)
+        xPos += COL_WIDTH
+        doc.text(toCurrency(settings.extra_driver_price_per_day), xPos, yPos)
+        xPos += COL_WIDTH
+        doc.text(toCurrency(settings.extra_driver_price_type === 'fix' ? settings.extra_driver_price_per_day : settings.extra_driver_price_per_day * num_days), xPos, yPos)
+        xPos += COL_WIDTH
+
+    }
 
     return topY + (CELL_HEIGHT * total_cell_num)
 }
@@ -531,11 +556,15 @@ function printTax(topY, order, equip_total, ins_total) {
 export function printAgreement(settings, agreement) {
     agreement = JSON.parse(agreement)
     settings = JSON.parse(settings)
-    console.log(settings);
     // console.log('server',agreement);
     // agreement = test_agreement.order
-    const equip_total = agreement.extras.reduce((prev, curr) => {return curr.price_type === 'fix' ? curr.price_per_day : curr.price_per_day * agreement.num_days + prev}, 0)
+    const equip_total = agreement.extras.reduce((prev, curr) => {return curr.item.price_type === 'fix' ? curr.item.price_per_day * curr.count : curr.item.price_per_day * agreement.num_days * curr.count + prev}, 0)
     const ins_total = agreement.insurance.price_type === 'fix' ? agreement.insurance.price_per_day : agreement.insurance.price_per_day*agreement.num_days
+    let extra_drivers_total = settings?.extra_driver_price_type === 'day'
+    ? settings?.extra_driver_price_per_day * agreement.num_days
+    : settings?.extra_driver_price_per_day
+    extra_drivers_total *= agreement.extra_drivers.length
+
 
     printTitle(agreement.number)
     doc.setLineWidth(0.8)
@@ -543,7 +572,7 @@ export function printAgreement(settings, agreement) {
     printHeader()
     let lastY = printVehicleInfo(agreement)
     lastY = printDriver(lastY, agreement.client, agreement.extra_drivers)
-    lastY = printTotal(lastY, agreement, equip_total, ins_total)
+    lastY = printTotal(lastY, agreement, settings, equip_total, ins_total, extra_drivers_total)
 
     doc.setFont("Helvetica", "normal");
     doc.setFontSize(9);

@@ -11,28 +11,36 @@ export default function Total({
 	setPricePerDay,
 	equipment,
 	insurances,
+	settings,
 }) {
 	const num_days = dateDiffInDays(watch.pick_up_date, watch.drop_off_date)
 	const vehicle = vehicles.find((a) => a._id === watch.vehicle)
-	const equip = equipment.filter((e) => watch.extras.includes(e.id))
+	const equip = equipment.filter((e) => e.count > 0)
 	const insurance = insurances.find((i) => i.id === watch.insurance)
-
+	
 	const vehicleTotal = getPrice(
 		vehicle?.basic_day_rate,
 		watch.pick_up_date,
 		watch.drop_off_date
-	)
+		)
+
 	let extrasTotal = 0
 	equip.forEach((e) => {
-		e.price_type === 'day'
-			? (extrasTotal += e.price_per_day * num_days)
-			: (extrasTotal += e.price_per_day)
+		e.item.price_type === 'day'
+			? (extrasTotal += e.item.price_per_day * num_days * e.count)
+			: (extrasTotal += e.item.price_per_day * e.count)
 	})
 
 	extrasTotal +=
 		insurance?.price_type === 'day'
 			? insurance?.price_per_day * num_days
 			: insurance?.price_per_day
+
+	let extra_drivers_total_price =
+			settings?.extra_driver_price_type === 'day'
+				? settings?.extra_driver_price_per_day * num_days
+				: settings?.extra_driver_price_per_day
+	extra_drivers_total_price *= watch.extra_drivers.length 
 
 	setPricePerDay(vehicleTotal / num_days)
 
@@ -68,14 +76,27 @@ export default function Total({
 
 						<div>
 							<p className='text-heading4-medium'>Extras</p>
-							{equip.map((extra) => (
-								<div key={extra.id} className='flex justify-between'>
-									<p className='text-small-regular'>{extra.name}</p>
-									<p className='text-tiny'>{toCurrency(extra.price_per_day)}</p>
+							{watch.extra_drivers.length > 0 && (
+								<div className='flex justify-between'>
+									<p className='text-small-regular'>Extra driver x{watch.extra_drivers.length}</p>
+									<p className='text-tiny'>
+										{toCurrency(settings?.extra_driver_price_per_day)}
+									</p>
 									<p>
-										{extra.price_type === 'day'
-											? toCurrency(extra.price_per_day * num_days)
-											: toCurrency(extra.price_per_day)}
+										{settings?.extra_driver_price_type === 'day'
+											? toCurrency(settings?.extra_driver_price_per_day * num_days *watch.extra_drivers.length )
+											: toCurrency(settings?.extra_driver_price_per_day *watch.extra_drivers.length)}
+									</p>
+								</div>
+							)}
+							{equip.map((extra) => (
+								<div key={extra.item.id} className='flex justify-between'>
+									<p className='text-small-regular'>{`${extra.item.name} (x${extra.count})`}</p>
+									<p className='text-tiny'>{toCurrency(extra.item.price_per_day)}</p>
+									<p>
+										{extra.item.price_type === 'day'
+											? toCurrency(extra.item.price_per_day * num_days *extra.count)
+											: toCurrency(extra.item.price_per_day *extra.count)}
 									</p>
 								</div>
 							))}
@@ -119,7 +140,7 @@ export default function Total({
 				)}
 				<div className='flex justify-between'>
 					<p className='text-base-semibold'>Due Balance</p>
-					<p className=''>{toCurrency(vehicleTotal + extrasTotal)}</p>
+					<p className=''>{toCurrency(vehicleTotal + extrasTotal + extra_drivers_total_price)}</p>
 				</div>
 			</div>
 		</div>
