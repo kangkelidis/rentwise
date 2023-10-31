@@ -30,7 +30,11 @@ export const orderValidationSchema = z.object({
 	drop_off_location: z.string(),
 	extras: z.array(z.string()),
 	insurance: z.string(),
-	client_signature: z.string()
+	client_signature: z.string(),
+	extra_drivers: z.array(z.object({
+		full_name: z.string(),
+		license: z.string()
+	}))
 })
 
 export const clientValidationSchema = z.object({

@@ -38,10 +38,10 @@ export function SettingsForm({ data }) {
 
 	async function onSubmit(values) {
 
-        // const success = await updateSettings(values, pathname)
-		// if (success) {
-		// 	router.push('/settings')
-		// }
+        const success = await updateSettings(values, pathname)
+		if (success) {
+			router.push('/settings')
+		}
 	}
 
 

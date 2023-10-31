@@ -324,15 +324,13 @@ function printDriver(yPos, client, drivers) {
     
             doc.setFont("Helvetica", "normal");
             doc.setFontSize(5);
-            doc.text('FIRST NAME', xPos + 1, yPos)
+            doc.text('FULL NAME', xPos + 1, yPos)
+            xPos += COL_WIDTH
             xPos += COL_WIDTH
             doc.line(PAGE_MARGIN, topLine+CELL_HEIGHT*i, PAGE_MARGIN, topLine+CELL_HEIGHT*i + CELL_HEIGHT)
     
-            doc.text('LAST NAME', xPos + 1, yPos)
-            doc.line(xPos, topLine+CELL_HEIGHT*i, xPos, topLine+CELL_HEIGHT*i + CELL_HEIGHT)
-            xPos += COL_WIDTH
     
-            doc.text('DRIVING LICENSE', xPos + 1, yPos)
+            doc.text('DRIVING LICENSE', xPos+ 1, yPos)
             doc.line(xPos, topLine+CELL_HEIGHT*i, xPos, topLine+CELL_HEIGHT*i + CELL_HEIGHT)
             doc.line(PAGE_WIDTH-PAGE_MARGIN, topLine+CELL_HEIGHT*i, PAGE_WIDTH-PAGE_MARGIN, topLine+CELL_HEIGHT*i + CELL_HEIGHT)
             
@@ -340,9 +338,8 @@ function printDriver(yPos, client, drivers) {
             yPos += LINE_SPACE +1.5
             doc.setFont("Helvetica", "bold");
             doc.setFontSize(11);
-            doc.text(driver.first_name, xPos, yPos)
+            doc.text(driver.full_name, xPos, yPos)
             xPos += COL_WIDTH
-            doc.text(driver.last_name, xPos, yPos)
             xPos += COL_WIDTH
             doc.text(driver.license, xPos, yPos)
             xPos += COL_WIDTH
