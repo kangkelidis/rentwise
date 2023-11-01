@@ -5,10 +5,10 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
-export function toCurrency(number, withoutCents) {
+export function toCurrency(number, withoutCents, noSign) {
   if (isNaN(number)) return;
   return number.toLocaleString(undefined, {
-    style: "currency",
+    style: `${noSign ? "decimal" : "currency"}`,
     currency: "EUR",
     minimumFractionDigits: withoutCents ? 0 : 2,
     maximumFractionDigits: withoutCents ? 0 : 2,
@@ -27,4 +27,17 @@ export function dateDiffInDays(a, b) {
   const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
 
   return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+}
+
+export function changeSingleStateValue(setter, name, value) {
+  setter((prev) => {
+    return {
+      ...prev,
+      [name]: value,
+    };
+  });
+}
+
+export async function delay(ms) {
+  await new Promise((res) => setTimeout(res, ms));
 }

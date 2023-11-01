@@ -193,7 +193,7 @@ export function VehicleForm({ data }) {
 						render={({ field }) => (
 							<FormItem>
 								<FormControl>
-										<Input
+									<Input
 										className='form-input'
 										isRequired
 										label='Basic Day Rate'
@@ -207,13 +207,13 @@ export function VehicleForm({ data }) {
 						)}
 					/>
 
-<FormField
+					<FormField
 						control={form.control}
 						name='long_term_rate'
 						render={({ field }) => (
 							<FormItem>
 								<FormControl>
-										<Input
+									<Input
 										className='form-input'
 										isRequired
 										label='Long Term Day Rate'

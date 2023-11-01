@@ -42,7 +42,7 @@ function calculatePrice(standard_rate, num_days) {
             total += (standard_rate - standard_rate * 40/100) * (1 - adj)
             continue
         }
-        total += standard_rate - standard_rate * 70/100
+        total += standard_rate - standard_rate * 60/100
     }
 
     return Math.round(total / 5) * 5

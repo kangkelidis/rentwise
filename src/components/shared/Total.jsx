@@ -2,8 +2,13 @@
 
 // TODO use server action
 import { getPrice } from '@/lib/price/rates'
-import { dateDiffInDays, toCurrency } from '@/lib/utils'
+import { changeSingleStateValue, dateDiffInDays, toCurrency } from '@/lib/utils'
 import { Divider } from '@nextui-org/divider'
+import { Input } from '@nextui-org/input'
+import { Button } from '@nextui-org/button'
+import { useState } from 'react'
+import { Tooltip } from '@nextui-org/tooltip'
+import EditableInput from '../elements/EditableInput'
 
 export default function Total({
 	watch,
@@ -17,32 +22,70 @@ export default function Total({
 	const vehicle = vehicles.find((a) => a._id === watch.vehicle)
 	const equip = equipment.filter((e) => e.count > 0)
 	const insurance = insurances.find((i) => i.id === watch.insurance)
-	
+
+	let defaultPrice = {}
+	let equipmentCustom = {}
+
 	const vehicleTotal = getPrice(
 		vehicle?.basic_day_rate,
 		watch.pick_up_date,
 		watch.drop_off_date
-		)
+	)
 
 	let extrasTotal = 0
 	equip.forEach((e) => {
-		e.item.price_type === 'day'
-			? (extrasTotal += e.item.price_per_day * num_days * e.count)
-			: (extrasTotal += e.item.price_per_day * e.count)
+		const price_for_item =
+			e.item.price_type === 'day'
+				? (extrasTotal += e.item.price_per_day * num_days * e.count)
+				: (extrasTotal += e.item.price_per_day * e.count)
+
+		defaultPrice[e.item.name] = price_for_item
+		equipmentCustom[e.item.name] = false
 	})
 
-	extrasTotal +=
+	let insurance_total =
 		insurance?.price_type === 'day'
 			? insurance?.price_per_day * num_days
 			: insurance?.price_per_day
+	extrasTotal += insurance_total
 
 	let extra_drivers_total_price =
-			settings?.extra_driver_price_type === 'day'
-				? settings?.extra_driver_price_per_day * num_days
-				: settings?.extra_driver_price_per_day
-	extra_drivers_total_price *= watch.extra_drivers.length 
+		settings?.extra_driver_price_type === 'day'
+			? settings?.extra_driver_price_per_day * num_days
+			: settings?.extra_driver_price_per_day
+	extra_drivers_total_price *= watch.extra_drivers.length
+
+	defaultPrice = {
+		...defaultPrice,
+		vehicle_price: vehicleTotal,
+		extra_drivers: extra_drivers_total_price,
+		deposit_amount: insurance?.deposit_amount,
+		deposit_excess: insurance?.deposit_excess,
+		insurance_price: insurance_total,
+	}
 
 	setPricePerDay(vehicleTotal / num_days)
+	const [isCustom, setIsCustom] = useState({
+		vehicle_price: false,
+		extra_drivers: false,
+		deposit_amount: false,
+		deposit_excess: false,
+		insurance_price: false,
+		...equipmentCustom,
+	})
+	const [customPrice, setCustomPrice] = useState(defaultPrice)
+
+	const customProps = {
+		isCustom: isCustom,
+		setIsCustom: setIsCustom,
+		customPrice: customPrice,
+		setCustomPrice: setCustomPrice,
+		defaultPrice: defaultPrice,
+	}
+	
+	function getTotalPrice() {
+		return Object.values(customPrice).reduce((prev, curr) => (prev+curr)) - customPrice.deposit_amount - customPrice.deposit_excess
+	}
 
 	return (
 		<div className=''>
@@ -58,18 +101,24 @@ export default function Total({
 						<p className='text-heading4-medium'>{vehicle.group.name}</p>
 						<span className=' w-full flex justify-between gap-10'>
 							<p>{vehicle.make + ' ' + vehicle.model}</p>
-							<p className='text-body-semibold'>{toCurrency(vehicleTotal)}</p>
+							<EditableInput name='vehicle_price' {...customProps} size='lg' />
 						</span>
+						{isCustom.vehicle_price && (
+							<p className=' self-end line-through'>
+								{toCurrency(vehicleTotal)}
+							</p>
+						)}
+
 						<span className=' w-full flex justify-between'>
 							<p className='text-subtle-medium'>Tariff</p>
 							<p className=' text-small-regular'>
-								{toCurrency(vehicleTotal / num_days)} / day
+								{toCurrency(customPrice.vehicle_price / num_days)} / day
 							</p>
 						</span>
 						<span className=' w-full flex justify-between'>
 							<p className='text-subtle-medium'>VAT inc.</p>
 							<p className=' text-small-regular'>
-								{toCurrency((vehicleTotal * 19) / 100)}{' '}
+								{toCurrency((customPrice.vehicle_price * 19) / 100)}{' '}
 							</p>
 						</span>
 						<Divider className='my-1' />
@@ -77,40 +126,54 @@ export default function Total({
 						<div>
 							<p className='text-heading4-medium'>Extras</p>
 							{watch.extra_drivers.length > 0 && (
-								<div className='flex justify-between'>
-									<p className='text-small-regular'>Extra driver x{watch.extra_drivers.length}</p>
-									<p className='text-tiny'>
-										{toCurrency(settings?.extra_driver_price_per_day)}
-									</p>
-									<p>
-										{settings?.extra_driver_price_type === 'day'
-											? toCurrency(settings?.extra_driver_price_per_day * num_days *watch.extra_drivers.length )
-											: toCurrency(settings?.extra_driver_price_per_day *watch.extra_drivers.length)}
-									</p>
+								<div className='flex flex-col'>
+									<div className='flex justify-between'>
+										<p className='text-small-regular'>
+											Extra driver (x{watch.extra_drivers.length})
+										</p>
+										<p className={`text-tiny ${isCustom.extra_drivers ? 'line-through' : ''}`}>
+											{toCurrency(settings?.extra_driver_price_per_day)}
+										</p>
+										<EditableInput name={'extra_drivers'} {...customProps} />
+									</div>
+									{isCustom.extra_drivers && (
+										<p className=' self-end line-through'>
+											{toCurrency(extra_drivers_total_price)}
+										</p>
+									)}
 								</div>
 							)}
 							{equip.map((extra) => (
-								<div key={extra.item.id} className='flex justify-between'>
-									<p className='text-small-regular'>{`${extra.item.name} (x${extra.count})`}</p>
-									<p className='text-tiny'>{toCurrency(extra.item.price_per_day)}</p>
-									<p>
-										{extra.item.price_type === 'day'
-											? toCurrency(extra.item.price_per_day * num_days *extra.count)
-											: toCurrency(extra.item.price_per_day *extra.count)}
-									</p>
+								<div className='flex flex-col'>
+									<div key={extra.item.id} className='flex justify-between'>
+										<p className='text-small-regular'>{`${extra.item.name} (x${extra.count})`}</p>
+										<p className={`text-tiny ${isCustom[extra.item.name] ? 'line-through' : ''}`}>
+											{toCurrency(extra.item.price_per_day)}
+										</p>
+										<EditableInput name={extra.item.name} {...customProps} />
+									</div>
+									{isCustom[extra.item.name] && (
+										<p className=' self-end line-through'>
+											{toCurrency(defaultPrice[extra.item.name])}
+										</p>
+									)}
 								</div>
 							))}
+							<div className='flex flex-col'>
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>{insurance?.name}</p>
-								<p className='text-tiny'>
+								<p className={`text-tiny ${isCustom.insurance_price ? 'line-through' : ''}`}>
 									{toCurrency(insurance?.price_per_day)}
 								</p>
-								<p>
-									{insurance?.price_type === 'day'
-										? toCurrency(insurance?.price_per_day * num_days)
-										: toCurrency(insurance?.price_per_day)}
-								</p>
+								<EditableInput name={'insurance_price'} {...customProps} />
+
 							</div>
+							{isCustom.insurance_price && (
+										<p className=' self-end line-through'>
+											{toCurrency(defaultPrice.insurance_price)}
+										</p>
+									)}
+									</div>
 						</div>
 						<Divider className='my-1' />
 
@@ -124,23 +187,44 @@ export default function Total({
 
 						<Divider className='my-1' />
 
-						<div>
+						<div className='flex flex-col gap-3'>
 							<p className='text-heading4-medium'>Deposit</p>
 
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>Security deposit</p>
-								<p>{toCurrency(insurance?.deposit_amount)}</p>
+								<EditableInput
+									{...customProps}
+									name={'deposit_amount'}
+									size='lg'
+								/>
 							</div>
+							{isCustom.deposit_amount && (
+								<p className=' self-end line-through'>
+									{toCurrency(insurance?.deposit_amount)}
+								</p>
+							)}
+
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>Damage excess:</p>
-								<p>{toCurrency(insurance?.deposit_excess)}</p>
+								<EditableInput
+									{...customProps}
+									name={'deposit_excess'}
+									size='lg'
+								/>
 							</div>
+							{isCustom.deposit_excess && (
+								<p className=' self-end line-through'>
+									{toCurrency(insurance?.deposit_excess)}
+								</p>
+							)}
 						</div>
 					</div>
 				)}
 				<div className='flex justify-between'>
 					<p className='text-base-semibold'>Due Balance</p>
-					<p className=''>{toCurrency(vehicleTotal + extrasTotal + extra_drivers_total_price)}</p>
+					<p className=''>
+						{toCurrency(getTotalPrice())}
+					</p>
 				</div>
 			</div>
 		</div>

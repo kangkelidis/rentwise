@@ -217,7 +217,7 @@ export function OrderForm({ data }) {
 					settings={settings}
 				/>
 			</UsePopover>
-			<div className='max-md:hidden w-4/5'>
+			<div className='max-md:hidden w-5/6'>
 				<Total
 					setPricePerDay={setPricePerDay}
 					watch={watchAll}
@@ -228,7 +228,7 @@ export function OrderForm({ data }) {
 				/>
 			</div>
 
-			<div className=''>
+			<div >
 				<Form {...form}>
 					<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
 						<div className='form-container'>
