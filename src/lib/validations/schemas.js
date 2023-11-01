@@ -18,7 +18,8 @@ export const vehicleValidationSchema = z.object({
 	extras: z.string().or(z.array(z.string())),
 	owner: z.string(),
 	notes: z.string(),
-	basic_day_rate: z.coerce.number()
+	basic_day_rate: z.coerce.number(),
+	long_term_rate: z.coerce.number(),
 })
 
 export const orderValidationSchema = z.object({

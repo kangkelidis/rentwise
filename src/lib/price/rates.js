@@ -56,8 +56,12 @@ function adjustForAvailability(standard_rate, from, till) {
 
 }
 
-export function getPrice(standard_rate, from, till) {
+export function getPrice(standard_rate, from, till, num_days) {
+    if (num_days) {
+        return calculatePrice(standard_rate, num_days)
+    }
+    
     if (from === '' || till === '') return
-    const num_days = dateDiffInDays(from, till)
+    num_days = dateDiffInDays(from, till)
     return calculatePrice(standard_rate, num_days)
 }

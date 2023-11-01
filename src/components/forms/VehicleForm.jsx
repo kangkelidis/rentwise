@@ -71,6 +71,7 @@ export function VehicleForm({ data }) {
 			color: vehicle?.color || '',
 			extras: vehicle?.extras || '',
 			basic_day_rate: vehicle?.basic_day_rate || '',
+			long_term_rate: vehicle?.long_term_rate || '',
 			notes: vehicle?.notes || '',
 		},
 	})
@@ -197,6 +198,26 @@ export function VehicleForm({ data }) {
 										isRequired
 										label='Basic Day Rate'
 										placeholder='100'
+										type='number'
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+<FormField
+						control={form.control}
+						name='long_term_rate'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+										<Input
+										className='form-input'
+										isRequired
+										label='Long Term Day Rate'
+										placeholder='35'
 										type='number'
 										{...field}
 									/>

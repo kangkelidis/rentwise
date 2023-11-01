@@ -100,6 +100,9 @@ const vehicleSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    long_term_rate: {
+        type: Number,
+    },
     number: {
         type: Number,
     }
