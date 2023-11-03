@@ -81,6 +81,10 @@ const vehicleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Extras",
     },
+    default_insurance: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Extras",
+    },
     current_location: {
         type: String
     },
@@ -94,7 +98,7 @@ const vehicleSchema = new mongoose.Schema({
         type: Number
     },
     notes: {
-
+        type: String
     },
     basic_day_rate: {
         type: Number,

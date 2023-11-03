@@ -31,7 +31,6 @@ export default async function Page({ params }) {
 		<main>
 			<h2 className='head-text'>Edit</h2>
 			<OrderForm data={JSON.stringify(data)} />
-			<Agreement settings={JSON.stringify(data.settings)} order={JSON.stringify(data.order)}/>
 		</main>
 	)
 }

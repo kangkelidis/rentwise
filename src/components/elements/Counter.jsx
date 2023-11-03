@@ -17,7 +17,7 @@ export default function Counter({equip, index, setEquipmentData}) {
             const newData = [...prev]
             newData[index] = {
                 item: prev[index].item,
-                count: prev[index].count -1
+                count: prev[index].count -1,
             }
             return newData
         })

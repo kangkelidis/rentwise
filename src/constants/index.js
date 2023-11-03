@@ -89,3 +89,5 @@ export const EXTRAS = [
 ]
 
 export const DEFAULT_LIMIT = 25 
+
+export const LONG_TERM_DAYS = 90

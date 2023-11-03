@@ -41,3 +41,8 @@ export function changeSingleStateValue(setter, name, value) {
 export async function delay(ms) {
   await new Promise((res) => setTimeout(res, ms));
 }
+
+export function hasCustomPrice(name, customPrices) {
+  return typeof customPrices[name] === 'number'
+
+}

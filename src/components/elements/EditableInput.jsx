@@ -1,57 +1,83 @@
 'use client'
 
-import { changeSingleStateValue, toCurrency } from '@/lib/utils'
+import { changeSingleStateValue, hasCustomPrice, toCurrency } from '@/lib/utils'
 import { Input } from '@nextui-org/input'
+import { Button } from '@nextui-org/button'
 import { Tooltip } from '@nextui-org/tooltip'
+import { useState } from 'react'
 
 // TODO: validate input to avoid NaN
+//       reset when 0
 export default function EditableInput(props) {
-    function handleChange(e) {
-        changeSingleStateValue(props.setCustomPrice, props.name, Number(e.target.value))
-    }
+	const [isEditable, setIsEditable] = useState(hasCustomPrice(props.name, props.customPrices))
 
-    function handleClear() {
-        if (props.isCustom[props.name]) {
-            changeSingleStateValue(props.setIsCustom, props.name, false)
-            changeSingleStateValue(props.setCustomPrice, props.name, props.defaultPrice[props.name])
-        }
-						
-    }
+	function handleChange(e) {
+		if (isNaN(e.target.value.replace(',', ''))) {
+			return
+		}
+		changeSingleStateValue(
+			props.setCustomPrices,
+			props.name,
+			Number(e.target.value.replace(',', ''))
+		)
+	}
+
+	function handleEdit() {
+		if (isEditable) {
+			setIsEditable(false)
+
+			changeSingleStateValue(
+				props.setCustomPrices,
+				props.name,
+				null
+			)
+		} else {
+			setIsEditable(true)
+			
+			changeSingleStateValue(
+				props.setCustomPrices,
+				props.name,
+				props.normalPrices[props.name]
+			)
+		}
+	}
+
 	return (
-		<Tooltip
-			content={
-				props.isCustom[props.name] ? 'Press x to reset' : 'Double Click to Edit'
-			}
-		>
+		<div className='flex flex-row'>
 			<Input
+				onMouseEnter={() => console.log(props)}
 				name={props.name}
 				className={`${props.size === 'lg' ? 'w-[7rem]' : 'w-[6rem]'}`}
-                size='sm'
+				size='sm'
 				type=''
 				classNames={{
 					input: ['text-body-semibold', 'text-right'],
-					inputWrapper: props.isCustom[props.name]
+					inputWrapper: isEditable
 						? ['border-green-400 border-2']
-						: '' ,
+						: '',
 				}}
 				onChange={handleChange}
-				readOnly={!props.isCustom[props.name]}
-				onDoubleClick={() =>
-					changeSingleStateValue(props.setIsCustom, props.name, true)
-				}
+				readOnly={!isEditable}
 				value={
-					props.isCustom[props.name]
-						? props.customPrice[props.name] 
-						: toCurrency(props.defaultPrice[props.name], null, true)
+					isEditable
+						? props.customPrices[props.name]
+						: toCurrency(props.normalPrices[props.name], null, true)
 				}
-				isClearable={props.isCustom[props.name]}
-				onClear={handleClear}
+
 				startContent={
 					<div className='pointer-events-none flex items-center'>
 						<span className='text-default-400 text-small'>€</span>
 					</div>
 				}
 			></Input>
-		</Tooltip>
+			<Button
+				isIconOnly
+				size='sm'
+				className='bg-transparent'
+				onPress={handleEdit}
+			>
+				<img src={isEditable ? '/assets/edit.svg' : '/assets/edit.svg'}></img>
+			</Button>
+		</div>
 	)
 }

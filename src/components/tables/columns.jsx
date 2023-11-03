@@ -44,7 +44,7 @@ export const orderColumns = [
 		label: 'Client',
 	},
 	{
-		key: 'price_per_day',
+		key: 'vehicle_total',
 		label: 'Amount',
 	},
 ]

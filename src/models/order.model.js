@@ -35,8 +35,10 @@ const orderSchema = new mongoose.Schema(
 		number: {
 			type: Number,
 		},
-		// saves only price per day and use num_days * this to calculate car_price
-		price_per_day: {
+		vehicle_price: {
+			type: Number,
+		},
+		custom_vehicle_price: {
 			type: Number,
 		},
 		extra_drivers: {
@@ -51,7 +53,9 @@ const orderSchema = new mongoose.Schema(
 				},
 			],
 		},
-
+		custom_extra_drivers_price: {
+			type: Number,
+		},
 		extras: [
 			{
 				item: {
@@ -62,12 +66,24 @@ const orderSchema = new mongoose.Schema(
 					type: Number,
 					default: 0,
 				},
+				custom_price: {
+					type: Number,
+				},
 			},
 		],
 
 		insurance: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Extras',
+		},
+		custom_insurance_price: {
+			type: Number,
+		},
+		custom_excess: {
+			type: Number,
+		},
+		custom_deposit: {
+			type: Number,
 		},
 		client_signature: {
 			type: String,
@@ -83,14 +99,11 @@ const orderSchema = new mongoose.Schema(
 					return dateDiffInDays(this.pick_up_date, this.drop_off_date)
 				},
 			},
-			car_total: {
+			vehicle_total: {
 				get() {
-					return this.price_per_day * this.num_days
-				},
-			},
-			car_vat: {
-				get() {
-					return (this.car_total * 19) / 100
+					return typeof this.custom_vehicle_price === 'number'
+						? this.custom_vehicle_price
+						: vehicle_price
 				},
 			},
 		},

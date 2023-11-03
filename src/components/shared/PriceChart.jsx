@@ -20,8 +20,8 @@ const CustomTooltip = ({ active, payload, label }) => {
         return (
         <div className="bg-slate-500 p-5 flex flex-col gap-5">
           <p className="">{`Days: ${label}`}</p>
-          <p className="text-body-bold" style={{color:LINE_COLOR}}>{`Total: ${toCurrency(payload[0].value)}`}</p>
-          <p className="text-body-bold" style={{color:'blue'}}>{`Per Day: ${toCurrency(payload[1].value)}`}</p>
+          <p className="text-body-bold" style={{color:'blue'}}>{`Total: ${toCurrency(payload[0].value)}`}</p>
+          <p className="text-body-bold" style={{color:'red'}}>{`Per Day: ${toCurrency(payload[1].value)}`}</p>
         </div>
       );
     }

@@ -113,19 +113,18 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 						<p>{item[columnKey === 'pick_up_date' ? 'pick_up_location' : 'drop_off_location']}</p>
 					</div>
 				)
-			case 'price_per_day':
-				if (item.category === 'insurance' || item.category === 'equipment') {
-					return toCurrency(cellValue)
-				} else {
-					return (
-						<div>
-							<p>Total</p>
-							<p>{toCurrency(item.price_per_day * item.num_days)}</p>
-						</div>
-					)
-				}
+ 
+			case 'vehicle_total':
+				return (
+					<div>
+						<p>Vehicle Total</p>
+						<p>{toCurrency(cellValue)}</p>
+					</div>
+				)
+
 			case 'deposit_amount':
 			case 'deposit_excess':
+			case 'price_per_day':
 				return toCurrency(cellValue)
 			// groups
 			case 'vehicles':

@@ -20,7 +20,6 @@ import { updateVehicle, deleteVehicle } from '@/lib/actions/vehicle.actions'
 import { vehicleValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
-
 import Upload from '@/components/elements/Upload'
 import Carousel from '@/components/elements/Carousel'
 
@@ -43,6 +42,8 @@ export function VehicleForm({ data }) {
 	const groups = data.groups
 	const owners = data.owners
 	const vehicle = data.vehicle
+	const insurances = data.insurances
+
 	const [photos, setPhotos] = useState(vehicle?.photos ? vehicle.photos : [])
 
 	const form = useForm({
@@ -72,6 +73,7 @@ export function VehicleForm({ data }) {
 			extras: vehicle?.extras || '',
 			basic_day_rate: vehicle?.basic_day_rate || '',
 			long_term_rate: vehicle?.long_term_rate || '',
+			default_insurance: vehicle?.default_insurance || '',
 			notes: vehicle?.notes || '',
 		},
 	})
@@ -243,6 +245,29 @@ export function VehicleForm({ data }) {
 									{groups.map((group) => (
 										<SelectItem key={group.id} textValue={group.name}>
 											{group.name}
+										</SelectItem>
+									))}
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+<FormField
+						control={form.control}
+						name='default_insurance'
+						render={({ field }) => (
+							<FormItem>
+								<Select
+									className='form-input'
+									onChange={field.onChange}
+									defaultSelectedKeys={field.value ? [field.value] : undefined}
+									label='Default Insurance'
+									size='sm'
+								>
+									{insurances.map((ins) => (
+										<SelectItem key={ins.id} textValue={ins.name}>
+											{ins.name}
 										</SelectItem>
 									))}
 								</Select>

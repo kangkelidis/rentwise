@@ -22,6 +22,9 @@ const settingSchema = new mongoose.Schema({
         type: String,
         enum: ['fix', 'day']
     },
+    long_term_cut_off: {
+        type: Number,
+    }
 
 
 }, {timestamps: true,
