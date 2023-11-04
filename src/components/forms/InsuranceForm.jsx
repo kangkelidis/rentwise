@@ -29,7 +29,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 export default function InsuranceForm({ insurance }) {
 	const pathname = usePathname()
-    const searchParams = useSearchParams()
+	const searchParams = useSearchParams()
 
 	const [isDepositSelected, setDepositSelected] = useState(true)
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
@@ -37,17 +37,18 @@ export default function InsuranceForm({ insurance }) {
 		resolver: zodResolver(insuranceValidationSchema),
 	})
 
-    useEffect(() => {
+	useEffect(() => {
 		if (insurance) {
-            insurance = JSON.parse(insurance)
-            form.setValue('name', insurance.name)
-            form.setValue('price_per_day', insurance.price_per_day)
-            form.setValue('price_type', insurance.price_type)
-            form.setValue('deposit_amount', insurance.deposit_amount)
-            form.setValue('deposit_excess', insurance.deposit_excess)
+			try {
+				insurance = JSON.parse(insurance)
+			} catch (error) {}
+			form.setValue('name', insurance.name)
+			form.setValue('price_per_day', insurance.price_per_day)
+			form.setValue('price_type', insurance.price_type)
+			form.setValue('deposit_amount', insurance.deposit_amount)
+			form.setValue('deposit_excess', insurance.deposit_excess)
 			onOpenChange()
 		}
-
 	}, [searchParams])
 
 	const router = useRouter()
@@ -57,9 +58,9 @@ export default function InsuranceForm({ insurance }) {
 			insurance = JSON.parse(insurance)
 		}
 		const values = form.getValues()
-        values.category = 'insurance'
+		values.category = 'insurance'
 		await updateExtra(insurance?._id, values, pathname)
-		
+
 		insurance = undefined
 		onClose()
 		router.push(pathname)
@@ -80,7 +81,7 @@ export default function InsuranceForm({ insurance }) {
 				isOpen={isOpen}
 				backdrop='blur'
 				onClose={() => {
-                    insurance = undefined
+					insurance = undefined
 					onClose()
 					router.push(pathname)
 				}}
@@ -202,11 +203,7 @@ export default function InsuranceForm({ insurance }) {
 								</ModalBody>
 
 								<ModalFooter>
-									<Button
-										type='submit'
-										color='primary'
-										onPress={onSubmit}
-									>
+									<Button type='submit' color='primary' onPress={onSubmit}>
 										{insurance ? 'Update' : 'Add'}
 									</Button>
 								</ModalFooter>

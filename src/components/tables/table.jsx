@@ -27,8 +27,13 @@ import { deleteGroup } from '@/lib/actions/group.actions'
 import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
 
 export default function TableUI({ columns, data, selectionMode = 'single' }) {
-	data = JSON.parse(data)
-	const count = data.count
+	try {
+		data = JSON.parse(data)
+		
+	} catch (error) {
+		
+	}
+	const count = data.count 
 	const items = data.items
 	const [isLoading, setIsLoading] = useState(true)
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]))

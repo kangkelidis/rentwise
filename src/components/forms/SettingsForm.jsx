@@ -27,15 +27,18 @@ import Image from 'next/image'
 export function SettingsForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
-	data = JSON.parse(data)
-
+	try {
+		data = JSON.parse(data)
+	} catch (error) {}
+//TODO: move etra driver price to rentals settings
 	const form = useForm({
 		resolver: zodResolver(settingsValidationSchema),
 		defaultValues: {
 			company_name: data?.company_name || '',
 			company_signature: data?.company_signature || '',
+			terms_conditions: data?.terms_conditions || '',
 			extra_driver_price_type: data?.extra_driver_price_type || '',
-			extra_driver_price_per_day: data?.extra_driver_price_per_day || ''
+			extra_driver_price_per_day: data?.extra_driver_price_per_day || '',
 		},
 	})
 

@@ -43,6 +43,7 @@
     "react-day-picker": "^8.8.2",
     "react-dom": "^18",
     "react-hook-form": "^7.47.0",
+    "react-router-dom": "^6.18.0",
     "react-signature-canvas": "^1.0.6",
     "recharts": "^2.9.2",
     "swr": "^2.2.4",
@@ -52,7 +53,9 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.0.1",
     "autoprefixer": "^10",
+    "cross-env": "^7.0.3",
     "postcss": "^8",
     "tailwindcss": "^3"
   }

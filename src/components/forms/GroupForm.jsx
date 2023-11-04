@@ -37,7 +37,10 @@ export default function GroupForm({ group }) {
 
 	useEffect(() => {
 		if (group) {
-			group = JSON.parse(group)
+			try {
+				group = JSON.parse(group)
+			} catch (error) {
+			}
 			form.setValue('name', group.name)
 			onOpenChange()
 		}

@@ -28,22 +28,23 @@ import { useEffect } from 'react'
 
 export default function EquipmentForm({ equipment }) {
 	const pathname = usePathname()
-    const searchParams = useSearchParams()
+	const searchParams = useSearchParams()
 
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 	const form = useForm({
 		resolver: zodResolver(equipValidationSchema),
 	})
 
-    useEffect(() => {
+	useEffect(() => {
 		if (equipment) {
-            equipment = JSON.parse(equipment)
-            form.setValue('name', equipment.name)
-            form.setValue('price_per_day', equipment.price_per_day)
-            form.setValue('price_type', equipment.price_type)
+			try {
+				equipment = JSON.parse(equipment)
+			} catch (error) {}
+			form.setValue('name', equipment.name)
+			form.setValue('price_per_day', equipment.price_per_day)
+			form.setValue('price_type', equipment.price_type)
 			onOpenChange()
 		}
-
 	}, [searchParams])
 
 	const router = useRouter()
@@ -53,9 +54,9 @@ export default function EquipmentForm({ equipment }) {
 			equipment = JSON.parse(equipment)
 		}
 		const values = form.getValues()
-        values.category = 'equipment'
+		values.category = 'equipment'
 		await updateExtra(equipment?._id, values, pathname)
-		
+
 		equipment = undefined
 		onClose()
 		router.push(pathname)
@@ -76,8 +77,8 @@ export default function EquipmentForm({ equipment }) {
 				isOpen={isOpen}
 				backdrop='blur'
 				onClose={() => {
-                    equipment = undefined
-					onClose()   
+					equipment = undefined
+					onClose()
 					router.push(pathname)
 				}}
 				onOpenChange={onOpenChange}
@@ -148,11 +149,7 @@ export default function EquipmentForm({ equipment }) {
 												)}
 											/>
 
-											<Button
-												type='submit'
-												color='primary'
-												onPress={onSubmit}
-											>
+											<Button type='submit' color='primary' onPress={onSubmit}>
 												{equipment ? 'Update' : 'Add'}
 											</Button>
 										</form>
