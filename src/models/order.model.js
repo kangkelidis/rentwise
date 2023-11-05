@@ -4,6 +4,7 @@ import clientModel from './client.model'
 import { autoIncrement } from 'mongoose-plugin-autoinc'
 import { dateDiffInDays } from '@/lib/utils'
 
+// TODO: re-organise to save normal and custom price inside field. is insurance: {normal_price, custom_price}
 const orderSchema = new mongoose.Schema(
 	{
 		vehicle: {
@@ -69,6 +70,9 @@ const orderSchema = new mongoose.Schema(
 				custom_price: {
 					type: Number,
 				},
+				normal_price: {
+					type: Number
+				}
 			},
 		],
 
@@ -103,7 +107,7 @@ const orderSchema = new mongoose.Schema(
 				get() {
 					return typeof this.custom_vehicle_price === 'number'
 						? this.custom_vehicle_price
-						: vehicle_price
+						: this.vehicle_price
 				},
 			},
 		},

@@ -570,8 +570,6 @@ function perDayValue(item, totals, customPrices, order, settings) {
 }
 
 export function printAgreement(settings, order, customPrices, normalPrices) {
-    console.log(customPrices, normalPrices);
-
     function getEquipTotal() {
         return order.extras.reduce((prev, curr) => {
             return (hasCustomPrice(curr.item.name, customPrices) ?

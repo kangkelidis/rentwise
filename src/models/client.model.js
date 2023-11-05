@@ -31,10 +31,8 @@ const clientSchema = new mongoose.Schema({
         required: true
     },
     nationality: {
-        type: {
-            code: String,
-            name: String
-        }
+        // country code
+        type: String
     },
     address: {
         type: String

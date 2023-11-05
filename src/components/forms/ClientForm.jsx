@@ -83,14 +83,6 @@ export function ClientForm({ data }) {
 		}
 	}
 
-	function handleSelectionChange(e) {
-		const key = e.target.value
-		form.setValue(
-			'nationality',
-			countries.find((c) => c.code === key)
-		)
-	}
-
 	return (
 		<Form {...form}>
 			<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
@@ -140,7 +132,7 @@ export function ClientForm({ data }) {
 												)}
 											>
 												{field.value ? (
-													format(field.value, 'PPP')
+													format(new Date(field.value), 'dd-LL-yyyy')
 												) : (
 													<span>Pick a date</span>
 												)}
@@ -236,7 +228,7 @@ export function ClientForm({ data }) {
 										}
 										isRequired
 										size='sm'
-										onChange={handleSelectionChange}
+										onChange={field.onChange}
 									>
 										{countries.map((country) => (
 											<SelectItem key={country.code} textValue={country.name}>

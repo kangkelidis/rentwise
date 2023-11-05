@@ -47,7 +47,7 @@ export const clientValidationSchema = z.object({
 	email: z.string().email(),
 	passport: z.string(),
 	license: z.string(),
-	nationality: z.object({code: z.string(), name: z.string()}),
+	nationality: z.string(),
 	address: z.string(),
 })
 
