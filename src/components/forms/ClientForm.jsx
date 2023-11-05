@@ -26,29 +26,47 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@nextui-org/input'
 import { Calendar } from '@/components/ui/calendar'
+import { Select, SelectSection, SelectItem } from '@nextui-org/select'
+
+import countries from '@/lib/data/countries.json' assert { type: 'json' }
 
 import { cn } from '@/lib/utils'
 // import { toast } from '@/components/ui/use-toast'
-import { format } from 'date-fns'
 
 import { updateClient, deleteClient } from '@/lib/actions/client.actions'
 import { clientValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
+import { useEffect } from 'react'
+import { format } from 'date-fns'
+import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
+import { DayPicker } from 'react-day-picker'
 
 export function ClientForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
 	data = JSON.parse(data)
 	const client = data.client
-
 	const form = useForm({
 		resolver: zodResolver(clientValidationSchema),
 		defaultValues: {
 			first_name: client?.first_name || '',
 			last_name: client?.last_name || '',
+			dob: client?.dob || '',
+			tel: client?.tel || '',
+			email: client?.email || '',
+			passport: client?.passport || '',
+			license: client?.license || '',
+			nationality: client?.nationality || '',
+			address: client?.address || '',
 		},
 	})
+
+	// const watch = form.watch()
+
+	// useEffect(() => {
+	// 	console.log(watch)
+	// }, [watch])
 
 	async function onSubmit(values) {
 		const success = await updateClient(client?._id, values, pathname)
@@ -63,6 +81,14 @@ export function ClientForm({ data }) {
 			router.push('/clients')
 		} else {
 		}
+	}
+
+	function handleSelectionChange(e) {
+		const key = e.target.value
+		form.setValue(
+			'nationality',
+			countries.find((c) => c.code === key)
+		)
 	}
 
 	return (
@@ -89,6 +115,147 @@ export function ClientForm({ data }) {
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Last Name</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='dob'
+						render={({ field }) => (
+							<FormItem className='flex flex-col'>
+								<FormLabel>Date of Birth</FormLabel>
+								<Popover>
+									<PopoverTrigger asChild>
+										<FormControl>
+											<Button
+												variant={'outline'}
+												className={cn(
+													'w-[240px] pl-3 text-left font-normal',
+													!field.value && 'text-muted-foreground'
+												)}
+											>
+												{field.value ? (
+													format(field.value, 'PPP')
+												) : (
+													<span>Pick a date</span>
+												)}
+												<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+											</Button>
+										</FormControl>
+									</PopoverTrigger>
+									<PopoverContent className='w-auto p-0' align='start'>
+										<Calendar
+											mode='single'
+											selected={field.value}
+											onSelect={field.onChange}
+											initialFocus
+											captionLayout='dropdown-buttons'
+											fromYear={1940}
+											toYear={2015}
+										/>
+									</PopoverContent>
+								</Popover>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='tel'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Telephone</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='email'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Email</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='passport'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Passport</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='license'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>License</FormLabel>
+								<FormControl>
+									<Input className='form-input' placeholder='' {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='nationality'
+						render={({ field }) => (
+							<FormItem>
+								<div className='flex flex-col gap-2'>
+									<FormLabel>Country of Issue</FormLabel>
+
+									<Select
+										className='form-input'
+										defaultSelectedKeys={
+											field.value ? [field.value] : undefined
+										}
+										isRequired
+										size='sm'
+										onChange={handleSelectionChange}
+									>
+										{countries.map((country) => (
+											<SelectItem key={country.code} textValue={country.name}>
+												{country.name}
+											</SelectItem>
+										))}
+									</Select>
+								</div>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='address'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Full Address</FormLabel>
 								<FormControl>
 									<Input className='form-input' placeholder='' {...field} />
 								</FormControl>

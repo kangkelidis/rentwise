@@ -20,7 +20,7 @@ import { useCallback, useState, useMemo } from 'react'
 import VehicleDetails from '../elements/vehicle-details'
 import { DEFAULT_LIMIT } from '@/constants'
 import { Link } from '@nextui-org/link'
-import { toCurrency } from '@/lib/utils'
+import { toCurrency, zeroPad } from '@/lib/utils'
 import DateDisplay from '../shared/DateDisplay'
 import { deleteExtra } from '@/lib/actions/extras.actions'
 import { deleteGroup } from '@/lib/actions/group.actions'
@@ -96,7 +96,7 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 			case 'number':
 				return (
 					<Link href={`${pathname}/${item._id}`} underline='hover'>
-						{cellValue}
+						{zeroPad(cellValue, 3)}
 					</Link>
 				)
 			case 'vehicle':

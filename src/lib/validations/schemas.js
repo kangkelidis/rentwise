@@ -42,6 +42,13 @@ export const orderValidationSchema = z.object({
 export const clientValidationSchema = z.object({
 	first_name: z.string(),
     last_name: z.string(),
+	dob: z.date(),
+	tel: z.string(),
+	email: z.string().email(),
+	passport: z.string(),
+	license: z.string(),
+	nationality: z.object({code: z.string(), name: z.string()}),
+	address: z.string(),
 })
 
 export const ownerValidationSchema = z.object({
@@ -71,7 +78,9 @@ export const insuranceValidationSchema = z.object({
 export const settingsValidationSchema = z.object({
 	company_name: z.string(),
 	company_signature: z.string(),
+})
+
+export const rentalsSettingsValidationSchema = z.object({
 	extra_driver_price_type:  z.enum(['fix', 'day']),
 	extra_driver_price_per_day: z.coerce.number(),
 })
-

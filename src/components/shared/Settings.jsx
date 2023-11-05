@@ -12,6 +12,7 @@ import {
 	groupColumns,
 	insuranceColumns,
 } from '@/components/tables/columns'
+import { RentalsForm } from '../forms/RentalsForm'
 
 export default function Settings({ data }) {
 	data = JSON.parse(data)
@@ -25,6 +26,7 @@ export default function Settings({ data }) {
 					selectedKey={selected}
 					onSelectionChange={setSelected}
 				>
+
 					<Tab key='rentals' title='Rental'>
 						<div>
 							<GroupForm group={data.group} />
@@ -32,7 +34,12 @@ export default function Settings({ data }) {
 								columns={groupColumns}
 								data={{ items: data.newGroups }}
 							/>
+							<RentalsForm data={data.data.settings}/>
+						</div>
+					</Tab>
 
+					<Tab key='extras' title='Extras'>
+						<div>
 							<EquipmentForm equipment={data.equipment} />
 							<TableUI
 								columns={equipmentColumns}
