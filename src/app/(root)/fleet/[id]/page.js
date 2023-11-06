@@ -24,7 +24,7 @@ export default async function Page({ params }) {
             <VehicleForm data={JSON.stringify(data)} />
             <div className="p-2 mt-6">
                 <h2>Price Distribution</h2>
-            <PriceChart rate={data.vehicle.basic_day_rate} />
+            <PriceChart vehicle={JSON.stringify(data.vehicle)} />
 
             </div>
         </>

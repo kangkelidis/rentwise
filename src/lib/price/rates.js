@@ -55,16 +55,17 @@ function adjustForAvailability(standard_rate, from, till) {}
 
 
 
-function getVehiclePrice(vehicle, num_days) {
+export function getVehiclePrice(vehicle, num_days) {
 	if (vehicle && num_days) {
 		// TODO: use settings long_term_cut_off
-		if (num_days < LONG_TERM_DAYS) {
+		if (num_days <= LONG_TERM_DAYS) {
 			return calculatePrice(vehicle.basic_day_rate, num_days)
 		} else {
 			return vehicle.long_term_rate * num_days
 		}
 	}
 }
+
 function getDriverPrice(drivers, num_days, settings) {
 	if (drivers.length && num_days) {
 		const priceType = settings.extra_driver_price_type

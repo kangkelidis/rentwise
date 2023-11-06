@@ -1,6 +1,6 @@
 'use client'
 
-import { getPrice } from '@/lib/price/rates'
+import { getVehiclePrice } from '@/lib/price/rates'
 import { toCurrency } from '@/lib/utils'
 import {
 	Bar,
@@ -29,10 +29,15 @@ const CustomTooltip = ({ active, payload, label }) => {
     return null;
 };
 
-export default function PriceChart({ rate }) {
+export default function PriceChart({ vehicle }) {
+	try {
+		vehicle = JSON.parse(vehicle)
+	} catch (error) {
+		
+	}
     let data = []
-    for (let i = 0; i < 90; i++) {
-        const t = getPrice(rate, null, null, i + 1)
+    for (let i = 0; i < 100; i++) {
+        const t = getVehiclePrice(vehicle, i + 1)
         data[i] = { name: i + 1, total: t, per_day: Math.round((t / (i+1)) *100) /100 }
     }
 	return (
