@@ -25,15 +25,15 @@ import DateDisplay from '../shared/DateDisplay'
 import { deleteExtra } from '@/lib/actions/extras.actions'
 import { deleteGroup } from '@/lib/actions/group.actions'
 import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
+import { getTotalPrice } from '@/lib/price/rates'
+import StatusChip from '../elements/StatusChip'
+import { deleteOrder } from '@/lib/actions/order.actions'
 
 export default function TableUI({ columns, data, selectionMode = 'single' }) {
 	try {
 		data = JSON.parse(data)
-		
-	} catch (error) {
-		
-	}
-	const count = data.count 
+	} catch (error) {}
+	const count = data.count
 	const items = data.items
 	const [isLoading, setIsLoading] = useState(true)
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]))
@@ -99,8 +99,15 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 						{zeroPad(cellValue, 3)}
 					</Link>
 				)
+			case 'status': {
+				return <StatusChip status={cellValue} />
+			}
 			case 'vehicle':
-				return <VehicleDetails vehicle={item.vehicle ? item.vehicle : item}></VehicleDetails>
+				return (
+					<VehicleDetails
+						vehicle={item.vehicle ? item.vehicle : item}
+					></VehicleDetails>
+				)
 			case 'client':
 				return (
 					<Link href={`/clients/${item.client._id}`}>
@@ -115,15 +122,28 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 				return (
 					<div className='flex gap-3'>
 						<DateDisplay date={item[columnKey]} />
-						<p>{item[columnKey === 'pick_up_date' ? 'pick_up_location' : 'drop_off_location']}</p>
+						<p>
+							{
+								item[
+									columnKey === 'pick_up_date'
+										? 'pick_up_location'
+										: 'drop_off_location'
+								]
+							}
+						</p>
 					</div>
 				)
- 
-			case 'vehicle_total':
+
+			case 'prices':
+				if (!cellValue) return
 				return (
 					<div>
-						<p>Vehicle Total</p>
-						<p>{toCurrency(cellValue)}</p>
+						<p className='text-subtle-medium text-gray-500'>Vehicle</p>
+						<p>
+							{toCurrency(cellValue.vehicle.custom || cellValue.vehicle.total)}
+						</p>
+						<p className='text-subtle-medium text-gray-500'>Total</p>
+						<p>{toCurrency(getTotalPrice(cellValue))}</p>
 					</div>
 				)
 
@@ -136,7 +156,12 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 				return (
 					<div className='flex flex-wrap gap-1'>
 						{item.vehicles.map((v) => (
-							<div key={v.id} className='bg-slate-700 px-2 text-tiny-medium rounded-md'>{v.make} {v.model}</div>
+							<div
+								key={v.id}
+								className='bg-slate-700 px-2 text-tiny-medium rounded-md'
+							>
+								{v.make} {v.model}
+							</div>
 						))}
 					</div>
 				)
@@ -171,6 +196,33 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 						</Button>
 					</div>
 				)
+				case 'actions_order':
+					return (
+						<div>
+							<Button
+								isIconOnly
+								size='sm'
+								className='bg-transparent'
+								onPress={() => {
+									router.push(pathname + '/' + item.id)
+								}}
+							>
+								<img src='/assets/edit.svg'></img>
+							</Button>
+	
+							<Button
+								isIconOnly
+								size='sm'
+								className='bg-transparent'
+								onPress={async () => {
+									// TODO: add confirmation
+									await deleteOrder(item.id, pathname)
+								}}
+							>
+								<img src='/assets/delete.svg'></img>
+							</Button>
+						</div>
+					)
 			default:
 				return cellValue
 		}

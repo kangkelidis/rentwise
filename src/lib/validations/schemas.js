@@ -1,4 +1,4 @@
-import * as z from "zod";
+import * as z from 'zod'
 
 export const vehicleValidationSchema = z.object({
 	make: z.string(),
@@ -25,23 +25,33 @@ export const vehicleValidationSchema = z.object({
 
 export const orderValidationSchema = z.object({
 	vehicle: z.string(),
-    client: z.string(),
+	client: z.string(),
 	pick_up_date: z.date(),
 	drop_off_date: z.date(),
 	pick_up_location: z.string(),
 	drop_off_location: z.string(),
-	extras: z.array(z.object({item: z.string(), count: z.number(), custom_price: z.number().optional()})),
+	extras: z.array(
+		z.object({
+			item: z.string(),
+			count: z.number(),
+			custom_price: z.number().optional(),
+			normal_price: z.number().optional(),
+		})
+	),
 	insurance: z.string(),
 	client_signature: z.string(),
-	extra_drivers: z.array(z.object({
-		full_name: z.string(),
-		license: z.string(),
-	}))
+	extra_drivers: z.array(
+		z.object({
+			full_name: z.string(),
+			license: z.string(),
+		})
+	),
+	status: z.string(),
 })
 
 export const clientValidationSchema = z.object({
 	first_name: z.string(),
-    last_name: z.string(),
+	last_name: z.string(),
 	dob: z.date(),
 	tel: z.string(),
 	email: z.string().email(),
@@ -81,6 +91,6 @@ export const settingsValidationSchema = z.object({
 })
 
 export const rentalsSettingsValidationSchema = z.object({
-	extra_driver_price_type:  z.enum(['fix', 'day']),
+	extra_driver_price_type: z.enum(['fix', 'day']),
 	extra_driver_price_per_day: z.coerce.number(),
 })

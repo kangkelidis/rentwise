@@ -3,7 +3,7 @@ import { fetchEquipment, fetchInsurances } from "@/lib/actions/extras.actions";
 import { fetchGroups } from "@/lib/actions/group.actions";
 import { fetchOwners } from "@/lib/actions/owner.actions";
 
-export default async function Page(props) {
+export default async function Page({ searchParams }) {
     const groups = fetchGroups()
     const owners = fetchOwners()
     const insurances = fetchInsurances()

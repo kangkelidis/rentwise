@@ -24,6 +24,10 @@ export const orderColumns = [
 		label: 'ID',
 	},
 	{
+		key: 'status',
+		label: 'Status',
+	},
+	{
 		key: 'pick_up_date',
 		label: 'Pick Up',
 	},
@@ -44,8 +48,12 @@ export const orderColumns = [
 		label: 'Client',
 	},
 	{
-		key: 'vehicle_total',
+		key: 'prices',
 		label: 'Amount',
+	},
+	{
+		key: 'actions_order',
+		label: 'Actions',
 	},
 ]
 

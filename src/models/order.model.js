@@ -3,8 +3,8 @@ import vehicleModel from './vehicle.model'
 import clientModel from './client.model'
 import { autoIncrement } from 'mongoose-plugin-autoinc'
 import { dateDiffInDays } from '@/lib/utils'
+import { STATUS } from '@/constants'
 
-// TODO: re-organise to save normal and custom price inside field. is insurance: {normal_price, custom_price}
 const orderSchema = new mongoose.Schema(
 	{
 		vehicle: {
@@ -36,12 +36,6 @@ const orderSchema = new mongoose.Schema(
 		number: {
 			type: Number,
 		},
-		vehicle_price: {
-			type: Number,
-		},
-		custom_vehicle_price: {
-			type: Number,
-		},
 		extra_drivers: {
 			type: [
 				{
@@ -54,9 +48,6 @@ const orderSchema = new mongoose.Schema(
 				},
 			],
 		},
-		custom_extra_drivers_price: {
-			type: Number,
-		},
 		extras: [
 			{
 				item: {
@@ -67,12 +58,6 @@ const orderSchema = new mongoose.Schema(
 					type: Number,
 					default: 0,
 				},
-				custom_price: {
-					type: Number,
-				},
-				normal_price: {
-					type: Number
-				}
 			},
 		],
 
@@ -80,18 +65,16 @@ const orderSchema = new mongoose.Schema(
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Extras',
 		},
-		custom_insurance_price: {
-			type: Number,
-		},
-		custom_excess: {
-			type: Number,
-		},
-		custom_deposit: {
-			type: Number,
-		},
 		client_signature: {
 			type: String,
 		},
+		prices: {
+			type: Object
+		},
+		status: {
+			type: String,
+			enum: STATUS
+		}
 	},
 	{
 		timestamps: true,
@@ -101,13 +84,6 @@ const orderSchema = new mongoose.Schema(
 			num_days: {
 				get() {
 					return dateDiffInDays(this.pick_up_date, this.drop_off_date)
-				},
-			},
-			vehicle_total: {
-				get() {
-					return typeof this.custom_vehicle_price === 'number'
-						? this.custom_vehicle_price
-						: this.vehicle_price
 				},
 			},
 		},

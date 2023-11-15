@@ -2,10 +2,10 @@ import { OrderForm } from '@/components/forms/OrderForm'
 import { fetchClientsList } from '@/lib/actions/client.actions'
 import { fetchEquipment, fetchInsurances } from '@/lib/actions/extras.actions'
 import { fetchSettings } from '@/lib/actions/settings.action'
-import { fetchVehicles } from '@/lib/actions/vehicle.actions'
+import { fetchVehicles, markUnavailable } from '@/lib/actions/vehicle.actions'
 import { auth } from "@clerk/nextjs";
 
-export default async function Page(props) {
+export default async function Page({ searchParams }) {
 	const { userId } = auth();
 	
 	const vehicles = fetchVehicles()
@@ -21,6 +21,15 @@ export default async function Page(props) {
 		equipment: result[2],
 		insurances: result[3],
 		settings: result[4],
+	}
+
+	const selectedVehicle = data.vehicles.find(v => v.id === searchParams.vehicle)
+	const pickUpDate = new Date(searchParams.pickUp)
+	const dropOfDate = new Date(searchParams.dropOff)
+
+	if (!isNaN(pickUpDate) && !isNaN(dropOfDate)) {
+		const markedVehicles = await markUnavailable(data.vehicles, pickUpDate, dropOfDate)
+		data.vehicles = markedVehicles
 	}
 
 	return (

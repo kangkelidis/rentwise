@@ -7,7 +7,7 @@ import { Link } from '@nextui-org/link'
 
 export default function VehicleDetails({ vehicle, size=4 }) {
 	return (
-		<div className='flex gap-3 w-fit'>
+		<div className={`flex gap-3 w-full ${vehicle.unavailable && 'bg-red-500'}`}>
             <div style={{width: size + 'rem', height: size + 'rem'}} className='rounded-full bg-zinc-700 flex items-center justify-center'>
                 {vehicle?.photos?.length && vehicle.photos[0] ? (
                     <CldImage

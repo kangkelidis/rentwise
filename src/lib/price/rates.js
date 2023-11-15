@@ -1,5 +1,5 @@
 import { LONG_TERM_DAYS } from '@/constants'
-import { dateDiffInDays } from '../utils'
+import { dateDiffInDays, hasCustomPrice } from '../utils'
 
 function calculatePrice(standard_rate, num_days) {
 	let total = 0
@@ -53,11 +53,10 @@ function adjustForSeason(price, from, till) {}
 
 function adjustForAvailability(standard_rate, from, till) {}
 
-
-
 export function getVehiclePrice(vehicle, num_days) {
 	if (vehicle && num_days) {
 		// TODO: use settings long_term_cut_off
+		// smooth price drop
 		if (num_days <= LONG_TERM_DAYS) {
 			return calculatePrice(vehicle.basic_day_rate, num_days)
 		} else {
@@ -100,30 +99,59 @@ function getEquipPrice(equip, num_days) {
 	}
 }
 
-export function getNormalPrices(params, settings) {
+export function getNormalPrices(params, settings, prev) {
 	return {
-		vehicle: getVehiclePrice(params.vehicle, params.num_days),
+		vehicle: {
+			total: getVehiclePrice(params.vehicle, params.num_days),
+			type: 'day',
+			custom: prev.vehicle?.custom,
+		},
 		// [{}, ...]
-		drivers: getDriverPrice(params.drivers, params.num_days, settings),
-		insurance: getInsurance(params.insurance, params.num_days),
-		deposit: params.insurance?.deposit_amount,
-		excess: params.insurance?.deposit_excess,
+		drivers: {
+			total: getDriverPrice(params.drivers, params.num_days, settings),
+			type: settings.extra_driver_price_type,
+			custom: prev.drivers?.custom,
+		},
+		insurance: {
+			total: getInsurance(params.insurance, params.num_days),
+			type: params.insurance?.price_type,
+			custom: prev.insurance?.custom,
+		},
+		deposit: { total: params.insurance?.deposit_amount, custom: prev.deposit?.custom },
+		excess: { total: params.insurance?.deposit_excess, custom: prev.excess?.custom },
 		// [{count: 1, item: {name: 'baby seat'}}, ...]
-		...params.equipment.reduce((res, obj) => {
-			res[obj.item.name] = getEquipPrice(obj, params.num_days)
-			return res
-		}, {}),
+		equipment: {
+			...params.equipment.reduce((res, obj) => {
+				res[obj.item.name] = {
+					total: getEquipPrice(obj, params.num_days),
+					type: obj.item.price_type,
+					custom: prev.equipment?.[obj.item.name].custom,
+				}
+				return res
+			}, {}),
+		},
 	}
 }
 
-export function getTotalPrice(customPrices, normalPrices) {
-    let total = 0
-    Object.keys(customPrices).forEach(key => {
-        if (key !== 'deposit' && key !== 'excess') {
-            total += customPrices[key] !== undefined && customPrices[key] !== null && !isNaN(customPrices[key]) ?
-			 customPrices[key] : normalPrices[key] ? normalPrices[key] : 0
-        }
-    })
-
-    return total
+export function getTotalPrice(prices) {
+	let total = 0
+	Object.keys(prices).forEach((key) => {
+		if (key !== 'deposit' && key !== 'excess' && key !== 'equipment') {
+			total += hasCustomPrice(key, prices)
+				? prices[key].custom
+				: typeof prices[key]?.total === 'number'
+				? prices[key].total
+				: 0
+		}
+		if (key === 'equipment') {
+			Object.keys(prices.equipment).forEach((k) => {
+				total += hasCustomPrice(k, prices, true)
+					? prices.equipment[k].custom
+					: typeof prices.equipment?.[k].total === 'number'
+					? prices.equipment[k].total
+					: 0
+			})
+		}
+	})
+	return total
 }

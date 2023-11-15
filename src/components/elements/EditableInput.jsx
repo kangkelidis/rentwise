@@ -9,36 +9,83 @@ import { useState } from 'react'
 // TODO: validate input to avoid NaN
 //       reset when 0
 export default function EditableInput(props) {
-	const [isEditable, setIsEditable] = useState(hasCustomPrice(props.name, props.customPrices))
+	const [isEditable, setIsEditable] = useState(
+		hasCustomPrice(props.name, props.prices, props.equipment)
+	)
 
 	function handleChange(e) {
 		if (isNaN(e.target.value.replace(',', ''))) {
 			return
 		}
-		changeSingleStateValue(
-			props.setCustomPrices,
-			props.name,
-			Number(e.target.value.replace(',', ''))
-		)
+		props.setPrices((prev) => {
+			return props.equipment
+				? {
+						...prev,
+						equipment: {
+							...prev.equipment,
+							[props.name]: {
+								...prev.equipment[props.name],
+								custom: Number(e.target.value.replace(',', '')),
+							},
+						},
+				  }
+				: {
+						...prev,
+						[props.name]: {
+							...prev[props.name],
+							custom: Number(e.target.value.replace(',', '')),
+						},
+				  }
+		})
 	}
 
 	function handleEdit() {
 		if (isEditable) {
 			setIsEditable(false)
 
-			changeSingleStateValue(
-				props.setCustomPrices,
-				props.name,
-				null
-			)
+			props.setPrices((prev) => {
+				return props.equipment
+					? {
+							...prev,
+							equipment: {
+								...prev.equipment,
+								[props.name]: {
+									...prev.equipment[props.name],
+									custom: false,
+								},
+							},
+					  }
+					: {
+							...prev,
+							[props.name]: {
+								...prev[props.name],
+								custom: false,
+							},
+					  }
+			})
 		} else {
 			setIsEditable(true)
-			
-			changeSingleStateValue(
-				props.setCustomPrices,
-				props.name,
-				props.normalPrices[props.name]
-			)
+
+			props.setPrices((prev) => {
+				return props.equipment
+					? {
+							...prev,
+							equipment: {
+								...prev.equipment,
+								[props.name]: {
+									...prev.equipment[props.name],
+									custom: prev.equipment[props.name].total,
+								},
+							},
+					  }
+					: {
+							...prev,
+							[props.name]: {
+								...prev[props.name],
+								custom: prev[props.name].total,
+							},
+					  }
+			})
 		}
 	}
 
@@ -52,18 +99,19 @@ export default function EditableInput(props) {
 				type=''
 				classNames={{
 					input: ['text-body-semibold', 'text-right'],
-					inputWrapper: isEditable
-						? ['border-green-400 border-2']
-						: '',
+					inputWrapper: isEditable ? ['border-green-400 border-2'] : '',
 				}}
 				onChange={handleChange}
 				readOnly={!isEditable}
 				value={
-					isEditable
-						? props.customPrices[props.name]
-						: toCurrency(props.normalPrices[props.name], null, true)
+					props.equipment
+						? isEditable
+							? props.prices.equipment[props.name].custom
+							: toCurrency(props.prices.equipment[props.name].total, null, true)
+						: isEditable
+						? props.prices[props.name].custom
+						: toCurrency(props.prices[props.name]?.total, null, true)
 				}
-
 				startContent={
 					<div className='pointer-events-none flex items-center'>
 						<span className='text-default-400 text-small'>€</span>

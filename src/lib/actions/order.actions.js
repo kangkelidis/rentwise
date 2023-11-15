@@ -8,11 +8,11 @@ import clientModel from '@/models/client.model'
 import extraModel from '@/models/extra.model'
 import groupModel from '@/models/group.model'
 
-export async function fetchOrders() {
+export async function fetchOrders(page, limit, searchOptions={}) {
 	try {
 		await dbConnect()
 		return await orderModel
-			.find({})
+			.find(searchOptions)
 			.populate('vehicle')
 			.populate('client')
 			.populate('insurance')

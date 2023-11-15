@@ -2,7 +2,12 @@
 
 // TODO use server action
 import { getPrice, getTotalPrice } from '@/lib/price/rates'
-import { changeSingleStateValue, dateDiffInDays, hasCustomPrice, toCurrency } from '@/lib/utils'
+import {
+	changeSingleStateValue,
+	dateDiffInDays,
+	hasCustomPrice,
+	toCurrency,
+} from '@/lib/utils'
 import { Divider } from '@nextui-org/divider'
 import { Input } from '@nextui-org/input'
 import { Button } from '@nextui-org/button'
@@ -10,7 +15,6 @@ import { useEffect, useState } from 'react'
 import { Tooltip } from '@nextui-org/tooltip'
 import EditableInput from '../elements/EditableInput'
 
-// TODO: refactror. must rethink default price as a variable, use state without rerenders
 export default function Total(props) {
 	const num_days = dateDiffInDays(
 		props.watch.pick_up_date,
@@ -24,10 +28,12 @@ export default function Total(props) {
 		customPrices: props.customPrices,
 		setCustomPrices: props.setCustomPrices,
 		normalPrices: props.normalPrices,
+		prices: props.prices,
+		setPrices: props.setPrices,
 	}
 
 	return (
-		<div className=''>
+		<div className='sticky top-[50px]'>
 			<div className=' bg-primary-500 p-3 w-full rounded-t-lg'>
 				<h2 className=' text-heading3-bold'>Summary</h2>
 			</div>
@@ -40,7 +46,7 @@ export default function Total(props) {
 						<p className='text-heading4-medium'>{vehicle.group.name}</p>
 						<span className=' w-full flex justify-between gap-10'>
 							<p>{vehicle.make + ' ' + vehicle.model}</p>
-							{props.normalPrices.vehicle && (
+							{props.prices.vehicle?.total >= 0 && (
 								<EditableInput
 									name='vehicle'
 									{...editableInputProps}
@@ -48,22 +54,32 @@ export default function Total(props) {
 								/>
 							)}
 						</span>
-						{hasCustomPrice('vehicle', props.customPrices) && (
+						{hasCustomPrice('vehicle', props.prices) && (
 							<p className=' self-end line-through'>
-								{toCurrency(props.normalPrices.vehicle)}
+								{toCurrency(props.prices.vehicle.total)}
 							</p>
 						)}
 
 						<span className=' w-full flex justify-between'>
 							<p className='text-subtle-medium'>Tariff</p>
 							<p className=' text-small-regular'>
-								{toCurrency(hasCustomPrice('vehicle', props.customPrices) ? props.customPrices.vehicle / num_days : vehicle.basic_day_rate)} / day
+								{toCurrency(
+									hasCustomPrice('vehicle', props.prices)
+										? props.prices.vehicle?.custom / num_days
+										: props.prices.vehicle?.total / num_days
+								)}{' '}
+								/ day
 							</p>
 						</span>
 						<span className=' w-full flex justify-between'>
 							<p className='text-subtle-medium'>VAT inc.</p>
 							<p className=' text-small-regular'>
-								{toCurrency((props.customPrices.vehicle * 19) / 100)}{' '}
+								{toCurrency(
+									((props.prices.vehicle?.custom ||
+										props.prices.vehicle?.total) *
+										19) /
+										100
+								)}{' '}
 							</p>
 						</span>
 						<Divider className='my-1' />
@@ -78,69 +94,83 @@ export default function Total(props) {
 										</p>
 										<p
 											className={`text-tiny ${
-												props.customPrices.drivers >= 0 ? 'line-through' : ''
+												hasCustomPrice('drivers', props.prices)
+													? 'line-through'
+													: ''
 											}`}
 										>
-											{toCurrency(props.normalPrices.drivers / num_days / props.watch.extra_drivers.length )}
+											{toCurrency(
+												props.prices.drivers.total /
+													num_days /
+													props.watch.extra_drivers.length
+											)}
 										</p>
-										{props.normalPrices.drivers > 0 && (
+										{props.prices.drivers.total >= 0 && (
 											<EditableInput name={'drivers'} {...editableInputProps} />
 										)}
 									</div>
-									{props.customPrices.drivers >= 0 && (
+									{hasCustomPrice('drivers', props.prices) && (
 										<p className=' self-end line-through'>
-											{toCurrency(props.normalPrices.drivers)}
+											{toCurrency(props.prices.drivers.total)}
 										</p>
 									)}
 								</div>
 							)}
 
 							{selectedEquip.map((extra) => (
-								
 								<div className='flex flex-col'>
-								{ props.normalPrices[extra.item.name] >= 0 &&
-									<div key={extra.item.id} className='flex justify-between'>
-										<p className='text-small-regular'>{`${extra.item.name} (x${extra.count})`}</p>
-										<p
-											className={`text-tiny ${
-												props.customPrices[extra.item.name] >= 0
-													? 'line-through'
-													: ''
-											}`}
-										>
-											{toCurrency(extra.item.price_per_day)}
-										</p>
+									{props.prices.equipment?.[extra.item.name]?.total >= 0 && (
+										<div key={extra.item.id} className='flex justify-between'>
+											<p className='text-small-regular'>{`${extra.item.name} (x${extra.count})`}</p>
+											<p
+												className={`text-tiny ${
+													hasCustomPrice(extra.item.name, props.prices, true)
+														? 'line-through'
+														: ''
+												}`}
+											>
+												{toCurrency(extra.item.price_per_day)}{' '}
+												{extra.item.price_type === 'day' ? '/ day' : 'each'}
+											</p>
 
 											<EditableInput
 												name={extra.item.name}
+												equipment
 												{...editableInputProps}
 											/>
-									</div>
-										}
-									{props.customPrices[extra.item.name] >= 0 && (
+										</div>
+									)}
+									{hasCustomPrice(extra.item.name, props.prices, true) && (
 										<p className=' self-end line-through'>
-											{toCurrency(props.normalPrices[extra.item.name])}
+											{toCurrency(
+												props.prices.equipment?.[extra.item.name].total
+											)}
 										</p>
 									)}
 								</div>
 							))}
 
-							{props.normalPrices.insurance >= 0 && (
+							{props.prices?.insurance?.total >= 0 && (
 								<div className='flex flex-col'>
 									<div className='flex justify-between'>
 										<p className='text-small-regular'>{insurance?.name}</p>
 										<p
 											className={`text-tiny ${
-												props.customPrices.insurance >= 0 ? 'line-through' : ''
+												hasCustomPrice('insurance', props.prices)
+													? 'line-through'
+													: ''
 											}`}
 										>
-											{toCurrency(insurance?.price_per_day)}
+											{props.prices.insurance.type === 'fix'
+												? toCurrency(props.prices.insurance.total) + ' fix'
+												: toCurrency(props.prices.insurance.total / num_days) +
+												  ' /day'}
 										</p>
 										<EditableInput name={'insurance'} {...editableInputProps} />
 									</div>
-									{props.customPrices.insurance >= 0 && (
+									{hasCustomPrice('insurance', props.prices) && (
 										<p className=' self-end line-through'>
-											{toCurrency(props.normalPrices.insurance)}
+											{toCurrency(props.prices.insurance.total)}
 										</p>
 									)}
 								</div>
@@ -153,7 +183,7 @@ export default function Total(props) {
 							<p className='text-heading4-medium'>Taxes</p>
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>VAT 19% inc</p>
-								<p>{toCurrency((19 / 100) * (getTotalPrice(props.customPrices, props.normalPrices)))}</p>
+								<p>{toCurrency((19 / 100) * getTotalPrice(props.prices))}</p>
 							</div>
 						</div>
 
@@ -170,9 +200,9 @@ export default function Total(props) {
 									size='lg'
 								/>
 							</div>
-							{hasCustomPrice('deposit', props.customPrices) && (
+							{hasCustomPrice('deposit', props.prices) && (
 								<p className=' self-end line-through'>
-									{toCurrency(props.normalPrices.deposit)}
+									{toCurrency(props.prices.deposit.total)}
 								</p>
 							)}
 
@@ -184,9 +214,9 @@ export default function Total(props) {
 									size='lg'
 								/>
 							</div>
-							{props.customPrices.excess >= 0 && (
+							{hasCustomPrice('excess', props.prices) && (
 								<p className=' self-end line-through'>
-									{toCurrency(props.normalPrices.excess)}
+									{toCurrency(props.prices.excess.total)}
 								</p>
 							)}
 						</div>
@@ -194,7 +224,7 @@ export default function Total(props) {
 				)}
 				<div className='flex justify-between'>
 					<p className='text-base-semibold'>Due Balance</p>
-					<p className=''>{toCurrency(getTotalPrice(props.customPrices, props.normalPrices))}</p>
+					<p className=''>{toCurrency(getTotalPrice(props.prices))}</p>
 				</div>
 			</div>
 		</div>
