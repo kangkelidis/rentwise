@@ -33,6 +33,7 @@ export default async function Page({ searchParams }) {
 				</Button>
 			</div>
 				<TableUI columns={vehicleColumns} data={data} />
+				
 		</div>
 	)
 }

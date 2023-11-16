@@ -12,7 +12,6 @@ import {
 	FormMessage,
 } from '@/components/ui/form'
 
-import { cn } from '@/lib/utils'
 // import { toast } from '@/components/ui/use-toast'
 
 import { updateOwner, deleteOwner } from '@/lib/actions/owner.actions'
@@ -36,6 +35,7 @@ export function OwnerForm({ data }) {
 	})
 
 	async function onSubmit(values) {
+		console.log(values);
 		const success = await updateOwner(owner?._id, values, pathname)
 		if (success) {
 			router.push('/owners')

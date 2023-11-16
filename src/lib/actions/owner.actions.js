@@ -23,9 +23,11 @@ export async function totalCountOwners() {
 }
 
 export async function updateOwner(ownerID, values, path) {
+    console.log('ownerID');
+
     try {
         await dbConnect()        
-        
+        console.log('ok');
         const owner = ownerID ? await ownerModel.findByIdAndUpdate(ownerID, values)
         :
         await ownerModel.create(values)

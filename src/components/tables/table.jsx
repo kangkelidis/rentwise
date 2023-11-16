@@ -10,6 +10,7 @@ import {
 	getKeyValue,
 	Spinner,
 	Pagination,
+	Card,
 } from '@nextui-org/react'
 import useSWR from 'swr'
 
@@ -229,29 +230,32 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 	}, [])
 
 	return (
-		<Table
-			isStriped
-			selectionMode={selectionMode}
-			aria-label='Table with data'
-			bottomContent={bottomContent}
-			bottomContentPlacement='outside'
-		>
-			<TableHeader columns={columns}>
-				{(column) => (
-					<TableColumn allowsSorting key={column.key}>
-						{column.label}
-					</TableColumn>
-				)}
-			</TableHeader>
-			<TableBody emptyContent={'No rows to display.'} items={items}>
-				{(item) => (
-					<TableRow className='' key={item.key}>
-						{(columnKey) => (
-							<TableCell>{renderCell(item, columnKey)}</TableCell>
-						)}
-					</TableRow>
-				)}
-			</TableBody>
-		</Table>
+		<Card>
+			<Table
+				isStriped
+				selectionMode={selectionMode}
+				aria-label='Table with data'
+				bottomContent={bottomContent}
+				bottomContentPlacement='outside'
+			>
+				<TableHeader columns={columns}>
+					{(column) => (
+						<TableColumn allowsSorting key={column.key}>
+							{column.label}
+						</TableColumn>
+					)}
+				</TableHeader>
+				<TableBody emptyContent={'No rows to display.'} items={items}>
+					{(item) => (
+						<TableRow className='' key={item.key}>
+							{(columnKey) => (
+								<TableCell>{renderCell(item, columnKey)}</TableCell>
+							)}
+						</TableRow>
+					)}
+				</TableBody>
+			</Table>
+
+		</Card>
 	)
 }

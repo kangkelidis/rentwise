@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { SignOutButton, SignedIn, useAuth } from '@clerk/nextjs'
 
 import { sidebarLinks } from '@/constants'
+import SignOutCard from '../elements/SignOutCard'
 
 export default function LeftSidebar() {
 	const router = useRouter()
@@ -42,7 +43,8 @@ export default function LeftSidebar() {
 
 			<div className='mt-10 px-6'>
 				<SignedIn>
-					<SignOutButton signOutCallback={() => router.push('/sign-in')}>
+					<SignOutCard />
+					{/* <SignOutButton signOutCallback={() => router.push('/sign-in')}>
 						<div className='flex cursor-pointer gap-4 p-4'>
 							<Image
 								src='/assets/logout.svg'
@@ -53,7 +55,7 @@ export default function LeftSidebar() {
 
 							<p className='text-light-2 max-lg:hidden'>Logout</p>
 						</div>
-					</SignOutButton>
+					</SignOutButton> */}
 				</SignedIn>
 			</div>
 		</section>

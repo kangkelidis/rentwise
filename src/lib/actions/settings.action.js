@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from "next/cache";
-import dbConnect from "../dbConnect";
+import dbConnect, { dbDisconnect } from "../dbConnect";
 import settingsModel from "@/models/settings.model";
 
 

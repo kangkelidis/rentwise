@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { SignOutButton, SignedIn } from '@clerk/nextjs'
+import SignOutCard from '../elements/SignOutCard'
 
 export default function Topbar() {
 	return (
@@ -14,7 +15,8 @@ export default function Topbar() {
 			<div className='flex items-center gap-1'>
 				<div className='block md:hidden'>
 					<SignedIn>
-						<SignOutButton>
+						<SignOutCard />
+						{/* <SignOutButton>
 							<div className='flex cursor-pointer'>
 								<Image
 									src='/assets/logout.svg'
@@ -23,7 +25,7 @@ export default function Topbar() {
 									height={24}
 								/>
 							</div>
-						</SignOutButton>
+						</SignOutButton> */}
 					</SignedIn>
 				</div>
 			</div>
