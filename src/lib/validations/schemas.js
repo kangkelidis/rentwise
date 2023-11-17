@@ -86,8 +86,21 @@ export const insuranceValidationSchema = z.object({
 })
 
 export const settingsValidationSchema = z.object({
-	company_name: z.string(),
-	company_signature: z.string(),
+	company: z.object({
+		name: z.string(),
+		slogan: z.string(),
+		address: z.object({
+			line1: z.string(),
+			line2: z.string()
+		}),
+		vat: z.string(),
+		tel: z.string(),
+		email: z.string(),
+		website: z.string(),
+		terms: z.string(),
+		signature: z.string(),
+		logo: z.string(),	
+	})
 })
 
 export const rentalsSettingsValidationSchema = z.object({

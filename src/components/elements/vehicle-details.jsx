@@ -16,7 +16,7 @@ export default function VehicleDetails({ vehicle, size=4 }) {
                         width={30/4 * size}
                         height={30/4 * size}
                         src={vehicle.photos[0]}
-                        crop='thumb'
+                        // crop='thumb'
                     />
                 ) : (
                     <Image

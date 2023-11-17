@@ -20,9 +20,12 @@ import { settingsValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@nextui-org/button'
-import { Input } from '@nextui-org/input'
-import Signature from '../elements/Signature'
+import { Input, Textarea } from '@nextui-org/input'
+import Signature from '@/components/elements/Signature'
 import Image from 'next/image'
+import { useState } from 'react'
+import Upload from '@/components/elements/Upload'
+import { CldImage } from 'next-cloudinary'
 
 export function SettingsForm({ data }) {
 	const router = useRouter()
@@ -30,17 +33,17 @@ export function SettingsForm({ data }) {
 	try {
 		data = JSON.parse(data)
 	} catch (error) {}
-//TODO: move etra driver price to rentals settings
+
 	const form = useForm({
 		resolver: zodResolver(settingsValidationSchema),
 		defaultValues: {
-			company_name: data?.company_name || '',
-			company_signature: data?.company_signature || '',
-			terms_conditions: data?.terms_conditions || '',
+			company: data?.company || {},
 		},
 	})
+	console.log(form.watch())
 
 	async function onSubmit(values) {
+		console.log(values)
 		const success = await updateSettings(data.users, values, pathname)
 		if (success) {
 			router.push('/settings')
@@ -53,7 +56,7 @@ export function SettingsForm({ data }) {
 				<div className='form-container'>
 					<FormField
 						control={form.control}
-						name='company_name'
+						name='company.name'
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>Company Name</FormLabel>
@@ -72,7 +75,159 @@ export function SettingsForm({ data }) {
 
 					<FormField
 						control={form.control}
-						name='company_signature'
+						name='company.slogan'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company Slogan</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.address.line1'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company Address Line 1</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.address.line2'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company Address Line 2</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.vat'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company VAT NO</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.tel'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company Tel</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.email'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company Email</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.website'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Company Website</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										isRequired
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.terms'
+						render={({ field }) => (
+							<FormItem>
+								<FormControl>
+									<Textarea
+										className=' form-input sm:!w-[550px]'
+										required={false}
+										label='Terms And Conditions'
+										placeholder=''
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='company.signature'
 						render={({ field }) => {
 							const src =
 								field.value !== '' ? field.value : data.company_signature
@@ -90,6 +245,14 @@ export function SettingsForm({ data }) {
 						}}
 					/>
 
+					<Upload form={form} preset='cmtqcrgs' />
+					<CldImage
+						className='bg-gray-400 p-1'
+						style={{ width: 4 + 'rem', height: 4 + 'rem' }}
+						width={30}
+						height={30}
+						src={form.watch('company.logo')}
+					/>
 				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit' color='primary'>

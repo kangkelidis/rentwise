@@ -819,7 +819,7 @@ export function OrderForm({ data }) {
 									Back
 								</ButtonUI>
 
-								<Agreement prices={prices} settings={settings} order={order} />
+								<Agreement prices={prices} settings={settings} order={order}  />
 							</div>
 						</form>
 					</Form>

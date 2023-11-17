@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from "next/cache";
-import dbConnect, { dbDisconnect } from "../dbConnect";
+import dbConnect from "../dbConnect";
 import settingsModel from "@/models/settings.model";
 
 
@@ -17,11 +17,10 @@ export async function fetchSettings(userId) {
 }
 
 export async function updateSettings(userId, values, path) {
-
     try {
         await dbConnect()    
         await settingsModel.findOneAndUpdate({users: userId}, values)
-        // revalidatePath(path);
+        revalidatePath(path);
         return true;
       } catch (error) {
         console.log(error);
@@ -37,7 +36,7 @@ export async function createSettings(userId, values, path) {
         }
         await dbConnect()        
         await settingsModel.create(newSettings)
-        // revalidatePath(path);
+        revalidatePath(path);
         return true;
       } catch (error) {
         console.log(error);

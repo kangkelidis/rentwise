@@ -2,14 +2,43 @@ import mongoose from 'mongoose'
 
 
 const settingSchema = new mongoose.Schema({
-    company_name: {
-        type: String
-    },
-    company_signature: {
-        type: String
-    },
-    company_logo: {
-        type: String
+    company : {
+        type: {
+            name: {
+                type: String
+            },
+            slogan: {
+                type: String
+            },
+            address: {
+                type: {
+                    line1: String,
+                    line2: String
+                }
+            },
+            vat: {
+                type: String
+            },
+            tel: {
+                type: String
+            },
+            email: {
+                type: String
+            },
+            website: {
+                type: String
+            },
+            terms: {
+                type: String
+            },
+            signature: {
+                type: String
+            },
+            logo: {
+                type: String
+            },
+            
+        }
     },
     users: {
         // TODO : use array

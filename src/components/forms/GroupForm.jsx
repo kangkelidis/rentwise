@@ -64,7 +64,7 @@ export default function GroupForm({ group }) {
 	}
 	async function onErrors(values) {}
 	return (
-		<>
+		<div className='w-20' >
 			<Button
 				onPress={() => {
 					form.reset()
@@ -129,6 +129,6 @@ export default function GroupForm({ group }) {
 					}}
 				</ModalContent>
 			</Modal>
-		</>
+		</div>
 	)
 }

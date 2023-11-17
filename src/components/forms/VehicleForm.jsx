@@ -581,7 +581,7 @@ export function VehicleForm({ data }) {
 					/>
 					<div className='carousel-container'>
 						<Carousel photos={photos} />
-						<Upload setPhotos={setPhotos} />
+						<Upload setPhotos={setPhotos} preset='uflrmx00' />
 					</div>
 				</div>
 				<div className='flex place-content-between'>

@@ -13,6 +13,7 @@ import {
 	insuranceColumns,
 } from '@/components/tables/columns'
 import { RentalsForm } from '../forms/RentalsForm'
+import { Card, CardHeader } from '@nextui-org/react'
 
 export default function Settings({ data }) {
 	data = JSON.parse(data)
@@ -28,14 +29,17 @@ export default function Settings({ data }) {
 				>
 
 					<Tab key='rentals' title='Rental'>
-						<div>
-							<GroupForm group={data.group} />
-							<TableUI
-								columns={groupColumns}
-								data={{ items: data.newGroups }}
-							/>
+						<Card className='container p-4 flex gap-5'>
+							<Card className='container p-4 flex gap-5'>
+								<CardHeader>Groups</CardHeader>
+								<GroupForm group={data.group} />
+								<TableUI
+									columns={groupColumns}
+									data={{ items: data.newGroups }}
+								/>
+							</Card>
 							<RentalsForm data={data.data.settings}/>
-						</div>
+						</Card>
 					</Tab>
 
 					<Tab key='extras' title='Extras'>

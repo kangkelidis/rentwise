@@ -109,7 +109,7 @@ export function getNormalPrices(params, settings, prev) {
 		// [{}, ...]
 		drivers: {
 			total: getDriverPrice(params.drivers, params.num_days, settings),
-			type: settings.extra_driver_price_type,
+			type: settings?.extra_driver_price_type,
 			custom: prev.drivers?.custom,
 		},
 		insurance: {

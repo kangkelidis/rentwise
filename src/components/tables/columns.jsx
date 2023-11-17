@@ -66,6 +66,14 @@ export const clientColumns = [
 		key: 'full_name',
 		label: 'Name',
 	},
+	{
+		key: 'email',
+		label: 'Email'
+	},
+	{
+		key: 'tel',
+		label: 'Tel'
+	}
 ]
 
 export const ownerColumns = [
