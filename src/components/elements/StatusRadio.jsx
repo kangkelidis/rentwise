@@ -9,8 +9,8 @@ export const StatusRadio = (props) => {
 	const childIndex = STATUS.indexOf(children)
 
 	function onClick() {
-    if(currentStatusIndex === STATUS.length -1) return
-		form.setValue('status', STATUS[currentStatusIndex + 1])
+		// if (currentStatusIndex === STATUS.length - 1) return
+		form.setValue('status', STATUS[childIndex])
 	}
 
 	return (
@@ -18,14 +18,15 @@ export const StatusRadio = (props) => {
 			{...otherProps}
 			onClick={onClick}
 			className={`${
-				children === props.field.value && 'border-primary-600 bg-primary-100 !opacity-100'
+				children === props.field.value &&
+				'border-primary-600 bg-primary-100 !opacity-100'
 			} ${
 				currentStatusIndex > childIndex &&
 				'rounded-none bg-primary-100 !opacity-50 hover:bg-primary-50'
 			} mt-2 disabled:opacity-10 opacity-80 disabled:cursor-not-allowed hover:bg-content2 px-4 py-2 w-full cursor-pointer rounded-lg border-3 border-transparent`}
-			disabled={
-				childIndex - currentStatusIndex > 1 || currentStatusIndex > childIndex || childIndex === STATUS.length-1
-			}
+			// disabled={
+			// 	childIndex - currentStatusIndex > 1 || currentStatusIndex > childIndex || childIndex === STATUS.length-1
+			// }
 		>
 			<StatusChip status={children}></StatusChip>
 		</button>

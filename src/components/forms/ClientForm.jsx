@@ -41,6 +41,8 @@ import { useEffect } from 'react'
 import { format } from 'date-fns'
 import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
 import { DayPicker } from 'react-day-picker'
+import Upload from '../elements/Upload'
+import { CldImage } from 'next-cloudinary'
 
 export function ClientForm({ data }) {
 	const router = useRouter()
@@ -52,21 +54,16 @@ export function ClientForm({ data }) {
 		defaultValues: {
 			first_name: client?.first_name || '',
 			last_name: client?.last_name || '',
-			dob: client?.dob || '',
+			dob: client?.dob ? new Date(client.dob) : '',
 			tel: client?.tel || '',
 			email: client?.email || '',
 			passport: client?.passport || '',
 			license: client?.license || '',
 			nationality: client?.nationality || '',
 			address: client?.address || '',
+			documents: client.documents || []
 		},
 	})
-
-	// const watch = form.watch()
-
-	// useEffect(() => {
-	// 	console.log(watch)
-	// }, [watch])
 
 	async function onSubmit(values) {
 		const success = await updateClient(client?._id, values, pathname)
@@ -255,6 +252,23 @@ export function ClientForm({ data }) {
 							</FormItem>
 						)}
 					/>
+
+
+					<Upload form={form} multiple={true} fieldName={'documents'} preset={'client'}/>
+					{form.watch('documents').map(d => {
+						return (
+							<CldImage
+							key={d}
+							className='bg-gray-400 p-1'
+							style={{ width: 4 + 'rem', height: 4 + 'rem' }}
+							width={30}
+							height={30}
+							src={d}
+						/>
+						)
+					})}
+						
+
 				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>

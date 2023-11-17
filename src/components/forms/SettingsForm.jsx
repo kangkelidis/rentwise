@@ -245,7 +245,7 @@ export function SettingsForm({ data }) {
 						}}
 					/>
 
-					<Upload form={form} preset='cmtqcrgs' />
+					<Upload form={form} fieldName={'company.logo'} preset='cmtqcrgs' />
 					<CldImage
 						className='bg-gray-400 p-1'
 						style={{ width: 4 + 'rem', height: 4 + 'rem' }}

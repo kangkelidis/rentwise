@@ -59,6 +59,7 @@ export const clientValidationSchema = z.object({
 	license: z.string(),
 	nationality: z.string(),
 	address: z.string(),
+	documents: z.array(z.string()).optional()
 })
 
 export const ownerValidationSchema = z.object({

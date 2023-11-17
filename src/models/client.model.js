@@ -37,6 +37,11 @@ const clientSchema = new mongoose.Schema({
     address: {
         type: String
     },
+    documents: {
+        // images
+        type: [String]
+    }
+
 
 
 },{timestamps: true,
