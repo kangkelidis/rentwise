@@ -776,7 +776,7 @@ export function printAgreement(settings, order, prices, logoImgData) {
 			return (
 				(hasCustomPrice(curr.item.name, prices, true)
 					? prices.equipment[curr.item.name].custom
-					: prices.equipment[curr.item.name].total || 0) + prev
+					: prices.equipment[curr.item.name]?.total || 0) + prev
 			)
 		}, 0)
 	}

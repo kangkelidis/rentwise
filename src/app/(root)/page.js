@@ -1,10 +1,16 @@
 import DailyPlan from "@/components/shared/DailyPlan";
 import { fetchOrderForDate } from "@/lib/actions/order.actions";
-import { discardTime } from "@/lib/utils";
+import { fetchSettings } from "@/lib/actions/settings.action";
+import { auth } from "@clerk/nextjs";
 
 async function getData(date) {
-	const orders = await fetchOrderForDate(date)
-	return JSON.stringify(orders)
+  const { userId } = auth();
+
+	const orders = fetchOrderForDate(date)
+  const settings = fetchSettings(userId)
+
+  const result = await  Promise.all([orders, settings])
+  return JSON.stringify({orders: result[0], settings: result[1]})
 }
 
 export default async function Page() {
@@ -14,7 +20,7 @@ export default async function Page() {
   const data = await getData(date)
   return (
     <>
-    <DailyPlan orders={data}/>
+    <DailyPlan data={data}/>
     </>
     )
 }

@@ -2,10 +2,11 @@
 
 import OrderCard from "../elements/OrderCard"
 
-export default function DailyPlan({ orders }) {    
+export default function DailyPlan({ data }) {    
 
     try {
-        orders = JSON.parse(orders)
+        data = JSON.parse(data)
+        console.log(data);
     } catch (error) {
     }    
     // calendar
@@ -13,11 +14,11 @@ export default function DailyPlan({ orders }) {
     // header
     // row card
     return (
-        <div>
-            {orders?.map(order => {
+        <div className="flex flex-col gap-4">
+            {data?.orders?.map(order => {
                 return (
-                    <div>
-                        <OrderCard order={order} />
+                    <div key={order.id}>
+                        <OrderCard order={order.data} type={order.type} settings={data.settings} />
                     </div>
                 )
             })}

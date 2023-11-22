@@ -78,23 +78,32 @@ export async function fetchOrderForDate(date) {
 	let nextDate = new Date(date)
 	nextDate.setDate(nextDate.getDate() + 1)
 
-	console.log(nextDate);
 	try {
 		await dbConnect()
-		return await orderModel.find({
-			$or: [
-				{ pick_up_date: { $gt: date, $lt: nextDate } },
-				{ drop_off_date: { $gt: date, $lt: nextDate } },
-			],
+		const orders = await orderModel
+			.find({
+				$or: [
+					{ pick_up_date: { $gt: date, $lt: nextDate } },
+					{ drop_off_date: { $gt: date, $lt: nextDate } },
+				],
+			})
+			.populate({
+				path: 'vehicle',
+				model: 'Vehicle',
+				populate: { path: 'group', model: 'Group' },
+			})
+			.populate('client')
+			.populate('insurance')
+			.populate({ path: 'extras.item', model: 'Extras' })
+
+		return orders.map((order) => {
+			const type =
+				order.pick_up_date >= date && order.pick_up_date <= nextDate
+					? 'pick_up'
+					: 'drop_off'
+
+			return { data: order, type: type }
 		})
-		.populate({
-			path: 'vehicle',
-			model: 'Vehicle',
-			populate: { path: 'group', model: 'Group' },
-		})
-		.populate('client')
-		.populate('insurance')
-		.populate({ path: 'extras.item', model: 'Extras' })
 	} catch (error) {
 		throw new Error(
 			'Failed to fetch order for date: ' + date + 'error: ' + error.message
