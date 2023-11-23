@@ -4,6 +4,7 @@ import { DEFAULT_LIMIT } from '@/constants'
 import { fetchClients, totalCountClients } from '@/lib/actions/client.actions'
 import TableUI from '@/components/tables/table'
 import Link from 'next/link'
+import UploadCSVFile from '@/components/shared/UploadCSVFile'
 
 async function getData(page, limit) {
 	const result = await fetchClients(page, limit)
@@ -25,6 +26,8 @@ export default async function Page({ searchParams }) {
 				</Button>
 			</div>
 			<TableUI columns={clientColumns} data={data} />
+
+			<UploadCSVFile />
 		</div>
 	)
 }

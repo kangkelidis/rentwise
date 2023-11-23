@@ -1,9 +1,11 @@
 'use client'
 
-import { Button } from '../ui/button'
 import { printAgreement } from '@/lib/pdf/agreement'
+import LoadingButton from "../ui/loadingButton";
 
 export default function Agreement({ settings, order, prices }) {
+
+
 	const baseURL =
 		'https://res.cloudinary.com/dgxlyrprq/image/upload/v1700227330/'
 
@@ -26,16 +28,19 @@ export default function Agreement({ settings, order, prices }) {
 			const logoImgData = dataURL
 			printAgreement(settings, order, prices, logoImgData)
 		})
-		
 	}
+
 	return (
 		<>
-			<Button
+			<LoadingButton
 				type='button'
+				color="primary"
 				onClick={handleClick}
-			>
+				>
+			
 				Print Agreement
-			</Button>
+			</LoadingButton>
 		</>
 	)
 }
+

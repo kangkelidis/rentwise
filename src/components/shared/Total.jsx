@@ -1,7 +1,7 @@
 'use client'
 
 // TODO use server action
-import { getPrice, getTotalPrice } from '@/lib/price/rates'
+import { getNormalPrices, getPrice, getTotalPrice } from '@/lib/price/rates'
 import {
 	changeSingleStateValue,
 	dateDiffInDays,
@@ -16,6 +16,8 @@ import { Tooltip } from '@nextui-org/tooltip'
 import EditableInput from '../elements/EditableInput'
 
 export default function Total(props) {
+	console.log('total', props.watch);
+
 	const num_days = dateDiffInDays(
 		props.watch.pick_up_date,
 		props.watch.drop_off_date

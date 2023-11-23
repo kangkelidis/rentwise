@@ -57,6 +57,7 @@ import Agreement from '../shared/Agreement'
 import { Card, CardBody, CardHeader, Divider } from '@nextui-org/react'
 import { StatusRadio } from '../elements/StatusRadio'
 import { STATUS } from '@/constants'
+import LoadingButton from '../ui/loadingButton'
 
 // TODO: no need to have extradriversnum eand extradivcers use one and use its lenght
 function ExtraDriver({
@@ -159,6 +160,7 @@ export function OrderForm({ data }) {
 	const settings = data.settings
 
 	const [prices, setPrices] = useState(order?.prices || {})
+	const [isLoading, setIsLoading] = useState(false)
 
 	const [isDifferentReturnSelected, setDifferentReturnSelected] =
 		useState(false)
@@ -212,6 +214,7 @@ export function OrderForm({ data }) {
 		)
 	}, [equipmentData])
 
+	// const watchAll = form.watch(['client', 'client_signature', 'drop_off_date', 'drop_off_location', 'extra_drivers', 'extras', 'insurance', 'pick_up_date', 'pick_up_location', 'status', 'vehicle'])
 	const watchAll = form.watch()
 	const watchVehicle = form.watch('vehicle')
 
@@ -265,6 +268,7 @@ export function OrderForm({ data }) {
 	}
 
 	async function onSubmit(values) {
+		setIsLoading(true)
 		updateNormalPrices(form.getValues())
 		const newValues = {
 			...values,
@@ -282,8 +286,9 @@ export function OrderForm({ data }) {
 			success = await createOrder(newValues, pathname)
 		}
 		if (success) {
-			router.push('/orders')
+			// router.push('/orders')
 		}
+		setIsLoading(false)
 	}
 
 	async function onDelete() {
@@ -297,32 +302,38 @@ export function OrderForm({ data }) {
 	function updateNormalPrices(values) {
 		// prevent changes if existing
 		// TODO: add edit different from view, edit only after change in form
-		if (order) return
+		// if (order) return
 		// [{item: 'id', count: 1}] values.extras
 		// [{count: 1, item: {name: 'baby seat'}}, ...] equipment
 		// [{count: 1, item: {name: 'baby seat'}}, ...]
+		let matchingEquipment
 		const equipmentParam = values.extras.map((extra) => {
-			const matchingEquipment = equipment.find(
+			matchingEquipment = equipment.find(
 				(eq) => eq.item.id === extra.item
-			)
-			return {
-				item: matchingEquipment.item,
-				count: extra.count,
+				)
+				console.log(matchingEquipment);
+				return {
+					item: matchingEquipment?.item,
+					count: extra.count,
+				}
+			})
+			
+			const params = {
+				num_days: dateDiffInDays(values.pick_up_date, values.drop_off_date),
+				vehicle: vehicles.find((v) => v.id === values.vehicle),
+				drivers: values.extra_drivers,
+				equipment: equipmentParam,
+				insurance: insurances.find((i) => i.id === values.insurance),
 			}
-		})
+			console.log(params);
+			if (matchingEquipment) {
 
-		const params = {
-			num_days: dateDiffInDays(values.pick_up_date, values.drop_off_date),
-			vehicle: vehicles.find((v) => v.id === values.vehicle),
-			drivers: values.extra_drivers,
-			equipment: equipmentParam,
-			insurance: insurances.find((i) => i.id === values.insurance),
-		}
+				setPrices((prev) => getNormalPrices(params, settings, prev))
+			}
 
-		setPrices((prev) => getNormalPrices(params, settings, prev))
 	}
 
-	// update normal prices as form changes
+	// // update normal prices as form changes
 	useEffect(() => {
 		updateNormalPrices(form.getValues())
 		const subscription = form.watch((values, { name, type }) => {
@@ -330,7 +341,7 @@ export function OrderForm({ data }) {
 		})
 
 		return () => subscription.unsubscribe()
-	}, [form.watch])
+	}, [form.watch ])
 
 	const totalProps = {
 		prices: prices,
@@ -801,7 +812,7 @@ export function OrderForm({ data }) {
 							</div>
 
 							<div className='flex place-content-between'>
-								<ButtonUI type='submit'>Submit</ButtonUI>
+								<LoadingButton isLoading={isLoading} type='submit'>Save</LoadingButton>
 								{order && (
 									<ButtonUI
 										type='button'
@@ -811,15 +822,17 @@ export function OrderForm({ data }) {
 										Delete
 									</ButtonUI>
 								)}
-								<ButtonUI
+								{/* <ButtonUI
 									type='button'
 									variant='secondary'
 									onClick={() => router.back()}
 								>
 									Back
-								</ButtonUI>
-
+								</ButtonUI> */}
+									{order && 
+									
 								<Agreement prices={prices} settings={settings} order={order}  />
+									}
 							</div>
 						</form>
 					</Form>
