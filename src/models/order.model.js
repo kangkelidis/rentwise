@@ -27,11 +27,11 @@ const orderSchema = new mongoose.Schema(
 		},
 		pick_up_location: {
 			type: String,
-			required: true,
+			// required: true,
 		},
 		drop_off_location: {
 			type: String,
-			required: true,
+			// required: true,
 		},
 		number: {
 			type: Number,

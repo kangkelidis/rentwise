@@ -2,6 +2,7 @@ import { clientColumns } from '@/components/tables/columns'
 import { Button } from '@nextui-org/button'
 import { DEFAULT_LIMIT } from '@/constants'
 import { fetchClients, totalCountClients } from '@/lib/actions/client.actions'
+import { createFromCSV } from '@/lib/actions/client.actions'
 import TableUI from '@/components/tables/table'
 import Link from 'next/link'
 import UploadCSVFile from '@/components/shared/UploadCSVFile'
@@ -27,7 +28,7 @@ export default async function Page({ searchParams }) {
 			</div>
 			<TableUI columns={clientColumns} data={data} />
 
-			<UploadCSVFile />
+			<UploadCSVFile action={createFromCSV}/>
 		</div>
 	)
 }

@@ -16,8 +16,8 @@ import { Tooltip } from '@nextui-org/tooltip'
 import EditableInput from '../elements/EditableInput'
 
 export default function Total(props) {
-	console.log('total', props.watch);
-
+	// console.log('total', props.watch);
+console.log(props);
 	const num_days = dateDiffInDays(
 		props.watch.pick_up_date,
 		props.watch.drop_off_date
@@ -45,7 +45,7 @@ export default function Total(props) {
 				</span>
 				{vehicle && (
 					<div className='bg-slate-700 -mx-4 p-4 flex gap-3 flex-col'>
-						<p className='text-heading4-medium'>{vehicle.group.name}</p>
+						<p className='text-heading4-medium'>{vehicle.group?.name}</p>
 						<span className=' w-full flex justify-between gap-10'>
 							<p>{vehicle.make + ' ' + vehicle.model}</p>
 							{props.prices.vehicle?.total >= 0 && (

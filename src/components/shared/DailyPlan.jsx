@@ -6,7 +6,6 @@ export default function DailyPlan({ data }) {
 
     try {
         data = JSON.parse(data)
-        console.log(data);
     } catch (error) {
     }    
     // calendar

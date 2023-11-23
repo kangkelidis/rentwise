@@ -35,7 +35,6 @@ export function OwnerForm({ data }) {
 	})
 
 	async function onSubmit(values) {
-		console.log(values);
 		const success = await updateOwner(owner?._id, values, pathname)
 		if (success) {
 			router.push('/owners')

@@ -168,7 +168,7 @@ export function OrderForm({ data }) {
 		order?.extra_drivers?.length || 0
 	)
 	const [extraDrivers, setExtraDrivers] = useState(order?.extra_drivers || [])
-	const [equipmentData, setEquipmentData] = useState(order?.extras || equipment)
+	const [equipmentData, setEquipmentData] = useState(order?.extras.length ? order.extras : equipment)
 
 	const defaultFormValues = {
 		vehicle: order?.vehicle.id || '',
@@ -179,7 +179,7 @@ export function OrderForm({ data }) {
 		drop_off_location: order?.drop_off_location || '',
 		extras: order?.extras || [],
 		insurance:
-			order?.insurance.id || order?.vehicle.default_insurance || insurances[0],
+			order?.insurance?.id || order?.vehicle.default_insurance || insurances[0],
 		client_signature: order?.client_signature || '',
 		status: order?.status || STATUS[0],
 		extra_drivers: order?.extra_drivers || [],
@@ -311,7 +311,6 @@ export function OrderForm({ data }) {
 			matchingEquipment = equipment.find(
 				(eq) => eq.item.id === extra.item
 				)
-				console.log(matchingEquipment);
 				return {
 					item: matchingEquipment?.item,
 					count: extra.count,
@@ -325,7 +324,6 @@ export function OrderForm({ data }) {
 				equipment: equipmentParam,
 				insurance: insurances.find((i) => i.id === values.insurance),
 			}
-			console.log(params);
 			if (matchingEquipment) {
 
 				setPrices((prev) => getNormalPrices(params, settings, prev))

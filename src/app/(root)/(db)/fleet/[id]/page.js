@@ -14,7 +14,7 @@ export default async function Page({ params }) {
 	const owners = fetchOwners()
 	const vehicle = fetchVehicle(params.id)
 	const insurances = fetchInsurances()
-	const orders = fetchOrders(1, DEFAULT_LIMIT, { vehicle: params.id })
+	const orders = fetchOrders(1, DEFAULT_LIMIT, null, null, { vehicle: params.id })
 
 	const result = await Promise.all([
 		groups,

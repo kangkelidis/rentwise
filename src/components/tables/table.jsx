@@ -230,6 +230,14 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 		}
 	}, [])
 
+	function handleSort({column, direction}) {
+		const params = new URLSearchParams(searchParams)
+		params.set('sortColumn', column)
+		params.set('sortDirection', direction)
+		router.push(pathname + '?' + params.toString())
+
+	}
+
 	return (
 		<Card>
 			<CardBody>
@@ -239,6 +247,8 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 					aria-label='Table with data'
 					bottomContent={bottomContent}
 					bottomContentPlacement='outside'
+					sortDescriptor={{column: searchParams.get('sortColumn'), direction: searchParams.get('sortDirection')}}
+					onSortChange={handleSort}
 				>
 					<TableHeader columns={columns}>
 						{(column) => (

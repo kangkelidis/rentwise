@@ -8,12 +8,17 @@ import clientModel from '@/models/client.model'
 import extraModel from '@/models/extra.model'
 import groupModel from '@/models/group.model'
 import { discardTime } from '../utils'
+import * as CSV from 'csv-string'
 
-export async function fetchOrders(page, limit, searchOptions = {}) {
+export async function fetchOrders(page, limit, sortColumn, sortDirection, searchOptions = {}) {
+	console.log(sortColumn, sortDirection);
 	try {
 		await dbConnect()
 		return await orderModel
 			.find(searchOptions)
+			.sort({sortColumn: sortDirection})
+			.limit(limit)
+			.skip((page - 1) * limit)
 			.populate('vehicle')
 			.populate('client')
 			.populate('insurance')
@@ -121,4 +126,55 @@ export async function deleteOrder(id, path) {
 		console.log(error)
 		throw new Error('Could not delete order with id: ' + id)
 	}
+}
+
+export async function createMany(data) {
+	try {
+		await dbConnect()
+		await orderModel.insertMany(data, {ordered: false})
+	} catch (error) {
+		console.log(error)
+		throw new Error('Could not create orders ')
+	}
+}
+
+export async function createFromCSV(data) {
+	const parsedData = CSV.parse(data, { output: 'objects' }).filter(
+		(d) => d['Id']
+	)
+
+	const formattedData = await Promise.all(
+		parsedData.map(async (data) => {
+			return {
+				vehicle: await vehicleModel.findOne({
+					registration: data['Vehicle Number'].replace(' ', '').toUpperCase(),
+				}).select('id'),
+				client: await clientModel.findOne({
+					full_name: data['Customer']
+				}).select('id'),
+				pick_up_date: new Date(data['Pickup']),
+				drop_off_date: new Date(data['Return']),
+				status: 'done',
+				prices: {
+					vehicle: {
+						total: Number(data['Amount Total'].replace(' €', '')),
+						custom: Number(data['Amount Total'].replace(' €', '')),
+					},
+					insurance: {
+						custom: Number(data['Insurance Price'].replace(' €', '')),
+					},
+					deposit: {
+						custom: Number(data['Security Deposit'].replace(' €', '')),
+					},
+					excess: {
+						custom: Number(data['Security Deposit'].replace(' €', '')),
+					},
+				},
+			}
+		})
+	)
+
+	const filterData = formattedData.filter(d => d.vehicle && d.client)
+
+	await createMany(filterData)
 }

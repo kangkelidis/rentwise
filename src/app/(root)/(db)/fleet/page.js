@@ -4,10 +4,12 @@ import {
 	fetchAvailableVehicles,
 	fetchVehicles,
 	totalCountVehicles,
+	createFromCSV
 } from '@/lib/actions/vehicle.actions'
 import Link from 'next/link'
 import TableUI from '@/components/tables/table'
 import { DEFAULT_LIMIT } from '@/constants'
+import UploadCSVFile from '@/components/shared/UploadCSVFile'
 
 async function getData(page, limit) {
 	const result = await fetchVehicles(page, limit)
@@ -34,6 +36,7 @@ export default async function Page({ searchParams }) {
 			</div>
 				<TableUI columns={vehicleColumns} data={data} />
 				
+			<UploadCSVFile action={createFromCSV}/>
 		</div>
 	)
 }

@@ -40,10 +40,8 @@ export function SettingsForm({ data }) {
 			company: data?.company || {},
 		},
 	})
-	console.log(form.watch())
 
 	async function onSubmit(values) {
-		console.log(values)
 		const success = await updateSettings(data.users, values, pathname)
 		if (success) {
 			router.push('/settings')

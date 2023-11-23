@@ -203,7 +203,7 @@ function printVehicleInfo(order) {
 	doc.setFontSize(11)
 	doc.text(new Date(order.pick_up_date).toLocaleDateString('en-GB'), xPos, yPos)
 	xPos += VEHICLE_COL_WIDTH
-	doc.text(order.pick_up_location, xPos, yPos)
+	doc.text(order.pick_up_location || '', xPos, yPos)
 	xPos += VEHICLE_COL_WIDTH
 	doc.text(new Date(order.pick_up_date).toLocaleTimeString('en-GB'), xPos, yPos)
 	doc.line(
@@ -232,7 +232,7 @@ function printVehicleInfo(order) {
 		yPos
 	)
 	xPos += VEHICLE_COL_WIDTH
-	doc.text(order.drop_off_location, xPos, yPos)
+	doc.text(order.drop_off_location || '', xPos, yPos)
 	xPos += VEHICLE_COL_WIDTH
 	doc.text(
 		new Date(order.drop_off_date).toLocaleTimeString('en-GB'),
@@ -280,19 +280,19 @@ function printDriver(yPos, client, drivers) {
 	doc.setFont('Helvetica', 'normal')
 	doc.setFontSize(5)
 	yPos = yPos + LINE_SPACE
-	doc.text('FIRST NAME', xPos + 1, yPos)
+	doc.text('CLIENT NAME', xPos + 1, yPos)
 	xPos += COL_WIDTH
-	doc.text('LAST NAME', xPos + 1, yPos)
+	// doc.text('LAST NAME', xPos + 1, yPos)
 	xPos += COL_WIDTH
 	doc.text('DATE OF BIRTH', xPos + 1, yPos)
 	xPos = PAGE_MARGIN + 1
 	yPos += LINE_SPACE + 1.5
 	doc.setFont('Helvetica', 'bold')
 	doc.setFontSize(11)
-	doc.text(client.first_name, xPos, yPos)
+	doc.text(client.full_name, xPos, yPos)
 	xPos += COL_WIDTH
-	doc.line(xPos - 1, TOP_LINE, xPos - 1, TOP_LINE + 3 * CELL_HEIGHT)
-	doc.text(client.last_name, xPos, yPos)
+	doc.line(xPos - 1, TOP_LINE+CELL_HEIGHT, xPos - 1, TOP_LINE + 3 * CELL_HEIGHT)
+	// doc.text(client.last_name, xPos, yPos)
 	xPos += COL_WIDTH
 	doc.line(xPos - 1, TOP_LINE, xPos - 1, TOP_LINE + 2 * CELL_HEIGHT)
 	doc.text(
@@ -550,7 +550,7 @@ function printInsurance(topY, order, totals, prices) {
 	xPos += COL_WIDTH
 	doc.text(
 		`${
-			order.insurance.price_type === 'day' ||
+			order.insurance?.price_type === 'day' ||
 			hasCustomPrice('insurance', prices)
 				? 'PRICE PER DAY'
 				: 'FIX PRICE'
@@ -564,10 +564,10 @@ function printInsurance(topY, order, totals, prices) {
 	yPos += LINE_SPACE + 1.5
 	doc.setFont('Helvetica', 'bold')
 	doc.setFontSize(11)
-	doc.text(order.insurance.name, xPos, yPos)
+	doc.text(order.insurance?.name || '', xPos, yPos)
 	xPos += COL_WIDTH
 	doc.text(
-		toCurrency(perDayValue(order.insurance, totals, prices, order)),
+		toCurrency(perDayValue(order.insurance, totals, prices, order) || 0),
 		xPos,
 		yPos
 	)
@@ -743,7 +743,7 @@ function perDayValue(item, totals, prices, order) {
 		)
 	}
 
-	if (item.category === 'insurance') {
+	if (item?.category === 'insurance') {
 		return (
 			totals['insurance'] /
 			(prices.insurance.type === 'day' || hasCustomPrice('insurance', prices)
@@ -752,7 +752,7 @@ function perDayValue(item, totals, prices, order) {
 		)
 	}
 
-	if (item.category === 'equipment') {
+	if (item?.category === 'equipment') {
 		return (
 			totals[item.name] /
 			(prices.equipment[item.name].type === 'day' ||
@@ -763,8 +763,8 @@ function perDayValue(item, totals, prices, order) {
 	}
 
 	return (
-		totals[item.name] /
-		(item.price_type === 'day' || hasCustomPrice(item.name, prices)
+		totals[item?.name] /
+		(item?.price_type === 'day' || hasCustomPrice(item?.name, prices)
 			? order.num_days
 			: 1)
 	)
@@ -784,19 +784,19 @@ export function printAgreement(settings, order, prices, logoImgData) {
 	const totals = {
 		vehicle: hasCustomPrice('vehicle', prices)
 			? prices.vehicle.custom
-			: prices.vehicle.total || 0,
+			: prices.vehicle?.total || 0,
 		insurance: hasCustomPrice('insurance', prices)
 			? prices.insurance.custom
 			: prices.insurance.total || 0,
 		drivers: hasCustomPrice('drivers', prices)
 			? prices.drivers.custom
-			: prices.drivers.total || 0,
+			: prices.drivers?.total || 0,
 		deposit: hasCustomPrice('deposit', prices)
 			? prices.deposit.custom
-			: prices.deposit.total || 0,
+			: prices.deposit?.total || 0,
 		excess: hasCustomPrice('excess', prices)
 			? prices.excess.custom
-			: prices.excess.total || 0,
+			: prices.excess?.total || 0,
 		equipment: getEquipTotal(),
 		...order.extras.reduce((res, obj) => {
 			res[obj.item.name] = hasCustomPrice(obj.item.name, prices, true)
@@ -848,14 +848,16 @@ export function printAgreement(settings, order, prices, logoImgData) {
 
 	doc.setFontSize(5)
 	doc.text("HIRER'S SIGNATURE", PAGE_MARGIN + 1, lastY + LINE_SPACE)
-	doc.addImage(
-		order.client_signature,
-		'png',
-		PAGE_MARGIN + 6,
-		lastY + LINE_SPACE + 1,
-		25,
-		10
-	)
+	if (order.client_signature) {
+		doc.addImage(
+			order.client_signature,
+			'png',
+			PAGE_MARGIN + 6,
+			lastY + LINE_SPACE + 1,
+			25,
+			10
+		)
+	}
 	doc.text("MANAGER'S SIGNATURE", PAGE_WIDTH / 2 + 1, lastY + LINE_SPACE)
 	doc.addImage(
 		settings.company.signature,

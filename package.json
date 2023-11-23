@@ -25,6 +25,7 @@
     "cloudinary": "^1.41.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "csv-string": "^4.1.1",
     "date-fns": "^2.30.0",
     "flatpickr": "^4.6.13",
     "framer-motion": "^10.16.4",

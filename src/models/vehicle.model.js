@@ -20,19 +20,19 @@ const vehicleSchema = new mongoose.Schema({
     },
     year: {
         type: Number,
-        min: [1900, 'Must be after 1900'],
-        max: [2100, 'Must be before 2100'],
-        required: true,
+        // min: [1900, 'Must be after 1900'],
+        // max: [2100, 'Must be before 2100'],
+        // required: true,
     },
 	registration: {
 		type: String,
-        required: true,
+        // required: true,
         unique: true
 	},
     group: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Group",
-        required: true,
+        // required: true,
     },
     transmission: {
         type: String,
@@ -75,7 +75,7 @@ const vehicleSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Owner",
-        required: true, 
+        // required: true, 
     },
     insurance: {
         type: mongoose.Schema.Types.ObjectId,

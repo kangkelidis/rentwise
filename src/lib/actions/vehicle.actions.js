@@ -6,6 +6,7 @@ import vehicleModel from '@/models/vehicle.model'
 import orderModel from '@/models/order.model'
 import ownerModel from '@/models/owner.model'
 import groupModel from '@/models/group.model'
+import * as CSV from 'csv-string'
 
 export async function fetchVehicles(page, limit) {
 	try {
@@ -58,13 +59,17 @@ export async function fetchUnavailableVehicles(fromDate, tillDate) {
 }
 
 export async function markUnavailable(vehicles, from, till) {
-    for (let i = 0 ; i < vehicles.length ; i++) {
-        if (!await isAvailableDuring(vehicles[i]._id, from, till)) {
-            vehicles[i] = {...vehicles[i]._doc, id: vehicles[i]._id, unavailable: true}
-        } 
-    } 
+	for (let i = 0; i < vehicles.length; i++) {
+		if (!(await isAvailableDuring(vehicles[i]._id, from, till))) {
+			vehicles[i] = {
+				...vehicles[i]._doc,
+				id: vehicles[i]._id,
+				unavailable: true,
+			}
+		}
+	}
 
-    return vehicles
+	return vehicles
 }
 
 export async function isAvailableDuring(vehicle, from, till) {
@@ -131,4 +136,35 @@ export async function deleteVehicle(id, path) {
 		console.log(error)
 		throw new Error('Could not delete vehicle with id: ' + id)
 	}
+}
+
+export async function createMany(data) {
+	try {
+		await dbConnect()
+		await vehicleModel.insertMany(data, {ordered: false})
+	} catch (error) {
+		console.log(error)
+		throw new Error('Could not create vehicles ')
+	}
+}
+
+export async function createFromCSV(data) {
+	const parsedData = CSV.parse(data, { output: 'objects' }).filter(
+		(d) => d['Id']
+	)
+
+	const formattedData = parsedData.map((data) => {
+		return {
+			make: data['Brand'],
+			model: data['Mark'],
+			registration: data['Registration Number'].replace(' ', '').toUpperCase(),
+			basic_day_rate: Number(data['Price'].replace('Day: ', '')),
+			odometer: Number(data['Odometer'].replace(' (km)', '')),
+			fuel_level: Number(data['Fuel Level'].replace(' (L)', '')),
+			transmission: data['Transmission'].replace(/ \((AT|MT)\)/g, ''),
+			vol_engine: Number(data['Engine Volume'].replace(' (cm3)', '')),
+			year: Number(data['Year']),
+		}
+	})
+	await createMany(formattedData)
 }

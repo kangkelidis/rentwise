@@ -52,8 +52,7 @@ export function ClientForm({ data }) {
 	const form = useForm({
 		resolver: zodResolver(clientValidationSchema),
 		defaultValues: {
-			first_name: client?.first_name || '',
-			last_name: client?.last_name || '',
+			full_name: client?.full_name || '',
 			dob: client?.dob ? new Date(client.dob) : '',
 			tel: client?.tel || '',
 			email: client?.email || '',
@@ -86,7 +85,7 @@ export function ClientForm({ data }) {
 				<div className='form-container'>
 					<FormField
 						control={form.control}
-						name='first_name'
+						name='full_name'
 						render={({ field }) => (
 							<FormItem>
 								<FormLabel>First Name</FormLabel>
@@ -98,19 +97,6 @@ export function ClientForm({ data }) {
 						)}
 					/>
 
-					<FormField
-						control={form.control}
-						name='last_name'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Last Name</FormLabel>
-								<FormControl>
-									<Input className='form-input' placeholder='' {...field} />
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
 
 					<FormField
 						control={form.control}

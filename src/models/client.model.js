@@ -2,13 +2,9 @@ import mongoose from 'mongoose'
 import { autoIncrement } from 'mongoose-plugin-autoinc';
 
 const clientSchema = new mongoose.Schema({
-	first_name: { 
+	full_name: { 
         type: String,
-        required: true
-    },
-    last_name: {
-        type: String,
-        required: true
+        // required: true
     },
     dob: {
         type: Date,
@@ -28,7 +24,7 @@ const clientSchema = new mongoose.Schema({
     },
     license: {
         type: String,
-        required: true
+        // required: true
     },
     nationality: {
         // country code
@@ -47,9 +43,7 @@ const clientSchema = new mongoose.Schema({
 },{timestamps: true,
     toJSON: { virtuals: true }, toObject: { virtuals: true },
     virtuals: {
-        full_name: {get() {
-            return this.first_name + ' ' + this.last_name
-        }}
+
     }
 })
 

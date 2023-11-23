@@ -50,8 +50,7 @@ export const orderValidationSchema = z.object({
 })
 
 export const clientValidationSchema = z.object({
-	first_name: z.string(),
-	last_name: z.string(),
+	full_name: z.string(),
 	dob: z.date(),
 	tel: z.string(),
 	email: z.string().email(),
