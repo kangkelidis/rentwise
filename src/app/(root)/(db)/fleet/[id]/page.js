@@ -9,12 +9,19 @@ import { fetchOrders } from '@/lib/actions/order.actions'
 import { fetchOwners } from '@/lib/actions/owner.actions'
 import { fetchVehicle } from '@/lib/actions/vehicle.actions'
 
-export default async function Page({ params }) {
+export default async function Page({ params, searchParams }) {
+	const page = searchParams.page || 1
+	const limit = searchParams.limit || DEFAULT_LIMIT / 2
+	const sortColumn = searchParams.sortColumn || 'number'
+	const sortDirection = searchParams.sortDirection || 'descending'
+
 	const groups = fetchGroups()
 	const owners = fetchOwners()
 	const vehicle = fetchVehicle(params.id)
 	const insurances = fetchInsurances()
-	const orders = fetchOrders(1, DEFAULT_LIMIT, null, null, { vehicle: params.id })
+	const orders = fetchOrders(page, limit, sortColumn, sortDirection, {
+		vehicle: params.id,
+	})
 
 	const result = await Promise.all([
 		groups,
@@ -33,9 +40,9 @@ export default async function Page({ params }) {
 	return (
 		<div className='flex flex-col gap-4'>
 			<h2 className='head-text'>Edit</h2>
-            <div>
-			    <VehicleForm data={JSON.stringify(data)} />
-            </div>
+			<div>
+				<VehicleForm data={JSON.stringify(data)} />
+			</div>
 
 			<div className='card-container'>
 				<h2>Price Distribution</h2>
@@ -44,13 +51,7 @@ export default async function Page({ params }) {
 
 			<div className='card-container'>
 				<h4>History</h4>
-				<TableUI
-					columns={orderColumns}
-					data={JSON.stringify({
-						items: data.orders,
-						count: data.orders.length,
-					})}
-				/>
+				<TableUI columns={orderColumns} rowsPerPage={DEFAULT_LIMIT/2} data={JSON.stringify(data.orders)} />
 			</div>
 		</div>
 	)

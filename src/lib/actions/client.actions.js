@@ -5,11 +5,18 @@ import dbConnect from '../dbConnect'
 import clientModel from '@/models/client.model'
 import * as CSV from 'csv-string'
 
-export async function fetchClients(page, limit) {
+export async function fetchClients(
+	page,
+	limit,
+	sortColumn,
+	sortDirection,
+	searchOptions = {}
+) {
 	try {
 		await dbConnect()
 		return await clientModel
 			.find({})
+			.sort({ [sortColumn]: sortDirection })
 			.limit(limit)
 			.skip((page - 1) * limit)
 	} catch (error) {
@@ -73,13 +80,13 @@ export async function deleteClient(id, path) {
 }
 
 export async function createMany(data) {
-    try {
-        await dbConnect()
-        await clientModel.insertMany(data)
-    } catch (error) {
-        console.log(error)
+	try {
+		await dbConnect()
+		await clientModel.insertMany(data)
+	} catch (error) {
+		console.log(error)
 		throw new Error('Could not create clients ')
-    }
+	}
 }
 
 export async function createFromCSV(data) {
@@ -103,12 +110,13 @@ export async function createFromCSV(data) {
 				', ' +
 				data.City +
 				', ' +
-				data['Zip Code'] + '',
+				data['Zip Code'] +
+				'',
 			tel: data.tel,
 			email: data.email,
 			license: data.license,
 		}
 	})
 
-    await createMany(cleanClientsData)
+	await createMany(cleanClientsData)
 }

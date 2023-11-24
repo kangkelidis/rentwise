@@ -8,15 +8,22 @@ import ownerModel from '@/models/owner.model'
 import groupModel from '@/models/group.model'
 import * as CSV from 'csv-string'
 
-export async function fetchVehicles(page, limit) {
+export async function fetchVehicles(
+	page,
+	limit,
+	sortColumn,
+	sortDirection,
+	searchOptions = {}
+) {
 	try {
 		await dbConnect()
 		return await vehicleModel
 			.find({})
-			.limit(limit)
-			.skip((page - 1) * limit)
 			.populate('owner')
 			.populate('group')
+			.sort({ [sortColumn]: sortDirection })
+			.limit(limit)
+			.skip((page - 1) * limit)
 	} catch (error) {
 		console.log(error)
 	}
@@ -141,7 +148,7 @@ export async function deleteVehicle(id, path) {
 export async function createMany(data) {
 	try {
 		await dbConnect()
-		await vehicleModel.insertMany(data, {ordered: false})
+		await vehicleModel.insertMany(data, { ordered: false })
 	} catch (error) {
 		console.log(error)
 		throw new Error('Could not create vehicles ')

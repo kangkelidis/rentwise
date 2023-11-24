@@ -7,8 +7,8 @@ import TableUI from '@/components/tables/table'
 import UploadCSVFile from '@/components/shared/UploadCSVFile'
 
 async function getData(page, limit, sortColumn, sortDirection) {
-	const result = await fetchOrders(page, limit, sortColumn, sortDirection)
-    const orders = {items: result, count: await totalCountOrders()}
+	const result = await fetchOrders(page, limit, sortColumn, sortDirection )
+	const orders = result
 	return JSON.stringify(orders)
 }
 

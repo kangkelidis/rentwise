@@ -11,8 +11,8 @@ import TableUI from '@/components/tables/table'
 import { DEFAULT_LIMIT } from '@/constants'
 import UploadCSVFile from '@/components/shared/UploadCSVFile'
 
-async function getData(page, limit) {
-	const result = await fetchVehicles(page, limit)
+async function getData(page, limit, sortColumn, sortDirection) {
+	const result = await fetchVehicles(page, limit, sortColumn, sortDirection)
 	const vehicles = { items: result, count: await totalCountVehicles() }
 	return JSON.stringify(vehicles)
 }
@@ -20,7 +20,9 @@ async function getData(page, limit) {
 export default async function Page({ searchParams }) {
 	const page = searchParams.page || 1
 	const limit = searchParams.limit || DEFAULT_LIMIT
-	const data = await getData(page, limit)
+	const sortColumn = searchParams.sortColumn || 'number'
+	const sortDirection = searchParams.sortDirection || 'descending'
+	const data = await getData(page, limit, sortColumn, sortDirection)
 
 	const from = new Date('2023-10-09T21:00:00.000+00:00')
 	const till = new Date('2023-10-15T21:00:00.000+00:00')

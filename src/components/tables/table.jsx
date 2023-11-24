@@ -31,12 +31,18 @@ import { getTotalPrice } from '@/lib/price/rates'
 import StatusChip from '../elements/StatusChip'
 import { deleteOrder } from '@/lib/actions/order.actions'
 
-export default function TableUI({ columns, data, selectionMode = 'single' }) {
+export default function TableUI({
+	columns,
+	data,
+	selectionMode = 'single',
+	rowsPerPage = DEFAULT_LIMIT,
+}) {
 	try {
 		data = JSON.parse(data)
 	} catch (error) {}
 	const count = data.count
 	const items = data.items
+	console.log(count)
 	const [isLoading, setIsLoading] = useState(true)
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]))
 
@@ -46,7 +52,6 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 
-	const rowsPerPage = DEFAULT_LIMIT
 	const pages = count ? Math.ceil(count / rowsPerPage) : 0
 
 	// Get a new searchParams string by merging the current
@@ -77,15 +82,18 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 					</span>
 				)}
 				{count && (
-					<Pagination
-						isCompact
-						showControls
-						showShadow
-						color='primary'
-						page={page}
-						total={pages}
-						onChange={(page) => onChangePage(page)}
-					/>
+					<div className='flex justify-between w-full'>
+						<Pagination
+							isCompact
+							showControls
+							showShadow
+							color='primary'
+							page={page}
+							total={pages}
+							onChange={(page) => onChangePage(page)}
+						/>
+						<span className='text-small text-gray-500'>Total: {count}</span>
+					</div>
 				)}
 			</div>
 		)
@@ -198,44 +206,43 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 						</Button>
 					</div>
 				)
-				case 'actions_order':
-					return (
-						<div>
-							<Button
-								isIconOnly
-								size='sm'
-								className='bg-transparent'
-								onPress={() => {
-									router.push(pathname + '/' + item.id)
-								}}
-							>
-								<img src='/assets/edit.svg'></img>
-							</Button>
-	
-							<Button
-								isIconOnly
-								size='sm'
-								className='bg-transparent'
-								onPress={async () => {
-									// TODO: add confirmation
-									await deleteOrder(item.id, pathname)
-								}}
-							>
-								<img src='/assets/delete.svg'></img>
-							</Button>
-						</div>
-					)
+			case 'actions_order':
+				return (
+					<div>
+						<Button
+							isIconOnly
+							size='sm'
+							className='bg-transparent'
+							onPress={() => {
+								router.push(pathname + '/' + item.id)
+							}}
+						>
+							<img src='/assets/edit.svg'></img>
+						</Button>
+
+						<Button
+							isIconOnly
+							size='sm'
+							className='bg-transparent'
+							onPress={async () => {
+								// TODO: add confirmation
+								await deleteOrder(item.id, pathname)
+							}}
+						>
+							<img src='/assets/delete.svg'></img>
+						</Button>
+					</div>
+				)
 			default:
 				return cellValue
 		}
 	}, [])
 
-	function handleSort({column, direction}) {
+	function handleSort({ column, direction }) {
 		const params = new URLSearchParams(searchParams)
 		params.set('sortColumn', column)
 		params.set('sortDirection', direction)
 		router.push(pathname + '?' + params.toString())
-
 	}
 
 	return (
@@ -247,7 +254,10 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 					aria-label='Table with data'
 					bottomContent={bottomContent}
 					bottomContentPlacement='outside'
-					sortDescriptor={{column: searchParams.get('sortColumn'), direction: searchParams.get('sortDirection')}}
+					sortDescriptor={{
+						column: searchParams.get('sortColumn'),
+						direction: searchParams.get('sortDirection'),
+					}}
 					onSortChange={handleSort}
 				>
 					<TableHeader columns={columns}>
@@ -267,9 +277,7 @@ export default function TableUI({ columns, data, selectionMode = 'single' }) {
 						)}
 					</TableBody>
 				</Table>
-
 			</CardBody>
-
 		</Card>
 	)
 }

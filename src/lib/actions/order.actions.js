@@ -11,18 +11,21 @@ import { discardTime } from '../utils'
 import * as CSV from 'csv-string'
 
 export async function fetchOrders(page, limit, sortColumn, sortDirection, searchOptions = {}) {
-	console.log(sortColumn, sortDirection);
 	try {
 		await dbConnect()
-		return await orderModel
-			.find(searchOptions)
-			.sort({sortColumn: sortDirection})
-			.limit(limit)
-			.skip((page - 1) * limit)
-			.populate('vehicle')
-			.populate('client')
-			.populate('insurance')
-			.populate({ path: 'extras.item', model: 'Extras' })
+		const orders =  await orderModel
+		.find(searchOptions)
+		.populate('vehicle')
+		.populate('client')
+		.populate('insurance')
+		.populate({ path: 'extras.item', model: 'Extras' })
+		.sort({[sortColumn]: sortDirection})
+		.limit(limit)
+		.skip((page - 1) * limit)
+
+		const count = await orderModel.countDocuments(searchOptions)
+		
+		return {items: orders, count: count}
 	} catch (error) {
 		throw new Error('Failed to fetch orders: ' + error.message)
 	}
@@ -79,6 +82,11 @@ export async function fetchOrder(id) {
 }
 
 export async function fetchOrderForDate(date) {
+
+	if (date.toString() === 'Invalid Date') {
+		return
+	}
+	
 	date = discardTime(date)
 	let nextDate = new Date(date)
 	nextDate.setDate(nextDate.getDate() + 1)

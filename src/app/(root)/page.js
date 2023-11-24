@@ -13,9 +13,9 @@ async function getData(date) {
   return JSON.stringify({orders: result[0], settings: result[1]})
 }
 
-export default async function Page() {
+export default async function Page({ searchParams }) {
   //temp - use calendar and search options  
-  const date = new Date()
+  const date = new Date(searchParams.date || new Date())
 
   const data = await getData(date)
   return (

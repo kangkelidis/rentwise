@@ -6,8 +6,8 @@ import TableUI from '@/components/tables/table'
 import {Button} from '@nextui-org/button'
 import { DEFAULT_LIMIT } from '@/constants'
 
-async function getData(page, limit) {
-	const result = await fetchOwners(page, limit)
+async function getData(page, limit, sortColumn, sortDirection) {
+	const result = await fetchOwners(page, limit, sortColumn, sortDirection)
 	const owners = {items: result, count: await totalCountOwners()}
 	return JSON.stringify(owners)
 }
@@ -15,7 +15,9 @@ async function getData(page, limit) {
 export default async function Page({ searchParams }) {
 	const page = searchParams.page || 1
 	const limit = searchParams.limit || DEFAULT_LIMIT
-	const data = await getData(page, limit)
+	const sortColumn = searchParams.sortColumn || 'number'
+	const sortDirection = searchParams.sortDirection || 'descending'
+	const data = await getData(page, limit, sortColumn, sortDirection)
 
 	return (
 		<div className=''>
