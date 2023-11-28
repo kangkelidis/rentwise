@@ -60,7 +60,7 @@ export function ClientForm({ data }) {
 			license: client?.license || '',
 			nationality: client?.nationality || '',
 			address: client?.address || '',
-			documents: client.documents || []
+			documents: client?.documents || []
 		},
 	})
 
@@ -88,7 +88,7 @@ export function ClientForm({ data }) {
 						name='full_name'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>First Name</FormLabel>
+								<FormLabel>Full Name</FormLabel>
 								<FormControl>
 									<Input className='form-input' placeholder='' {...field} />
 								</FormControl>
