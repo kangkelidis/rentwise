@@ -60,7 +60,7 @@ export function ClientForm({ data }) {
 			license: client?.license || '',
 			nationality: client?.nationality || '',
 			address: client?.address || '',
-			documents: client.documents || []
+			documents: client?.documents || []
 		},
 	})
 
