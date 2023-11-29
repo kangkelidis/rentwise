@@ -24,8 +24,7 @@ export default function Signature({ field, form, clientSignature }) {
 
 	async function saveSignature() {
 		const ts = sigCanvas?.getTrimmedCanvas().toDataURL('image/png')
-
-		form.setValue(field.name, ts)
+			form.setValue(field.name, ts)
 		onClose()
 		// TODO: change to company
 		if(!clientSignature) {

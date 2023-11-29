@@ -14,11 +14,15 @@ export async function fetchClients(
 ) {
 	try {
 		await dbConnect()
-		return await clientModel
-			.find({})
+		const clients = await clientModel
+			.find(searchOptions	)
 			.sort({ [sortColumn]: sortDirection })
 			.limit(limit)
 			.skip((page - 1) * limit)
+
+		const count = await clientModel.countDocuments(searchOptions)
+
+		return {items: clients, count: count}
 	} catch (error) {
 		throw new Error('Failed to fetch clients: ' + error.message)
 	}
@@ -36,7 +40,7 @@ export async function totalCountClients() {
 // Used as data for comboBox
 export async function fetchClientsList() {
 	const clients = await fetchClients()
-	return clients.map((client) => ({
+	return clients.items.map((client) => ({
 		label: client.full_name,
 		value: client._id,
 	}))

@@ -92,7 +92,6 @@ export default function EditableInput(props) {
 	return (
 		<div className='flex flex-row'>
 			<Input
-				// onMouseEnter={() => console.log(props)}
 				name={props.name}
 				className={`${props.size === 'lg' ? 'w-[7rem]' : 'w-[6rem]'}`}
 				size='sm'

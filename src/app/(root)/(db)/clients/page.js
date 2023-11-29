@@ -6,11 +6,17 @@ import { createFromCSV } from '@/lib/actions/client.actions'
 import TableUI from '@/components/tables/table'
 import Link from 'next/link'
 import UploadCSVFile from '@/components/shared/UploadCSVFile'
+import SearchInput from '@/components/shared/SearchInput'
 
-async function getData(page, limit, sortColumn, sortDirection) {
-	const result = await fetchClients(page, limit, sortColumn, sortDirection)
-	const clients = { items: result, count: await totalCountClients() }
-	return JSON.stringify(clients)
+async function getData(page, limit, sortColumn, sortDirection, searchTerm) {
+	const result = await fetchClients(
+		page,
+		limit,
+		sortColumn,
+		sortDirection,
+		searchTerm
+	)
+	return JSON.stringify(result)
 }
 
 export default async function Page({ searchParams }) {
@@ -18,7 +24,10 @@ export default async function Page({ searchParams }) {
 	const limit = searchParams.limit || DEFAULT_LIMIT
 	const sortColumn = searchParams.sortColumn || 'number'
 	const sortDirection = searchParams.sortDirection || 'descending'
-	const data = await getData(page, limit, sortColumn, sortDirection)
+	const searchTerm = searchParams.search
+		? { full_name: new RegExp(searchParams.search, 'i') }
+		: {}
+	const data = await getData(page, limit, sortColumn, sortDirection, searchTerm)
 
 	return (
 		<div className=''>
@@ -28,9 +37,10 @@ export default async function Page({ searchParams }) {
 					<Link href={'/clients/create'}>Add Client</Link>
 				</Button>
 			</div>
+			<SearchInput />
 			<TableUI columns={clientColumns} data={data} />
 
-			<UploadCSVFile action={createFromCSV}/>
+			<UploadCSVFile action={createFromCSV} />
 		</div>
 	)
 }

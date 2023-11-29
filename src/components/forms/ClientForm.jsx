@@ -11,13 +11,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from '@/components/ui/form'
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-} from '@/components/ui/command'
+
 import {
 	Popover,
 	PopoverContent,
@@ -43,6 +37,7 @@ import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
 import { DayPicker } from 'react-day-picker'
 import Upload from '../elements/Upload'
 import { CldImage } from 'next-cloudinary'
+import { Card, CardBody } from '@nextui-org/card'
 
 export function ClientForm({ data }) {
 	const router = useRouter()
@@ -60,7 +55,7 @@ export function ClientForm({ data }) {
 			license: client?.license || '',
 			nationality: client?.nationality || '',
 			address: client?.address || '',
-			documents: client?.documents || []
+			documents: client?.documents || [],
 		},
 	})
 
@@ -82,7 +77,7 @@ export function ClientForm({ data }) {
 	return (
 		<Form {...form}>
 			<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
-				<div className='form-container'>
+				<div className='form-container '>
 					<FormField
 						control={form.control}
 						name='full_name'
@@ -97,21 +92,21 @@ export function ClientForm({ data }) {
 						)}
 					/>
 
-
 					<FormField
 						control={form.control}
 						name='dob'
 						render={({ field }) => (
-							<FormItem className='flex flex-col'>
+							<FormItem className='flex flex-col gap-1 mt-1'>
 								<FormLabel>Date of Birth</FormLabel>
 								<Popover>
 									<PopoverTrigger asChild>
 										<FormControl>
 											<Button
-												variant={'outline'}
+												variant={''}
 												className={cn(
 													'w-[240px] pl-3 text-left font-normal',
-													!field.value && 'text-muted-foreground'
+													!field.value && 'text-muted-foreground',
+													'form-input-bg '
 												)}
 											>
 												{field.value ? (
@@ -239,22 +234,31 @@ export function ClientForm({ data }) {
 						)}
 					/>
 
-
-					<Upload form={form} multiple={true} fieldName={'documents'} preset={'client'}/>
-					{form.watch('documents').map(d => {
-						return (
-							<CldImage
-							key={d}
-							className='bg-gray-400 p-1'
-							style={{ width: 4 + 'rem', height: 4 + 'rem' }}
-							width={30}
-							height={30}
-							src={d}
-						/>
-						)
-					})}
-						
-
+					<Card className='w-full flex flex-col'>
+						<CardBody>
+							<label>Documents</label>
+							<Upload
+								form={form}
+								multiple={true}
+								fieldName={'documents'}
+								preset={'client'}
+							/>
+							<div className='flex gap-3 mt-2 flex-wrap'>
+								{form.watch('documents').map((d) => {
+									return (
+										<CldImage
+											key={d}
+											className='bg-gray-400 p-1'
+											// style={{ width: 5 + 'rem', height: 5 + 'rem' }}
+											width={200}
+											height={50}
+											src={d}
+										/>
+									)
+								})}
+							</div>
+						</CardBody>
+					</Card>
 				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit'>Submit</Button>

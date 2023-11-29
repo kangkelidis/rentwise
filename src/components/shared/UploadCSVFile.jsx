@@ -21,7 +21,7 @@ export default function UploadCSVFile({ action }) {
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleSubmit} className="flex gap-4 p-4">
 			<label>Upload csv file</label>
 			<input type='text'></input>
 			<input

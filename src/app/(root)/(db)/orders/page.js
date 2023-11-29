@@ -1,13 +1,24 @@
 import { orderColumns } from '@/components/tables/columns'
 import { Button } from '@nextui-org/button'
-import { fetchOrders, totalCountOrders, createFromCSV } from '@/lib/actions/order.actions'
+import {
+	fetchOrders,
+	totalCountOrders,
+	createFromCSV,
+} from '@/lib/actions/order.actions'
 import Link from 'next/link'
 import { DEFAULT_LIMIT } from '@/constants'
 import TableUI from '@/components/tables/table'
 import UploadCSVFile from '@/components/shared/UploadCSVFile'
+import SearchInput from '@/components/shared/SearchInput'
 
-async function getData(page, limit, sortColumn, sortDirection) {
-	const result = await fetchOrders(page, limit, sortColumn, sortDirection )
+async function getData(page, limit, sortColumn, sortDirection, searchTerm) {
+	const result = await fetchOrders(
+		page,
+		limit,
+		sortColumn,
+		sortDirection,
+		searchTerm
+	)
 	const orders = result
 	return JSON.stringify(orders)
 }
@@ -17,7 +28,18 @@ export default async function Page({ searchParams }) {
 	const limit = searchParams.limit || DEFAULT_LIMIT
 	const sortColumn = searchParams.sortColumn || 'number'
 	const sortDirection = searchParams.sortDirection || 'descending'
-	const data = await getData(page, limit, sortColumn, sortDirection)
+	const searchTerm = searchParams.search
+		? !isNaN(searchParams.search)
+			? {
+					number: Number(searchParams.search),
+			  }
+			: {
+					$or: [
+						{ status: searchParams.search },
+					],
+			  }
+		: {}
+	const data = await getData(page, limit, sortColumn, sortDirection, searchTerm)
 
 	return (
 		<div className=''>
@@ -27,10 +49,10 @@ export default async function Page({ searchParams }) {
 					<Link href={'/orders/create'}>Add Order</Link>
 				</Button>
 			</div>
+			<SearchInput />
 			<TableUI columns={orderColumns} data={data} />
 
-			<UploadCSVFile action={createFromCSV}/>
-
+			<UploadCSVFile action={createFromCSV} />
 		</div>
 	)
 }

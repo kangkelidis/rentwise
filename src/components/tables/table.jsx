@@ -13,7 +13,6 @@ import {
 	Card,
 	CardBody,
 } from '@nextui-org/react'
-import useSWR from 'swr'
 
 import { Button } from '@nextui-org/button'
 
@@ -26,7 +25,6 @@ import { toCurrency, zeroPad } from '@/lib/utils'
 import DateDisplay from '../shared/DateDisplay'
 import { deleteExtra } from '@/lib/actions/extras.actions'
 import { deleteGroup } from '@/lib/actions/group.actions'
-import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
 import { getTotalPrice } from '@/lib/price/rates'
 import StatusChip from '../elements/StatusChip'
 import { deleteOrder } from '@/lib/actions/order.actions'
@@ -42,8 +40,6 @@ export default function TableUI({
 	} catch (error) {}
 	const count = data.count
 	const items = data.items
-	console.log(count)
-	const [isLoading, setIsLoading] = useState(true)
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]))
 
 	const [page, setPage] = useState(1)

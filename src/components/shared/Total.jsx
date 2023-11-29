@@ -16,8 +16,6 @@ import { Tooltip } from '@nextui-org/tooltip'
 import EditableInput from '../elements/EditableInput'
 
 export default function Total(props) {
-	// console.log('total', props.watch);
-console.log(props);
 	const num_days = dateDiffInDays(
 		props.watch.pick_up_date,
 		props.watch.drop_off_date
