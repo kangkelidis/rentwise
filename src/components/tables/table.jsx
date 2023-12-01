@@ -101,7 +101,7 @@ export default function TableUI({
 		switch (columnKey) {
 			case 'number':
 				return (
-					<Link href={`${pathname}/${item._id}`} underline='hover'>
+					<Link href={item.pick_up_date ? `/orders/${item._id}` : `${pathname}/${item._id}`} underline='hover'>
 						{zeroPad(cellValue, 3)}
 					</Link>
 				)
@@ -182,7 +182,7 @@ export default function TableUI({
 								router.push(pathname + '?' + createQueryString('id', item.id))
 							}}
 						>
-							<img src='/assets/edit.svg'></img>
+							<img src='/assets/edit.svg' alt='edit' />
 						</Button>
 
 						<Button
@@ -198,7 +198,7 @@ export default function TableUI({
 								}
 							}}
 						>
-							<img src='/assets/delete.svg'></img>
+							<img src='/assets/delete.svg' alt='delete' />
 						</Button>
 					</div>
 				)
@@ -210,10 +210,10 @@ export default function TableUI({
 							size='sm'
 							className='bg-transparent'
 							onPress={() => {
-								router.push(pathname + '/' + item.id)
+								router.push( '/orders/' + item.id)
 							}}
 						>
-							<img src='/assets/edit.svg'></img>
+							<img src='/assets/edit.svg' alt='edit' />
 						</Button>
 
 						<Button
@@ -225,7 +225,7 @@ export default function TableUI({
 								await deleteOrder(item.id, pathname)
 							}}
 						>
-							<img src='/assets/delete.svg'></img>
+							<img src='/assets/delete.svg' alt='delete' />
 						</Button>
 					</div>
 				)

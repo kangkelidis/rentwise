@@ -580,7 +580,7 @@ export function VehicleForm({ data }) {
 						)}
 					/>
 					<div className='carousel-container'>
-						<Carousel photos={photos} />
+						{photos.length > 0 && <Carousel photos={photos} />}
 						<Upload setPhotos={setPhotos} preset='uflrmx00' />
 					</div>
 				</div>

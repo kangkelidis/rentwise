@@ -123,7 +123,7 @@ export default function EditableInput(props) {
 				className='bg-transparent'
 				onPress={handleEdit}
 			>
-				<img src={isEditable ? '/assets/edit.svg' : '/assets/edit.svg'}></img>
+				<img src={isEditable ? '/assets/edit.svg' : '/assets/edit.svg'} alt='edit'/>
 			</Button>
 		</div>
 	)

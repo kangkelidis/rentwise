@@ -141,7 +141,7 @@ function ExtraDriver({
 					type='button'
 					onClick={onDelete}
 				>
-					<img src='/assets/delete.svg'></img>
+					<img alt='delete' src='/assets/delete.svg'/>
 				</Button>
 			</div>
 		</div>

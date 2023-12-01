@@ -19,8 +19,8 @@ export default function LoadingSkeletonTable(props) {
 					<div className='h-10 rounded-lg bg-default-300'></div>
 				</Skeleton>
 				<div className='space-y-1'>
-					{new Array(3).fill(0).map((_) => (
-						<div className='space-y-1'>
+					{new Array(3).fill(0).map((_, i) => (
+						<div className='space-y-1' key={i}>
 							<Skeleton className='rounded-lg'>
 								<div className='h-20 rounded-lg bg-default-300'></div>
 							</Skeleton>
