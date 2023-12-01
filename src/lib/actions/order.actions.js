@@ -124,6 +124,32 @@ export async function fetchOrderForDate(date) {
 	}
 }
 
+export async function fetchMissedOrders() {
+	const now = new Date()
+	const orders = await orderModel.find({
+		$or: [
+		{$and: [{pick_up_date: {$lt: now}}, {status: 'reserved'}]},
+		{$and: [{drop_off_date: {$lt: now}}, {status: {$ne: 'done'}}]},
+	]})
+	.populate({
+		path: 'vehicle',
+		model: 'Vehicle',
+		populate: { path: 'group', model: 'Group' },
+	})
+	.populate('client')
+	.populate('insurance')
+	.populate({ path: 'extras.item', model: 'Extras' })
+
+	return orders.map((order) => {
+		const type =
+			order.pick_up_date < now 
+				? 'pick_up'
+				: 'drop_off'
+
+		return { data: order, type: type }
+	})
+}
+
 export async function deleteOrder(id, path) {
 	try {
 		await dbConnect()
