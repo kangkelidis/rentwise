@@ -286,7 +286,7 @@ export function OrderForm({ data }) {
 			success = await createOrder(newValues, pathname)
 		}
 		if (success) {
-			// router.push('/orders')
+			router.push('/orders/' + success)
 		}
 		setIsLoading(false)
 	}

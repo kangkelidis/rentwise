@@ -12,6 +12,8 @@ import {
 	Pagination,
 	Card,
 	CardBody,
+	useDisclosure,
+	CardHeader,
 } from '@nextui-org/react'
 
 import { Button } from '@nextui-org/button'
@@ -28,12 +30,14 @@ import { deleteGroup } from '@/lib/actions/group.actions'
 import { getTotalPrice } from '@/lib/price/rates'
 import StatusChip from '../elements/StatusChip'
 import { deleteOrder } from '@/lib/actions/order.actions'
+import Confirmation from '../shared/Confirmation'
 
 export default function TableUI({
 	columns,
 	data,
 	selectionMode = 'single',
 	rowsPerPage = DEFAULT_LIMIT,
+	title
 }) {
 	try {
 		data = JSON.parse(data)
@@ -42,13 +46,20 @@ export default function TableUI({
 	const items = data.items
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]))
 
-	const [page, setPage] = useState(1)
-
+	
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
-
+	
+	const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
 	const pages = count ? Math.ceil(count / rowsPerPage) : 0
+	const { isOpen, onOpen, onOpenChange } = useDisclosure()
+	const [deleteItem, setDeleteItem] = useState({
+		id: null,
+		title: '',
+		action: () => {},
+		params: null,
+	})
 
 	// Get a new searchParams string by merging the current
 	// searchParams with a provided key/value pair
@@ -101,7 +112,14 @@ export default function TableUI({
 		switch (columnKey) {
 			case 'number':
 				return (
-					<Link href={item.pick_up_date ? `/orders/${item._id}` : `${pathname}/${item._id}`} underline='hover'>
+					<Link
+						href={
+							item.pick_up_date
+								? `/orders/${item._id}`
+								: `${pathname}/${item._id}`
+						}
+						underline='hover'
+					>
 						{zeroPad(cellValue, 3)}
 					</Link>
 				)
@@ -189,13 +207,14 @@ export default function TableUI({
 							isIconOnly
 							size='sm'
 							className='bg-transparent'
-							onPress={async () => {
-								// TODO: add confirmation
-								if (item.category) {
-									await deleteExtra(item._id, pathname)
-								} else {
-									await deleteGroup(item._id, pathname)
-								}
+							onPress={() => {
+								setDeleteItem({
+									id: item.id,
+									title: item.name,
+									action: item.category ? deleteExtra : deleteGroup,
+									params: [item.id, pathname],
+								})
+								onOpen()
 							}}
 						>
 							<img src='/assets/delete.svg' alt='delete' />
@@ -210,7 +229,7 @@ export default function TableUI({
 							size='sm'
 							className='bg-transparent'
 							onPress={() => {
-								router.push( '/orders/' + item.id)
+								router.push('/orders/' + item.id)
 							}}
 						>
 							<img src='/assets/edit.svg' alt='edit' />
@@ -221,8 +240,13 @@ export default function TableUI({
 							size='sm'
 							className='bg-transparent'
 							onPress={async () => {
-								// TODO: add confirmation
-								await deleteOrder(item.id, pathname)
+								setDeleteItem({
+									id: item.id,
+									title: 'Order No: ' + item.number,
+									action: deleteOrder,
+									params: [item.id, pathname],
+								})
+								onOpen()
 							}}
 						>
 							<img src='/assets/delete.svg' alt='delete' />
@@ -242,38 +266,49 @@ export default function TableUI({
 	}
 
 	return (
-		<Card>
-			<CardBody>
-				<Table
-					isStriped
-					selectionMode={selectionMode}
-					aria-label='Table with data'
-					bottomContent={bottomContent}
-					bottomContentPlacement='outside'
-					sortDescriptor={{
-						column: searchParams.get('sortColumn'),
-						direction: searchParams.get('sortDirection'),
-					}}
-					onSortChange={handleSort}
-				>
-					<TableHeader columns={columns}>
-						{(column) => (
-							<TableColumn allowsSorting key={column.key}>
-								{column.label}
-							</TableColumn>
-						)}
-					</TableHeader>
-					<TableBody emptyContent={'No rows to display.'} items={items}>
-						{(item) => (
-							<TableRow className='' key={item.key}>
-								{(columnKey) => (
-									<TableCell>{renderCell(item, columnKey)}</TableCell>
-								)}
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-			</CardBody>
-		</Card>
+		<>
+			<Card>
+				<CardHeader>
+					<h2>{title}</h2>
+				</CardHeader>
+				<CardBody>
+					<Table
+						isStriped
+						selectionMode={selectionMode}
+						aria-label='Table with data'
+						bottomContent={bottomContent}
+						bottomContentPlacement='outside'
+						sortDescriptor={{
+							column: searchParams.get('sortColumn'),
+							direction: searchParams.get('sortDirection'),
+						}}
+						onSortChange={handleSort}
+					>
+						<TableHeader columns={columns}>
+							{(column) => (
+								<TableColumn allowsSorting key={column.key}>
+									{column.label}
+								</TableColumn>
+							)}
+						</TableHeader>
+						<TableBody emptyContent={'No rows to display.'} items={items}>
+							{(item) => (
+								<TableRow className='' key={item.key}>
+									{(columnKey) => (
+										<TableCell>{renderCell(item, columnKey)}</TableCell>
+									)}
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
+				</CardBody>
+
+				<Confirmation
+					isOpen={isOpen}
+					onOpenChange={onOpenChange}
+					deleteItem={deleteItem}
+				/>
+			</Card>
+		</>
 	)
 }

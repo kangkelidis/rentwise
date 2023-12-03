@@ -43,9 +43,9 @@ export async function totalCountOrders() {
 export async function createOrder(values, path) {
 	try {
 		await dbConnect()
-		await orderModel.create(values)
+		const order = await orderModel.create(values)
 		revalidatePath(path)
-		return true
+		return order.id
 	} catch (error) {
 		console.log(error)
 		return false
@@ -56,7 +56,7 @@ export async function updateOrder(orderId, values, path) {
 	try {
 		await orderModel.findByIdAndUpdate(orderId, values)
 		revalidatePath(path)
-		return true
+		return orderId
 	} catch (error) {
 		console.log(error)
 		return false
