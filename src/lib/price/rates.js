@@ -125,7 +125,7 @@ export function getNormalPrices(params, settings, prev) {
 				res[obj.item.name] = {
 					total: getEquipPrice(obj, params.num_days),
 					type: obj.item.price_type,
-					custom: prev.equipment?.[obj.item.name].custom,
+					custom: prev.equipment?.[obj.item.name]?.custom,
 				}
 				return res
 			}, {}),
