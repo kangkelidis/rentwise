@@ -2,8 +2,9 @@
 
 import { printAgreement } from '@/lib/pdf/agreement'
 import LoadingButton from "../ui/loadingButton";
+import { printInvoice } from '@/lib/pdf/invoice';
 
-export default function Agreement({ settings, order, prices }) {
+export default function Agreement({ settings, order, prices, invoice }) {
 
 
 	const baseURL =
@@ -26,6 +27,7 @@ export default function Agreement({ settings, order, prices }) {
 	function handleClick() {
 		toDataURL(baseURL + settings.company.logo + '.png', function (dataURL) {
 			const logoImgData = dataURL
+			invoice ? printInvoice(settings, order, prices, logoImgData) :
 			printAgreement(settings, order, prices, logoImgData)
 		})
 	}
@@ -34,11 +36,11 @@ export default function Agreement({ settings, order, prices }) {
 		<>
 			<LoadingButton
 				type='button'
-				color="primary"
+				color={invoice ? 'default' : "primary"}
 				onClick={handleClick}
 				>
 			
-				Print Agreement
+				{invoice ? 'Print Invoice' : 'Print Agreement'}
 			</LoadingButton>
 		</>
 	)

@@ -99,7 +99,6 @@ export default function OrderCard({ order, type, settings }) {
 						<Button>View Order</Button>
 					</Link>
 					<Agreement prices={order.prices} order={order} settings={settings} />
-
 					</div>
 				</div>
 

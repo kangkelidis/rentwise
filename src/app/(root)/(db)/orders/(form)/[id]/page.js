@@ -1,5 +1,4 @@
 import { OrderForm } from '@/components/forms/OrderForm'
-import Agreement from '@/components/shared/Agreement'
 import { fetchClientsList } from '@/lib/actions/client.actions'
 import { fetchEquipment, fetchInsurances } from '@/lib/actions/extras.actions'
 import { fetchOrder } from '@/lib/actions/order.actions'

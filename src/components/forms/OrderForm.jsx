@@ -828,8 +828,11 @@ export function OrderForm({ data }) {
 									Back
 								</ButtonUI> */}
 									{order && 
-									
+									<div className='space-x-3'>
+
+								<Agreement prices={prices} settings={settings} order={order} invoice={true}  />
 								<Agreement prices={prices} settings={settings} order={order}  />
+									</div>
 									}
 							</div>
 						</form>
