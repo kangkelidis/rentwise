@@ -137,14 +137,14 @@ function printHeader(company, logoImgData, order, totals) {
 				})  |  ${new Date(order.pick_up_date).toLocaleDateString(
 					'en-UK'
 				)} - ${new Date(order.drop_off_date).toLocaleDateString('en-UK')}`,
-				`(VAT 19%)  ${toCurrency((totals.vehicle * 19) / 100)}`,
-				toCurrency(totals.vehicle *81/100),
+				`(VAT 19%)  ${toCurrency(totals.vehicle * 19 / 119)}`,
+				toCurrency(totals.vehicle *100/119),
 			],
 			[
 				2,
 				`Insurance: ${order.insurance.name.toUpperCase()}`,
-				`(VAT 19%)  ${toCurrency((totals.insurance * 19) / 100)}`,
-				toCurrency(totals.insurance * 81/100),
+				`(VAT 19%)  ${toCurrency(totals.insurance * 19 / 119)}`,
+				toCurrency(totals.insurance * 100/119),
 			],
 			...order.extras.map((extra, i) => {
 
@@ -153,8 +153,8 @@ function printHeader(company, logoImgData, order, totals) {
 					return [
 						Number(3 + i),
 						`${extra.count}x ${extra.item.name}`,
-						`(VAT 19%)  ${toCurrency((totals[extra.item.name] * 19) / 100 * extra.count)}`,
-						toCurrency(totals[extra.item.name] * 81/100 * extra.count),
+						`(VAT 19%)  ${toCurrency(totals[extra.item.name] * 19 / 119 * extra.count)}`,
+						toCurrency(totals[extra.item.name] * 100/119 * extra.count),
 					]
 				} else {return []}
 			}).filter(a => a.length > 0),
@@ -166,11 +166,11 @@ function printHeader(company, logoImgData, order, totals) {
   	doc.line(PAGE_MARGIN, yPos, PAGE_WIDTH-PAGE_MARGIN, yPos);
 	yPos += 2*LINE_SPACE
 	doc.text('Total Tax', xPos -35, yPos, null, null, 'right')
-	doc.text(toCurrency(totals.total * 19/100), xPos, yPos, null, null, 'right')
+	doc.text(toCurrency(totals.total * 19/119), xPos, yPos, null, null, 'right')
 	yPos += 2*LINE_SPACE
 
-	doc.text('Total', xPos -35, yPos, null, null, 'right')
-	doc.text(toCurrency(totals.total * 81/100), xPos, yPos, null, null, 'right')
+	doc.text('Subtotal', xPos -35, yPos, null, null, 'right')
+	doc.text(toCurrency(totals.total * 100/119), xPos, yPos, null, null, 'right')
 	yPos += 2*LINE_SPACE
 
 	doc.setFont('Helvetica', 'bold')
