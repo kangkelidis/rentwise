@@ -679,7 +679,7 @@ function printTax(topY, order, totals) {
 	let cell_num = order.extras?.length > 0 ? 3 : 2
 	let xPos = PAGE_MARGIN
 	let yPos = topY + LINE_SPACE
-	let total = (totals.vehicle * 19) / 100
+	let total = (totals.vehicle * 19) / 119
 	doc.setFont('Helvetica', 'normal')
 	doc.setFontSize(5)
 	doc.text(`TYPE`, xPos + 1, yPos)
@@ -694,11 +694,11 @@ function printTax(topY, order, totals) {
 			xPos + COL_WIDTH,
 			topY + 2 * CELL_HEIGHT
 		)
-		total += (totals.equipment * 19) / 100
+		total += (totals.equipment * 19) / 119
 		doc.setFont('Helvetica', 'bold')
 		doc.setFontSize(11)
 		doc.text(
-			toCurrency((totals.equipment * 19) / 100),
+			toCurrency((totals.equipment * 19) / 119),
 			xPos + 1,
 			yPos + CELL_HEIGHT + LINE_SPACE + 1.5
 		)
@@ -714,13 +714,13 @@ function printTax(topY, order, totals) {
 	doc.setFontSize(11)
 	doc.text('TAX', xPos, yPos)
 	xPos += COL_WIDTH
-	doc.text(toCurrency((totals.vehicle * 19) / 100), xPos, yPos)
+	doc.text(toCurrency((totals.vehicle * 19) / 119), xPos, yPos)
 	doc.text(
-		toCurrency((totals.insurance * 19) / 100),
+		toCurrency((totals.insurance * 19) / 119),
 		xPos,
 		yPos + (cell_num - 1) * CELL_HEIGHT
 	)
-	total += (totals.insurance * 19) / 100
+	total += (totals.insurance * 19) / 119
 	doc.line(
 		PAGE_MARGIN,
 		topY + cell_num * CELL_HEIGHT,

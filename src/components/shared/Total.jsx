@@ -78,7 +78,7 @@ export default function Total(props) {
 									((props.prices.vehicle?.custom ||
 										props.prices.vehicle?.total) *
 										19) /
-										100
+										119
 								)}{' '}
 							</p>
 						</span>
@@ -183,7 +183,7 @@ export default function Total(props) {
 							<p className='text-heading4-medium'>Taxes</p>
 							<div className='flex justify-between'>
 								<p className='text-small-regular'>VAT 19% inc</p>
-								<p>{toCurrency((19 / 100) * getTotalPrice(props.prices))}</p>
+								<p>{toCurrency((19 / 119) * getTotalPrice(props.prices))}</p>
 							</div>
 						</div>
 
