@@ -107,15 +107,15 @@ function printHeader(company, logoImgData, order, totals) {
 	yPos += 2 * LINE_SPACE
 	if (order.client.email) {
 		doc.text(order.client.email, xPos, yPos)
-		yPos += LINE_SPACE
+		yPos += 1.5*LINE_SPACE
 	}
 	if (order.client.tel) {
 		doc.text(order.client.tel, xPos, yPos)
-		yPos += LINE_SPACE
+		yPos += 1.5*LINE_SPACE
 	}
 	if (order.client.address && order.client.address !== ', , , , ') {
 		doc.text(order.client.address, xPos, yPos)
-		yPos += LINE_SPACE
+		yPos += 1.5*LINE_SPACE
 	}
 	yPos += LINE_SPACE
 
@@ -234,5 +234,5 @@ export function printInvoice(settings, order, prices, logoImgData) {
 
 	printHeader(settings.company, logoImgData, order, totals)
 
-	doc.save(`${zeroPad(order.number, 3)}.pdf`)
+	doc.save(`${zeroPad(order.number, 3)}_invoice.pdf`)
 }
