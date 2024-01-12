@@ -123,7 +123,9 @@ function printVehicleInfo(order) {
 		xPos - 1,
 		VEHICLE_Y + LINE_SPACE + 5 * CELL_HEIGHT
 	)
-	doc.text(vehicle.group.name, xPos, yPos)
+	if (vehicle.group) {
+		doc.text(vehicle.group.name, xPos, yPos)
+	}
 	xPos += VEHICLE_COL_WIDTH
 	doc.line(
 		xPos - 1,
@@ -754,7 +756,7 @@ function perDayValue(item, totals, prices, order) {
 
 	if (item?.category === 'equipment') {
 		return (
-			totals[item.name] /
+			totals[item?.name] /
 			(prices.equipment[item.name].type === 'day' ||
 			hasCustomPrice(item.name, prices, true)
 				? order.num_days

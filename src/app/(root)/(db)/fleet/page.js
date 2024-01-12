@@ -17,7 +17,7 @@ async function getData(page, limit, sortColumn, sortDirection) {
 	return JSON.stringify(vehicles)
 }
 
-export default async function Page( ) {
+export default async function Page({ searchParams } ) {
 	const page = searchParams.page || 1
 	const limit = searchParams.limit || DEFAULT_LIMIT
 	const sortColumn = searchParams.sortColumn || 'number'
