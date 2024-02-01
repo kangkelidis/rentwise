@@ -182,7 +182,9 @@ function printVehicleInfo(order) {
 	doc.setFontSize(11)
 	doc.text(String(vehicle.odometer), xPos, yPos)
 	xPos += VEHICLE_COL_WIDTH
-	doc.text(vehicle.fuel_type, xPos, yPos)
+	if (vehicle.fuel_type){
+		doc.text(vehicle.fuel_type, xPos, yPos)
+	}
 	xPos += VEHICLE_COL_WIDTH
 	doc.text(`${vehicle.fuel_amount} %`, xPos, yPos)
 	doc.line(
