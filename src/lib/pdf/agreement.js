@@ -157,7 +157,9 @@ function printVehicleInfo(order) {
 	xPos += VEHICLE_COL_WIDTH
 	doc.text(String(vehicle.year), xPos, yPos)
 	xPos += VEHICLE_COL_WIDTH
-	doc.text(vehicle.color, xPos, yPos)
+	if (vehicle.color) {
+		doc.text(vehicle.color, xPos, yPos)
+	}
 	doc.line(
 		PAGE_MARGIN,
 		VEHICLE_Y + LINE_SPACE + 2 * CELL_HEIGHT,
