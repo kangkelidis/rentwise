@@ -13,6 +13,11 @@ import StatusChip from './StatusChip'
 
 const cellClass ='border-[0.1px] border-gray-500 p-4 grow  '
 export default function OrderCard({ order, type, settings }) {
+	// Add safety checks
+	if (!order) {
+		return <div className="text-gray-500">No order data available</div>
+	}
+
 	const timeTill = formatDateDifference(
 		new Date(),
 		new Date(order[type + '_date'])
@@ -22,7 +27,7 @@ export default function OrderCard({ order, type, settings }) {
 			className={` rounded-lg border-2 ${
 				type === 'pick_up' ? 'border-green-500' : 'border-yellow-500'
 			} ${!timeTill && 'bg-red-400 bg-opacity-10'}
-			
+
 			`}
 		>
 			<div className='flex flex-row w-full max-sm:flex-col '>
@@ -74,7 +79,11 @@ export default function OrderCard({ order, type, settings }) {
 					<span className='block text-subtle-semibold text-gray-400 mb-1'>
 						Vehicle
 					</span>
-					<VehicleDetails vehicle={order.vehicle} />
+					{order.vehicle ? (
+						<VehicleDetails vehicle={order.vehicle} />
+					) : (
+						<p className="text-gray-500">No vehicle assigned</p>
+					)}
 				</div>
 
 
@@ -106,7 +115,7 @@ export default function OrderCard({ order, type, settings }) {
 				<div className={cellClass}>
 				<span className='block text-subtle-semibold text-gray-400 mb-1'>
 						Status
-					</span>	
+					</span>
 					<StatusChip status={order.status}/>
 				</div>
 
