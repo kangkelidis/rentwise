@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { CldImage } from 'next-cloudinary'
 import { Link } from '@nextui-org/link'
 
-export default function VehicleDetails({ vehicle, size = 4 }) {
+export default function VehicleDetails({ vehicle, size = 4, showRegistrationText = false }) {
     if (!vehicle) {
         return (
             <div className={`flex gap-3 w-full`}>
@@ -48,6 +48,7 @@ export default function VehicleDetails({ vehicle, size = 4 }) {
                 <Link href={`/fleet/${vehicle?.id}`} underline='hover'>
                     {vehicle?.make + ' ' + vehicle?.model}
                 </Link>
+                {/* Logic for the fancy plate (large view) */}
                 {size === 4 && vehicle?.registration && (
                     <div className=' border-black border-2 bg-red-300 flex w-fit text-shadow '>
                         <div className='w-2 h-full flex bg-blue'>
@@ -58,6 +59,12 @@ export default function VehicleDetails({ vehicle, size = 4 }) {
                                 vehicle.registration.slice(3)}
                         </p>
                     </div>
+                )}
+                {/* New logic for simple text (table view) */}
+                {showRegistrationText && (vehicle?.registration_number || vehicle?.registration) && (
+                    <span className="text-xs text-gray-500">
+                        {vehicle.registration_number || vehicle.registration}
+                    </span>
                 )}
             </div>
         </div>

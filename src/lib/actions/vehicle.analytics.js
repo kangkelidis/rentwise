@@ -99,6 +99,7 @@ export async function getVehicleStats(vehicleId, year = null) {
 
         // Price history for trends
         stats.priceHistory.push({
+          orderId: order._id.toString(),
           date: order.pick_up_date,
           dailyRate: totalRevenue / duration,
           totalRevenue: totalRevenue,
