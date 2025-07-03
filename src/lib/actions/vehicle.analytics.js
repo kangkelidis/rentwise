@@ -135,38 +135,74 @@ export async function getVehicleStats(vehicleId, year = null) {
   }
 }
 
-export async function getFleetStats(vehicleIds = null, year = null) {
+export async function getFleetStats() {
   try {
-    await dbConnect()
+    await dbConnect();
 
-    // Get all vehicles or specific ones
-    const vehicles = vehicleIds
-      ? await vehicleModel.find({ _id: { $in: vehicleIds } })
-      : await vehicleModel.find({})
+    // 1. Fetch all vehicles and all orders with a past drop-off date.
+    const [vehicles, orders] = await Promise.all([
+      vehicleModel.find({}).lean(),
+      orderModel.find({ drop_off_date: { $lt: new Date() } }).lean()
+    ]);
 
-    const fleetStats = []
+    // 2. Create a Map to efficiently store and update stats for each vehicle.
+    const statsMap = new Map();
 
-    for (const vehicle of vehicles) {
-      const vehicleStats = await getVehicleStats(vehicle._id, year)
-      if (vehicleStats) {
-        fleetStats.push({
-          vehicle: {
-            id: vehicle._id.toString(),
-            make: vehicle.make,
-            model: vehicle.model,
-            registration: vehicle.registration,
-            group: vehicle.group
-          },
-          ...vehicleStats
-        })
+    // 3. Initialize the map with data for every vehicle.
+    vehicles.forEach(vehicle => {
+      statsMap.set(vehicle._id.toString(), {
+        vehicle: {
+          id: vehicle._id.toString(),
+          make: vehicle.make,
+          model: vehicle.model,
+          registration: vehicle.registration, // FIX: Use registration number
+        },
+        totalRevenue: 0,
+        totalBookings: 0,
+        totalDaysRented: 0,
+        acquisition_date: vehicle.acquisition_date || vehicle.createdAt || new Date('2016-01-01T00:00:00.000Z')
+      });
+    });
+
+    // 4. Loop through the orders ONCE and add their data to the map.
+    orders.forEach(order => {
+      const vehicleId = order.vehicle?.toString();
+      if (statsMap.has(vehicleId)) {
+        const vehicleStats = statsMap.get(vehicleId);
+
+        // --- START: Correct Revenue Calculation Logic ---
+        const vehicleRevenue = order.prices?.vehicle?.custom || order.prices?.vehicle?.total || 0;
+        const insuranceRevenue = order.prices?.insurance?.custom || order.prices?.insurance?.total || 0;
+        const driversRevenue = order.prices?.drivers?.custom || order.prices?.drivers?.total || 0;
+        const equipmentRevenue = order.extras?.reduce((total, extra) => {
+            const itemPrice = order.prices?.equipment?.[extra.item.name]?.custom || order.prices?.equipment?.[extra.item.name]?.total || 0;
+            return total + itemPrice;
+        }, 0) || 0;
+        const totalRevenueForOrder = vehicleRevenue + insuranceRevenue + driversRevenue + equipmentRevenue;
+        // --- END: Correct Revenue Calculation Logic ---
+
+        const duration = Math.ceil((new Date(order.drop_off_date) - new Date(order.pick_up_date)) / (1000 * 60 * 60 * 24)) || 1;
+
+        vehicleStats.totalRevenue += totalRevenueForOrder; // Use the correctly calculated revenue
+        vehicleStats.totalBookings += 1;
+        vehicleStats.totalDaysRented += duration;
       }
-    }
+    });
 
-    // Sort by total revenue (highest first)
-    return fleetStats.sort((a, b) => b.totalRevenue - a.totalRevenue)
+    // 5. Convert the map back to an array and calculate the final derived stats.
+    const fleetStats = Array.from(statsMap.values()).map(stats => {
+      stats.averageDailyRate = stats.totalDaysRented > 0 ? stats.totalRevenue / stats.totalDaysRented : 0;
+      const daysSinceAcquired = Math.ceil((new Date() - new Date(stats.acquisition_date)) / (1000 * 60 * 60 * 24)) || 1;
+      stats.utilizationRate = (stats.totalDaysRented / daysSinceAcquired) * 100;
+      delete stats.acquisition_date;
+      return stats;
+    });
+
+    return fleetStats;
+
   } catch (error) {
-    console.error('Error calculating fleet stats:', error)
-    return []
+    console.error('Error calculating fleet stats:', error);
+    return [];
   }
 }
 
