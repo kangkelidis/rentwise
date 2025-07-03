@@ -1,26 +1,27 @@
 import * as z from 'zod'
 
 export const vehicleValidationSchema = z.object({
-	make: z.string(),
-	model: z.string(),
-	year: z.coerce.number(),
-	registration: z.string(),
-	group: z.string(),
-	transmission: z.string(),
-	body_type: z.string().or(z.array(z.string())),
-	fuel_type: z.string(),
-	fuel_amount: z.coerce.number(),
-	odometer: z.coerce.number(),
-	vol_engine: z.coerce.number(),
-	num_seats: z.coerce.number(),
-	num_doors: z.coerce.number(),
-	color: z.string(),
-	extras: z.string().or(z.array(z.string())),
-	owner: z.string(),
-	notes: z.string(),
-	basic_day_rate: z.coerce.number(),
-	long_term_rate: z.coerce.number(),
-	default_insurance: z.string(),
+    make: z.string(),
+    model: z.string(),
+    year: z.coerce.number(),
+    acquisition_date: z.coerce.date().optional().nullable(),
+    registration: z.string(),
+    group: z.string(),
+    transmission: z.string(),
+    body_type: z.string().or(z.array(z.string())),
+    fuel_type: z.string(),
+    fuel_amount: z.coerce.number(),
+    odometer: z.coerce.number(),
+    vol_engine: z.coerce.number(),
+    num_seats: z.coerce.number(),
+    num_doors: z.coerce.number(),
+    color: z.string(),
+    extras: z.string().or(z.array(z.string())),
+    owner: z.string(),
+    notes: z.string(),
+    basic_day_rate: z.coerce.number(),
+    long_term_rate: z.coerce.number(),
+    default_insurance: z.string(),
 })
 
 export const orderValidationSchema = z.object({
@@ -99,7 +100,7 @@ export const settingsValidationSchema = z.object({
 		website: z.string(),
 		terms: z.string(),
 		signature: z.string(),
-		logo: z.string(),	
+		logo: z.string(),
 	})
 })
 

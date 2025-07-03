@@ -52,6 +52,7 @@ export function VehicleForm({ data }) {
 			make: vehicle?.make || '',
 			model: vehicle?.model || '',
 			year: vehicle?.year || '',
+			acquisition_date: vehicle?.acquisition_date ? new Date(vehicle.acquisition_date).toISOString().split('T')[0] : '',
 			registration: vehicle?.registration || '',
 			group: vehicle?.group || '',
 			owner: vehicle?.owner || '',
@@ -162,6 +163,24 @@ export function VehicleForm({ data }) {
 										min={1990}
 										max={2040}
 										placeholder={2023}
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name='acquisition_date'
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Acquisition Date</FormLabel>
+								<FormControl>
+									<Input
+										className='form-input'
+										type='date'
 										{...field}
 									/>
 								</FormControl>

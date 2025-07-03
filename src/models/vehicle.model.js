@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
 import orderModel from './order.model'
-import { 
-    TRANSMISSION, 
+import {
+    TRANSMISSION,
     BODY_TYPES,
-    EXTRAS, 
+    EXTRAS,
     FUEL_TYPES, } from '@/constants'
 
 import { autoIncrement } from 'mongoose-plugin-autoinc';
@@ -24,8 +24,11 @@ const vehicleSchema = new mongoose.Schema({
         // max: [2100, 'Must be before 2100'],
         // required: true,
     },
-	registration: {
-		type: String,
+    acquisition_date: {
+        type: Date,
+    },
+    registration: {
+        type: String,
         // required: true,
         unique: true
 	},
@@ -75,7 +78,7 @@ const vehicleSchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Owner",
-        // required: true, 
+        // required: true,
     },
     insurance: {
         type: mongoose.Schema.Types.ObjectId,
@@ -120,7 +123,7 @@ const vehicleSchema = new mongoose.Schema({
         // }},
         // current_active_order: { async get() {
         //     const today = new Date()
-        //     return this.orders.find(order => order.pick_up_date <= today && order.drop_off_date >= today) 
+        //     return this.orders.find(order => order.pick_up_date <= today && order.drop_off_date >= today)
         // }},
 
         // future_orders: { get() {
@@ -147,19 +150,19 @@ const vehicleSchema = new mongoose.Schema({
 // TODO refactor / simplify logic
 vehicleSchema.methods.isAvailableDuring = async function (from, till) {
     const orders = await orderModel.find({vehicle: this._id}).select(["pick_up_date", "drop_off_date"]).exec()
-    
+
     const today = new Date()
     const current_active_order = orders
-    .find(order => order.pick_up_date <= today && order.drop_off_date >= today) 
+    .find(order => order.pick_up_date <= today && order.drop_off_date >= today)
     const future_orders = orders
     .filter(order => order.pick_up_date >= today)
     .sort((a,b) => a.pick_up_date - b.pick_up_date)
-    
+
     let conflict
     // check if currently on rent
     if (current_active_order) {
-        conflict = 
-        current_active_order.pick_up_date <= till && 
+        conflict =
+        current_active_order.pick_up_date <= till &&
         current_active_order.drop_off_date >= from
     }
     if (conflict) {

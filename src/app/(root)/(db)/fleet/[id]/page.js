@@ -3,7 +3,6 @@ import { fetchGroups } from '@/lib/actions/group.actions'
 import { fetchOrders } from '@/lib/actions/order.actions'
 import { fetchOwners } from '@/lib/actions/owner.actions'
 import { fetchVehicle } from '@/lib/actions/vehicle.actions'
-import { getVehicleStats } from '@/lib/actions/vehicle.analytics'
 import { DEFAULT_LIMIT } from '@/constants'
 import VehicleDetailsTabs from '@/components/shared/VehicleDetailsTabs'
 
@@ -13,14 +12,12 @@ export default async function Page({ params, searchParams }) {
     const sortColumn = searchParams.sortColumn || 'number'
     const sortDirection = searchParams.sortDirection || 'descending'
 
-    // Fetch all data in parallel
-    const [groups, owners, vehicle, insurances, orders, vehicleStats] = await Promise.all([
+    const [groups, owners, vehicle, insurances, orders] = await Promise.all([
         fetchGroups(),
         fetchOwners(),
         fetchVehicle(params.id),
         fetchInsurances(),
         fetchOrders(page, limit, sortColumn, sortDirection, { vehicle: params.id }),
-        getVehicleStats(params.id)
     ])
 
     const data = {
@@ -29,7 +26,6 @@ export default async function Page({ params, searchParams }) {
         vehicle: JSON.parse(vehicle),
         insurances: JSON.parse(JSON.stringify(insurances)),
         orders: JSON.parse(JSON.stringify(orders)),
-        vehicleStats
     }
 
     return (

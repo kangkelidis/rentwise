@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { DEFAULT_LIMIT } from '@/constants'
 import UploadCSVFile from '@/components/shared/UploadCSVFile'
 import { fetchVehicles, totalCountVehicles, createFromCSV } from '@/lib/actions/vehicle.actions'
-import { getFleetStats } from '@/lib/actions/vehicle.analytics'
-import FleetTabs from '@/components/shared/FleetTabs' // Import the new component
+import FleetTabs from '@/components/shared/FleetTabs'
 
 export default async function Page({ searchParams } ) {
     const page = searchParams.page || 1
@@ -12,17 +11,12 @@ export default async function Page({ searchParams } ) {
     const sortColumn = searchParams.sortColumn || 'number'
     const sortDirection = searchParams.sortDirection || 'descending'
 
-    // Fetch both vehicle list and fleet stats in parallel
-    const [vehicleResult, statsResult] = await Promise.all([
-        fetchVehicles(page, limit, sortColumn, sortDirection),
-        getFleetStats()
-    ]);
-
+    // Only fetch the data needed for the initial view (the vehicle list)
+    const vehicleResult = await fetchVehicles(page, limit, sortColumn, sortDirection);
     const vehicleCount = await totalCountVehicles();
 
-    // Sanitize data for the client components
+    // Sanitize data for the client component
     const vehicleData = JSON.stringify({ items: vehicleResult, count: vehicleCount });
-    const fleetStats = JSON.parse(JSON.stringify(statsResult));
 
     return (
         <div className=''>
@@ -33,8 +27,8 @@ export default async function Page({ searchParams } ) {
                 </Button>
             </div>
 
-            {/* Use the new tabs component */}
-            <FleetTabs vehicleData={vehicleData} fleetStats={fleetStats} />
+            {/* Pass only the vehicle data. The tabs component will fetch its own stats. */}
+            <FleetTabs vehicleData={vehicleData} />
 
             <UploadCSVFile action={createFromCSV}/>
         </div>
