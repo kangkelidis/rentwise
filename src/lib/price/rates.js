@@ -49,9 +49,9 @@ function calculatePrice(standard_rate, num_days) {
 	return Math.round(total / 5) * 5
 }
 
-function adjustForSeason(price, from, till) {}
+function adjustForSeason(price, from, till) { }
 
-function adjustForAvailability(standard_rate, from, till) {}
+function adjustForAvailability(standard_rate, from, till) { }
 
 export function getVehiclePrice(vehicle, num_days) {
 	if (vehicle && num_days) {
@@ -140,16 +140,16 @@ export function getTotalPrice(prices) {
 			total += hasCustomPrice(key, prices)
 				? prices[key].custom
 				: typeof prices[key]?.total === 'number'
-				? prices[key].total
-				: 0
+					? prices[key].total
+					: 0
 		}
 		if (key === 'equipment') {
 			Object.keys(prices.equipment).forEach((k) => {
 				total += hasCustomPrice(k, prices, true)
 					? prices.equipment[k].custom
 					: typeof prices.equipment?.[k].total === 'number'
-					? prices.equipment[k].total
-					: 0
+						? prices.equipment[k].total
+						: 0
 			})
 		}
 	})
