@@ -15,15 +15,22 @@ async function dbConnect() {
 		cached = global.mongoose = { conn: null, promise: null }
 	}
 
-	if (cached.conn) {
+	// In serverless environments, a cached mongoose instance can survive while
+	// the underlying socket is already closed. Only reuse an active connection.
+	if (cached.conn && cached.conn.connection?.readyState === 1) {
 		return cached.conn
 	}
+
+	if (cached.conn && cached.conn.connection?.readyState !== 1) {
+		cached.conn = null
+		cached.promise = null
+	}
+
 	if (!cached.promise) {
 		const opts = {
 			bufferCommands: false,
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
 			serverSelectionTimeoutMS: 10000,
+			maxPoolSize: 10,
 		}
 		cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
 			return mongoose
