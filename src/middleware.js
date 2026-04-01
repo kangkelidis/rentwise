@@ -4,8 +4,9 @@ import { authMiddleware } from "@clerk/nextjs";
 // Please edit this to allow other routes to be public as needed.
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your middleware
 export default authMiddleware({
-      // will be accessible to all users
-      publicRoutes: ['/api/health/db', '/api/health/db/(.*)']
+      // allow DB diagnostics endpoint without auth
+      publicRoutes: ['/api/health/db', '/api/health/db(.*)'],
+      ignoredRoutes: ['/api/health/db', '/api/health/db(.*)']
 })
 
 export const config = {
