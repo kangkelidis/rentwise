@@ -14,8 +14,10 @@ import { Button } from '@nextui-org/button'
 import { useEffect, useState } from 'react'
 import { Tooltip } from '@nextui-org/tooltip'
 import EditableInput from '../elements/EditableInput'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function Total(props) {
+	const { t } = useLocale()
 	const num_days = dateDiffInDays(
 		props.watch.pick_up_date,
 		props.watch.drop_off_date
@@ -35,11 +37,11 @@ export default function Total(props) {
 	return (
 		<div className='sticky top-[50px]'>
 			<div className=' bg-primary-500 p-3 w-full rounded-t-lg'>
-				<h2 className=' text-heading3-bold'>Summary</h2>
+				<h2 className=' text-heading3-bold'>{t('common.summary')}</h2>
 			</div>
 			<div className='flex flex-col p-4 gap-2 bg-zinc-900 rounded-b-lg rounded-t-none'>
 				<span className=' w-full flex justify-between'>
-					<p>Rental period</p> <p className=' font-bold'>{num_days} days</p>
+					<p>{t('common.rentalPeriod')}</p> <p className=' font-bold'>{num_days} {t('common.days')}</p>
 				</span>
 				{vehicle && (
 					<div className='bg-slate-700 -mx-4 p-4 flex gap-3 flex-col'>
@@ -61,18 +63,18 @@ export default function Total(props) {
 						)}
 
 						<span className=' w-full flex justify-between'>
-							<p className='text-subtle-medium'>Tariff</p>
+							<p className='text-subtle-medium'>{t('common.tariff')}</p>
 							<p className=' text-small-regular'>
 								{toCurrency(
 									hasCustomPrice('vehicle', props.prices)
 										? props.prices.vehicle?.custom / num_days
 										: props.prices.vehicle?.total / num_days
 								)}{' '}
-								/ day
+								{t('forms.perDay')}
 							</p>
 						</span>
 						<span className=' w-full flex justify-between'>
-							<p className='text-subtle-medium'>VAT inc.</p>
+							<p className='text-subtle-medium'>{t('common.vatInc')}</p>
 							<p className=' text-small-regular'>
 								{toCurrency(
 									((props.prices.vehicle?.custom ||
@@ -85,12 +87,12 @@ export default function Total(props) {
 						<Divider className='my-1' />
 
 						<div>
-							<p className='text-heading4-medium'>Extras</p>
+							<p className='text-heading4-medium'>{t('common.extras')}</p>
 							{props.watch.extra_drivers.length > 0 && (
 								<div className='flex flex-col'>
 									<div className='flex justify-between'>
 										<p className='text-small-regular'>
-											Extra driver (x{props.watch.extra_drivers.length})
+											{t('common.extraDriver')} (x{props.watch.extra_drivers.length})
 										</p>
 										<p
 											className={`text-tiny ${
@@ -130,7 +132,7 @@ export default function Total(props) {
 												}`}
 											>
 												{toCurrency(extra.item.price_per_day)}{' '}
-												{extra.item.price_type === 'day' ? '/ day' : 'each'}
+												{extra.item.price_type === 'day' ? t('forms.perDay') : t('common.each')}
 											</p>
 
 											<EditableInput
@@ -162,9 +164,9 @@ export default function Total(props) {
 											}`}
 										>
 											{props.prices.insurance.type === 'fix'
-												? toCurrency(props.prices.insurance.total) + ' fix'
+												? toCurrency(props.prices.insurance.total) + ' ' + t('common.fix')
 												: toCurrency(props.prices.insurance.total / num_days) +
-												  ' /day'}
+												  ' ' + t('forms.perDay')}
 										</p>
 										<EditableInput name={'insurance'} {...editableInputProps} />
 									</div>
@@ -180,9 +182,9 @@ export default function Total(props) {
 						<Divider className='my-1' />
 
 						<div>
-							<p className='text-heading4-medium'>Taxes</p>
+							<p className='text-heading4-medium'>{t('common.taxes')}</p>
 							<div className='flex justify-between'>
-								<p className='text-small-regular'>VAT 19% inc</p>
+								<p className='text-small-regular'>{t('common.vat19Inc')}</p>
 								<p>{toCurrency((19 / 119) * getTotalPrice(props.prices))}</p>
 							</div>
 						</div>
@@ -190,10 +192,10 @@ export default function Total(props) {
 						<Divider className='my-1' />
 
 						<div className='flex flex-col gap-3'>
-							<p className='text-heading4-medium'>Deposit</p>
+							<p className='text-heading4-medium'>{t('common.deposit')}</p>
 
 							<div className='flex justify-between'>
-								<p className='text-small-regular'>Security deposit</p>
+								<p className='text-small-regular'>{t('common.securityDeposit')}</p>
 								<EditableInput
 									{...editableInputProps}
 									name={'deposit'}
@@ -207,7 +209,7 @@ export default function Total(props) {
 							)}
 
 							<div className='flex justify-between'>
-								<p className='text-small-regular'>Damage excess:</p>
+								<p className='text-small-regular'>{t('common.damageExcess')}:</p>
 								<EditableInput
 									{...editableInputProps}
 									name={'excess'}
@@ -223,7 +225,7 @@ export default function Total(props) {
 					</div>
 				)}
 				<div className='flex justify-between'>
-					<p className='text-base-semibold'>Due Balance</p>
+					<p className='text-base-semibold'>{t('common.dueBalance')}</p>
 					<p className=''>{toCurrency(getTotalPrice(props.prices))}</p>
 				</div>
 			</div>

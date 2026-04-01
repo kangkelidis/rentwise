@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useLocale } from '@/contexts/LocaleContext'
 
 import {
 	Form,
@@ -37,6 +38,7 @@ import { useState } from 'react'
 export function VehicleForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
+	const { t } = useLocale()
 
 	data = JSON.parse(data)
 	const groups = data.groups
@@ -119,7 +121,7 @@ export function VehicleForm({ data }) {
 								<FormControl>
 									<Input
 										className='form-input'
-										label='Make'
+										label={t('vehicle.make')}
 										isRequired
 										placeholder='Mercedes-Benz'
 										{...field}
@@ -138,7 +140,7 @@ export function VehicleForm({ data }) {
 								<FormControl>
 									<Input
 										className='form-input'
-										label='Model'
+										label={t('vehicle.model')}
 										isRequired
 										placeholder='E220'
 										{...field}
@@ -158,7 +160,7 @@ export function VehicleForm({ data }) {
 									<Input
 										className='form-input'
 										isRequired
-										label='Year'
+										label={t('vehicle.year')}
 										type='number'
 										min={1990}
 										max={2040}
@@ -176,7 +178,7 @@ export function VehicleForm({ data }) {
 						name='acquisition_date'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Acquisition Date</FormLabel>
+								<FormLabel>{t('forms.acquisitionDate')}</FormLabel>
 								<FormControl>
 									<Input
 										className='form-input'
@@ -198,7 +200,7 @@ export function VehicleForm({ data }) {
 									<Input
 										className='form-input'
 										isRequired
-										label='Registration'
+										label={t('forms.registration')}
 										placeholder='ABC123'
 										{...field}
 									/>
@@ -217,7 +219,7 @@ export function VehicleForm({ data }) {
 									<Input
 										className='form-input'
 										isRequired
-										label='Basic Day Rate'
+										label={t('forms.basicDayRate')}
 										placeholder='100'
 										type='number'
 										{...field}
@@ -237,7 +239,7 @@ export function VehicleForm({ data }) {
 									<Input
 										className='form-input'
 										isRequired
-										label='Long Term Day Rate'
+										label={t('forms.longTermDayRate')}
 										placeholder='35'
 										type='number'
 										{...field}
@@ -257,7 +259,7 @@ export function VehicleForm({ data }) {
 									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Group'
+									label={t('forms.group')}
 									isRequired
 									size='sm'
 								>
@@ -281,7 +283,7 @@ export function VehicleForm({ data }) {
 									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Default Insurance'
+									label={t('forms.defaultInsurance')}
 									size='sm'
 								>
 									{insurances.map((ins) => (
@@ -304,7 +306,7 @@ export function VehicleForm({ data }) {
 									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Transmission'
+									label={t('forms.transmission')}
 									isRequired
 									size='sm'
 								>
@@ -333,7 +335,7 @@ export function VehicleForm({ data }) {
 											: undefined
 									}
 									selectionMode='multiple'
-									label='Body Type'
+									label={t('forms.bodyType')}
 									size='sm'
 								>
 									{BODY_TYPES.map((type) => (
@@ -356,7 +358,7 @@ export function VehicleForm({ data }) {
 									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Fuel Type'
+									label={t('forms.fuelType')}
 									size='sm'
 								>
 									{FUEL_TYPES.map((type) => (
@@ -378,7 +380,7 @@ export function VehicleForm({ data }) {
 								<FormControl>
 									<Input
 										className='form-input'
-										label='Fuel Percentage'
+										label={t('forms.fuelPercentage')}
 										placeholder='60'
 										{...field}
 									/>
@@ -396,7 +398,7 @@ export function VehicleForm({ data }) {
 								<FormControl>
 									<Input
 										className='form-input'
-										label='Engine size'
+										label={t('forms.engineSize')}
 										placeholder='1600cc'
 										{...field}
 									/>
@@ -414,7 +416,7 @@ export function VehicleForm({ data }) {
 								<FormControl>
 									<Input
 										className='form-input'
-										label='Odometer'
+										label={t('forms.odometer')}
 										placeholder=''
 										type='number'
 										{...field}
@@ -437,7 +439,7 @@ export function VehicleForm({ data }) {
 										defaultSelectedKeys={
 											field.value ? [field.value] : undefined
 										}
-										label='Num of Seats'
+										label={t('forms.numOfSeats')}
 										size='sm'
 										items={NUM_SEATS}
 									>
@@ -462,7 +464,7 @@ export function VehicleForm({ data }) {
 									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Num of Doors'
+									label={t('forms.numOfDoors')}
 									size='sm'
 								>
 									{NUM_DOORS.map((type) => (
@@ -485,7 +487,7 @@ export function VehicleForm({ data }) {
 									className='form-input'
 									onChange={field.onChange}
 									defaultSelectedKeys={field.value ? [field.value] : undefined}
-									label='Owner'
+									label={t('forms.owner')}
 									size='sm'
 									isRequired
 								>
@@ -512,7 +514,7 @@ export function VehicleForm({ data }) {
 										defaultSelectedKeys={
 											field.value ? [field.value] : undefined
 										}
-										label='Color'
+										label={t('forms.color')}
 										size='sm'
 										renderValue={(items) => {
 											return items.map((item) => {
@@ -566,7 +568,7 @@ export function VehicleForm({ data }) {
 											: undefined
 									}
 									selectionMode='multiple'
-									label='Extras'
+									label={t('forms.extras')}
 									size='sm'
 								>
 									{EXTRAS.map((item) => (
@@ -589,7 +591,7 @@ export function VehicleForm({ data }) {
 									<Textarea
 										className=' form-input sm:!w-[550px]'
 										required={false}
-										label='Notes'
+										label={t('forms.notes')}
 										placeholder=''
 										{...field}
 									/>
@@ -604,10 +606,10 @@ export function VehicleForm({ data }) {
 					</div>
 				</div>
 				<div className='flex place-content-between'>
-					<Button type='submit'>Submit</Button>
+					<Button type='submit'>{t('common.submit')}</Button>
 					{vehicle && (
 						<Button type='button' variant='destructive' onClick={onDelete}>
-							Delete
+							{t('common.delete')}
 						</Button>
 					)}
 					<Button
@@ -615,7 +617,7 @@ export function VehicleForm({ data }) {
 						variant='secondary'
 						onClick={() => router.back()}
 					>
-						Back
+						{t('forms.back')}
 					</Button>
 				</div>
 			</form>

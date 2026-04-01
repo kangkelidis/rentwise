@@ -4,10 +4,12 @@ import { Card, CardBody, CardHeader } from '@nextui-org/card'
 import { Select, SelectItem } from '@nextui-org/select'
 import { toCurrency } from '@/lib/utils'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation' // Import the router
+import { useRouter } from 'next/navigation'
 import MonthlyRevenueChart from '@/components/shared/MonthlyRevenueChart'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function VehicleStats({ vehicleId, initialStats }) {
+  const { t } = useLocale()
   const router = useRouter() // Initialize the router
   const [stats, setStats] = useState(initialStats)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString())
@@ -16,7 +18,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
   if (!stats) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No analytics data available for this vehicle</p>
+        <p className="text-gray-500">{t('messages.noDataFound')}</p>
       </div>
     )
   }
@@ -31,7 +33,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
     <div className="space-y-6">
 
       <div className="flex justify-between items-center">
-        <h3 className="text-2xl font-bold">Vehicle Analytics</h3>
+        <h3 className="text-2xl font-bold">{t('vehicle.vehiclePerformance')}</h3>
 
         {/* <Select
           selectedKeys={new Set([selectedYear])}
@@ -52,7 +54,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <h4 className="text-sm font-medium text-gray-400">Total Revenue</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.totalFleetRevenue')}</h4>
           </CardHeader>
           <CardBody className="pt-0">
             <p className="text-2xl font-bold">{toCurrency(stats.totalRevenue || 0)}</p>
@@ -61,7 +63,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
 
         <Card>
           <CardHeader className="pb-2">
-            <h4 className="text-sm font-medium text-gray-400">Total Bookings</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.totalBookings')}</h4>
           </CardHeader>
           <CardBody className="pt-0">
             <p className="text-2xl font-bold">{stats.totalBookings || 0}</p>
@@ -70,7 +72,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
 
         <Card>
           <CardHeader className="pb-2">
-            <h4 className="text-sm font-medium text-gray-400">Days Rented</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.daysRented')}</h4>
           </CardHeader>
           <CardBody className="pt-0">
             <p className="text-2xl font-bold">{stats.totalDaysRented || 0}</p>
@@ -79,7 +81,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
 
         <Card>
           <CardHeader className="pb-2">
-            <h4 className="text-sm font-medium text-gray-400">Avg Daily Rate</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.avgDailyRate')}</h4>
           </CardHeader>
           <CardBody className="pt-0">
             <p className="text-2xl font-bold">{toCurrency(stats.averageDailyRate || 0)}</p>
@@ -90,29 +92,29 @@ export default function VehicleStats({ vehicleId, initialStats }) {
       {/* Utilization Card */}
       <Card>
         <CardHeader>
-          <h4 className="text-lg font-semibold">Utilization Details</h4>
+          <h4 className="text-lg font-semibold">{t('vehicle.utilizationDetails')}</h4>
         </CardHeader>
         <CardBody>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">{(stats.utilizationRate || 0).toFixed(1)}%</p>
-              <p className="text-sm text-gray-500">Utilization Rate</p>
+              <p className="text-sm text-gray-500">{t('vehicle.utilization')} Rate</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">{(stats.averageBookingDuration || 0).toFixed(1)}</p>
-              <p className="text-sm text-gray-500">Avg Booking Duration (days)</p>
+              <p className="text-sm text-gray-500">Avg {t('common.booking')} {t('common.duration')} (days)</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-purple-600">
                 {toCurrency((stats.totalRevenue || 0) / (stats.totalDaysRented || 1))}
               </p>
-              <p className="text-sm text-gray-500">Revenue per Day</p>
+              <p className="text-sm text-gray-500">{t('vehicle.revenue')} per Day</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-orange-600">
                 {toCurrency((stats.totalRevenue || 0) / (stats.totalBookings || 1))}
               </p>
-              <p className="text-sm text-gray-500">Revenue per Booking</p>
+              <p className="text-sm text-gray-500">{t('vehicle.revenue')} per {t('common.booking')}</p>
             </div>
           </div>
         </CardBody>
@@ -122,7 +124,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <h4 className="text-lg font-semibold">Monthly Revenue & Avg. Rate</h4>
+            <h4 className="text-lg font-semibold">{t('vehicle.monthlyRevenueAvgRate')}</h4>
           </CardHeader>
           <CardBody>
             <MonthlyRevenueChart
@@ -134,7 +136,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
 
         <Card>
           <CardHeader>
-            <h4 className="text-lg font-semibold">Top Clients</h4>
+            <h4 className="text-lg font-semibold">{t('order.topClients')}</h4>
           </CardHeader>
           <CardBody>
             <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -148,7 +150,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
                   </div>
                 ))}
               {Object.keys(stats.topClients || {}).length === 0 && (
-                <p className="text-gray-500 text-center py-4">No client data available</p>
+                <p className="text-gray-500 text-center py-4">{t('messages.noDataFound')}</p>
               )}
             </div>
           </CardBody>
@@ -158,17 +160,17 @@ export default function VehicleStats({ vehicleId, initialStats }) {
       {/* Price History */}
       <Card>
         <CardHeader>
-          <h4 className="text-lg font-semibold">Recent Bookings</h4>
+          <h4 className="text-lg font-semibold">Recent {t('vehicle.bookings')}</h4>
         </CardHeader>
         <CardBody>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-600">
-                  <th className="text-left p-2">Date</th>
-                  <th className="text-right p-2">Duration</th>
-                  <th className="text-right p-2">Daily Rate</th>
-                  <th className="text-right p-2">Total Revenue</th>
+                  <th className="text-left p-2">{t('common.date')}</th>
+                  <th className="text-right p-2">{t('common.duration')}</th>
+                  <th className="text-right p-2">{t('common.dailyRate')}</th>
+                  <th className="text-right p-2">{t('common.totalRevenue')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -177,7 +179,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
                   .slice(0, 10)
                   .map((booking) => (
                     <tr
-                      key={booking.orderId} // Use the unique orderId for the key
+                      key={booking.orderId}
                       className="border-b border-gray-700 hover:bg-gray-800 cursor-pointer transition-colors"
                       onClick={() => router.push(`/orders/${booking.orderId}`)}
                     >
@@ -192,7 +194,7 @@ export default function VehicleStats({ vehicleId, initialStats }) {
               </tbody>
             </table>
             {(!stats.priceHistory || stats.priceHistory.length === 0) && (
-              <div className="text-center py-4 text-gray-500">No booking history available</div>
+              <div className="text-center py-4 text-gray-500">{t('messages.noDataFound')}</div>
             )}
           </div>
         </CardBody>

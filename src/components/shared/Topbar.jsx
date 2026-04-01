@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { SignOutButton, SignedIn } from '@clerk/nextjs'
 import SignOutCard from '../elements/SignOutCard'
+import LanguageSwitcher from './LanguageSwitcher'
 
 export default function Topbar() {
 	return (
@@ -12,7 +13,8 @@ export default function Topbar() {
 				<p className='text-heading3-bold text-light-1 max-xs:hidden'>rentwise</p>
 			</Link>
 
-			<div className='flex items-center gap-1'>
+			<div className='flex items-center gap-4'>
+				<LanguageSwitcher />
 				<div className='block md:hidden'>
 					<SignedIn>
 						<SignOutCard />

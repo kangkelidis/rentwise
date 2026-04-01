@@ -2,6 +2,7 @@
 // TODO: make client required
 import { zodResolver } from '@hookform/resolvers/zod'
 import { get, useForm } from 'react-hook-form'
+import { useLocale } from '@/contexts/LocaleContext'
 
 import {
 	Form,
@@ -67,6 +68,7 @@ function ExtraDriver({
 	setExtraDrivers,
 	setExtraDriversNum,
 }) {
+	const { t } = useLocale()
 	const ed = form.getValues().extra_drivers
 	const defaultValues = {
 		full_name:
@@ -94,7 +96,7 @@ function ExtraDriver({
 
 	return (
 		<div>
-			<h4>Extra Driver no: {index + 1}</h4>
+			<h4>{t('order.extraDriver')} {index + 1}</h4>
 			<div className='flex flex-row gap-3'>
 				<FormField
 					control={form.control}
@@ -105,7 +107,7 @@ function ExtraDriver({
 								<Input
 									defaultValue={defaultValues.full_name}
 									className='form-input'
-									label='Full Name'
+									label={t('forms.fullName')}
 									placeholder=''
 									{...field}
 									onBlur={(e) => onSave(e, 'full_name')}
@@ -124,7 +126,7 @@ function ExtraDriver({
 								<Input
 									defaultValue={defaultValues.license}
 									className='form-input'
-									label='License Number'
+									label={t('forms.licenseNumber')}
 									placeholder=''
 									{...field}
 									onBlur={(e) => onSave(e, 'license')}
@@ -151,6 +153,7 @@ function ExtraDriver({
 export function OrderForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
+	const { t } = useLocale()
 	data = JSON.parse(data)
 	const vehicles = data.vehicles
 	const clients = data.clients
@@ -269,13 +272,37 @@ export function OrderForm({ data }) {
 
 	async function onSubmit(values) {
 		setIsLoading(true)
-		updateNormalPrices(form.getValues())
+		const submitValues = form.getValues()
+		const extras = Array.isArray(submitValues.extras) ? submitValues.extras : []
+		const equipmentParam = extras
+			.map((extra) => {
+				const matchingEquipment = equipment.find((eq) => eq.item.id === extra.item)
+				if (!matchingEquipment) return null
+				return {
+					item: matchingEquipment.item,
+					count: extra.count,
+				}
+			})
+			.filter(Boolean)
+
+		const calculatedPrices = getNormalPrices(
+			{
+				num_days: dateDiffInDays(submitValues.pick_up_date, submitValues.drop_off_date),
+				vehicle: vehicles.find((v) => v.id === submitValues.vehicle),
+				drivers: submitValues.extra_drivers || [],
+				equipment: equipmentParam,
+				insurance: insurances.find((i) => i.id === submitValues.insurance),
+			},
+			settings,
+			prices
+		)
+		setPrices(calculatedPrices)
 		const newValues = {
 			...values,
 			drop_off_location: isDifferentReturnSelected
 				? values.drop_off_location
 				: values.pick_up_location,
-			prices: prices,
+			prices: calculatedPrices,
 			status: values.status === STATUS[0] ? STATUS[1] : values.status,
 		}
 		// TODO: use error form server action
@@ -300,34 +327,27 @@ export function OrderForm({ data }) {
 	}
 
 	function updateNormalPrices(values) {
-		// prevent changes if existing
-		// TODO: add edit different from view, edit only after change in form
-		// if (order) return
-		// [{item: 'id', count: 1}] values.extras
-		// [{count: 1, item: {name: 'baby seat'}}, ...] equipment
-		// [{count: 1, item: {name: 'baby seat'}}, ...]
-		let matchingEquipment
-		const equipmentParam = values.extras.map((extra) => {
-			matchingEquipment = equipment.find(
-				(eq) => eq.item.id === extra.item
-				)
+		const extras = Array.isArray(values.extras) ? values.extras : []
+		const equipmentParam = extras
+			.map((extra) => {
+				const matchingEquipment = equipment.find((eq) => eq.item.id === extra.item)
+				if (!matchingEquipment) return null
 				return {
-					item: matchingEquipment?.item,
+					item: matchingEquipment.item,
 					count: extra.count,
 				}
 			})
-			
-			const params = {
-				num_days: dateDiffInDays(values.pick_up_date, values.drop_off_date),
-				vehicle: vehicles.find((v) => v.id === values.vehicle),
-				drivers: values.extra_drivers,
-				equipment: equipmentParam,
-				insurance: insurances.find((i) => i.id === values.insurance),
-			}
-			if (matchingEquipment) {
+			.filter(Boolean)
 
-				setPrices((prev) => getNormalPrices(params, settings, prev))
-			}
+		const params = {
+			num_days: dateDiffInDays(values.pick_up_date, values.drop_off_date),
+			vehicle: vehicles.find((v) => v.id === values.vehicle),
+			drivers: values.extra_drivers || [],
+			equipment: equipmentParam,
+			insurance: insurances.find((i) => i.id === values.insurance),
+		}
+
+		setPrices((prev) => getNormalPrices(params, settings, prev))
 
 	}
 
@@ -371,13 +391,13 @@ export function OrderForm({ data }) {
 			</div>
 
 			<Card>
-				<CardHeader>Order No: {zeroPad(order?.number, 3)}</CardHeader>
+				<CardHeader>{t('table.orderNo')}: {zeroPad(order?.number, 3)}</CardHeader>
 				<CardBody>
 					<Form {...form}>
 						<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
 							<div className='form-container'>
 								<Card className='w-full'>
-									<CardHeader>Status</CardHeader>
+									<CardHeader>{t('common.status')}</CardHeader>
 									<CardBody className=''>
 										<FormField
 											control={form.control}
@@ -398,7 +418,7 @@ export function OrderForm({ data }) {
 								</Card>
 
 								<Card className='w-full'>
-									<CardHeader>Dates</CardHeader>
+									<CardHeader>{t('forms.dates')}</CardHeader>
 									<CardBody className='flex flex-row justify-stretch gap-5'>
 										<div>
 											<div className='flex items-center'>
@@ -407,7 +427,7 @@ export function OrderForm({ data }) {
 													name='pick_up_date'
 													render={({ field }) => (
 														<FormItem className='flex flex-col'>
-															<FormLabel>Pick-up Date</FormLabel>
+															<FormLabel>{t('forms.pickupDate')}</FormLabel>
 															<Popover>
 																<PopoverTrigger asChild>
 																	<FormControl>
@@ -421,7 +441,7 @@ export function OrderForm({ data }) {
 																			{field.value ? (
 																				format(field.value, 'PPP')
 																			) : (
-																				<span>Pick a date</span>
+																				<span>{t('forms.pickADate')}</span>
 																			)}
 																			<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
 																		</Button>
@@ -462,7 +482,7 @@ export function OrderForm({ data }) {
 													name='drop_off_date'
 													render={({ field }) => (
 														<FormItem className='flex flex-col'>
-															<FormLabel>Drop-off Date</FormLabel>
+															<FormLabel>{t('forms.dropoffDate')}</FormLabel>
 															<Popover>
 																<PopoverTrigger asChild>
 																	<FormControl>
@@ -476,7 +496,7 @@ export function OrderForm({ data }) {
 																			{field.value ? (
 																				format(field.value, 'PPP')
 																			) : (
-																				<span>Pick a date</span>
+																				<span>{t('forms.pickADate')}</span>
 																			)}
 																			<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
 																		</Button>
@@ -523,7 +543,7 @@ export function OrderForm({ data }) {
 															<Input
 																className='form-input'
 																isRequired
-																label='Pick Up Location'
+																label={t('forms.pickUpLocation')}
 																placeholder='Office'
 																{...field}
 															/>
@@ -537,7 +557,7 @@ export function OrderForm({ data }) {
 												isSelected={isDifferentReturnSelected}
 												onValueChange={setDifferentReturnSelected}
 											>
-												Return to different location
+												{t('forms.returnToDifferentLocation')}
 											</Checkbox>
 										</div>
 
@@ -551,7 +571,7 @@ export function OrderForm({ data }) {
 															<Input
 																className='form-input'
 																isRequired
-																label='Drop Off Location'
+																label={t('forms.dropOffLocation')}
 																placeholder='LCA'
 																{...field}
 															/>
@@ -565,7 +585,7 @@ export function OrderForm({ data }) {
 								</Card>
 
 								<Card className='w-full'>
-									<CardHeader>Vehicle and Client</CardHeader>
+									<CardHeader>{t('forms.vehicleAndClient')}</CardHeader>
 									<CardBody className='flex flex-row gap-5 justify-evenly w-full'>
 										<FormField
 											control={form.control}
@@ -583,7 +603,7 @@ export function OrderForm({ data }) {
 															defaultSelectedKeys={
 																field.value ? [field.value] : undefined
 															}
-															label='Vehicle'
+															label={t('forms.vehicle')}
 															labelPlacement='inside'
 															size='lg'
 															fullWidth
@@ -627,7 +647,7 @@ export function OrderForm({ data }) {
 											name='client'
 											render={({ field }) => (
 												<FormItem>
-													<FormLabel>Client</FormLabel>
+													<FormLabel>{t('forms.client')}</FormLabel>
 													<Popover>
 														<PopoverTrigger asChild>
 															<FormControl>
@@ -643,15 +663,15 @@ export function OrderForm({ data }) {
 																		? clients.find(
 																				(client) => client.value === field.value
 																		  )?.label
-																		: 'Select client'}
+																		: t('forms.selectClient')}
 																	<ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
 																</Button>
 															</FormControl>
 														</PopoverTrigger>
 														<PopoverContent className='w-[200px] p-0'>
 															<Command>
-																<CommandInput placeholder='Search client...' />
-																<CommandEmpty>No client found.</CommandEmpty>
+																<CommandInput placeholder={t('forms.searchClient')} />
+																<CommandEmpty>{t('forms.noClientFound')}</CommandEmpty>
 																<CommandGroup>
 																	{clients.map((client) => (
 																		<CommandItem
@@ -684,7 +704,7 @@ export function OrderForm({ data }) {
 								</Card>
 
 								<Card className='w-full'>
-									<CardHeader>Extras</CardHeader>
+									<CardHeader>{t('forms.extras')}</CardHeader>
 									<CardBody className='flex  gap-5 w-full'>
 										<FormField
 											control={form.control}
@@ -694,7 +714,7 @@ export function OrderForm({ data }) {
 													<CheckboxGroup
 														value={field.value}
 														onValueChange={field.onChange}
-														label='Equipment'
+														label={t('forms.equipment')}
 													>
 														<div className='flex flex-row flex-wrap gap-4'>
 															{equipmentData.map((equip, index) => (
@@ -724,7 +744,7 @@ export function OrderForm({ data }) {
 													<RadioGroup
 														value={field.value}
 														onValueChange={field.onChange}
-														label='Insurance'
+														label={t('forms.insurance')}
 													>
 														<div className='flex flex-row flex-wrap gap-4'>
 															{insurances?.map((ins) => (
@@ -749,7 +769,7 @@ export function OrderForm({ data }) {
 											type='button'
 											onClick={() => setExtraDriversNum((prev) => prev + 1)}
 										>
-											Add Extra Driver
+											{t('order.addExtraDriver')}
 										</Button>
 										<FormField
 											control={form.control}
@@ -785,7 +805,7 @@ export function OrderForm({ data }) {
 														: order?.client_signature || ''
 												return (
 													<FormItem>
-														<FormLabel>Signature</FormLabel>
+														<FormLabel>{t('forms.signature')}</FormLabel>
 														<FormControl>
 															<Signature
 																field={field}
@@ -810,14 +830,14 @@ export function OrderForm({ data }) {
 							</div>
 
 							<div className='flex place-content-between'>
-								<LoadingButton isLoading={isLoading} type='submit'>Save</LoadingButton>
+								<LoadingButton isLoading={isLoading} type='submit'>{t('common.save')}</LoadingButton>
 								{order && (
 									<ButtonUI
 										type='button'
 										variant='destructive'
 										onClick={onDelete}
 									>
-										Delete
+										{t('common.delete')}
 									</ButtonUI>
 								)}
 								{/* <ButtonUI
@@ -827,7 +847,7 @@ export function OrderForm({ data }) {
 								>
 									Back
 								</ButtonUI> */}
-									{order && 
+									{order &&
 									<div className='space-x-3'>
 
 								<Agreement prices={prices} settings={settings} order={order} invoice={true}  />

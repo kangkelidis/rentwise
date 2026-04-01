@@ -3,9 +3,10 @@
 import { printAgreement } from '@/lib/pdf/agreement'
 import LoadingButton from "../ui/loadingButton";
 import { printInvoice } from '@/lib/pdf/invoice';
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function Agreement({ settings, order, prices, invoice }) {
-
+	const { t } = useLocale()
 
 	const baseURL =
 		'https://res.cloudinary.com/dgxlyrprq/image/upload/v1700227330/'
@@ -39,8 +40,8 @@ export default function Agreement({ settings, order, prices, invoice }) {
 				color={invoice ? 'default' : "primary"}
 				onClick={handleClick}
 				>
-			
-				{invoice ? 'Print Invoice' : 'Print Agreement'}
+
+				{invoice ? t('order.printInvoice') : t('order.printAgreement')}
 			</LoadingButton>
 		</>
 	)

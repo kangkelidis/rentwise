@@ -13,21 +13,22 @@ import * as CSV from 'csv-string'
 export async function fetchOrders(page, limit, sortColumn, sortDirection, searchOptions = {}) {
 	try {
 		await dbConnect()
-		const orders =  await orderModel
-		.find(searchOptions)
-		.populate('vehicle')
-		.populate('client')
-		.populate('insurance')
-		.populate({ path: 'extras.item', model: 'Extras' })
-		.sort({[sortColumn]: sortDirection})
-		.limit(limit)
-		.skip((page - 1) * limit)
+		const orders = await orderModel
+			.find(searchOptions)
+			.populate('vehicle')
+			.populate('client')
+			.populate('insurance')
+			.populate({ path: 'extras.item', model: 'Extras' })
+			.sort({ [sortColumn]: sortDirection })
+			.limit(limit)
+			.skip((page - 1) * limit)
 
 		const count = await orderModel.countDocuments(searchOptions)
-		
-		return {items: orders, count: count}
+
+		return { items: orders, count: count }
 	} catch (error) {
-		throw new Error('Failed to fetch orders: ' + error.message)
+		console.warn('Failed to fetch orders:', error.message)
+		return { items: [], count: 0 }
 	}
 }
 
@@ -77,7 +78,8 @@ export async function fetchOrder(id) {
 			.populate('insurance')
 			.populate({ path: 'extras.item', model: 'Extras' })
 	} catch (error) {
-		throw new Error('Failed to fetch order: ' + error.message)
+		console.warn('Failed to fetch order:', error.message)
+		return null
 	}
 }
 
@@ -86,7 +88,7 @@ export async function fetchOrderForDate(date) {
 	if (date.toString() === 'Invalid Date') {
 		return
 	}
-	
+
 	date = discardTime(date)
 	let nextDate = new Date(date)
 	nextDate.setDate(nextDate.getDate() + 1)
@@ -118,31 +120,32 @@ export async function fetchOrderForDate(date) {
 			return { data: order, type: type }
 		})
 	} catch (error) {
-		throw new Error(
-			'Failed to fetch order for date: ' + date + 'error: ' + error.message
-		)
+		console.warn('Failed to fetch orders for date:', error.message)
+		return []
 	}
 }
 
 export async function fetchMissedOrders() {
+	await dbConnect()
 	const now = new Date()
 	const orders = await orderModel.find({
 		$or: [
-		{$and: [{pick_up_date: {$lt: now}}, {status: 'reserved'}]},
-		{$and: [{drop_off_date: {$lt: now}}, {status: {$ne: 'done'}}]},
-	]})
-	.populate({
-		path: 'vehicle',
-		model: 'Vehicle',
-		populate: { path: 'group', model: 'Group' },
+			{ $and: [{ pick_up_date: { $lt: now } }, { status: 'reserved' }] },
+			{ $and: [{ drop_off_date: { $lt: now } }, { status: { $ne: 'done' } }] },
+		]
 	})
-	.populate('client')
-	.populate('insurance')
-	.populate({ path: 'extras.item', model: 'Extras' })
+		.populate({
+			path: 'vehicle',
+			model: 'Vehicle',
+			populate: { path: 'group', model: 'Group' },
+		})
+		.populate('client')
+		.populate('insurance')
+		.populate({ path: 'extras.item', model: 'Extras' })
 
 	return orders.map((order) => {
 		const type =
-			order.pick_up_date < now 
+			order.pick_up_date < now
 				? 'pick_up'
 				: 'drop_off'
 
@@ -165,7 +168,7 @@ export async function deleteOrder(id, path) {
 export async function createMany(data) {
 	try {
 		await dbConnect()
-		await orderModel.insertMany(data, {ordered: false})
+		await orderModel.insertMany(data, { ordered: false })
 	} catch (error) {
 		console.log(error)
 		throw new Error('Could not create orders ')

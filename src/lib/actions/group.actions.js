@@ -10,24 +10,25 @@ export async function fetchGroups() {
         await dbConnect()
         return await groupModel.find({})
     } catch (error) {
-        throw new Error('Failed to fetch Groups: ' + error.message)
+        console.warn('Failed to fetch groups:', error.message)
+        return []
     }
 }
 
 export async function updateGroup(groupID, values, path) {
     try {
-        await dbConnect()        
-        
+        await dbConnect()
+
         const group = groupID ? await groupModel.findByIdAndUpdate(groupID, values)
-        :
-        await groupModel.create(values)
-    
+            :
+            await groupModel.create(values)
+
         revalidatePath(path);
         return true;
-      } catch (error) {
+    } catch (error) {
         console.log(error);
         return false
-      }
+    }
 }
 
 export async function deleteGroup(id, path) {

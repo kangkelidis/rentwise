@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Tabs, Tab } from '@nextui-org/tabs'
 import { Spinner } from '@nextui-org/spinner'
-import { vehicleColumns } from '@/components/tables/columns'
+import { useVehicleColumns } from '@/components/tables/columns'
+import { useLocale } from '@/contexts/LocaleContext'
 import TableUI from '@/components/tables/table'
 import FleetOverview from '@/components/shared/FleetOverview'
 import { getFleetStats } from '@/lib/actions/vehicle.analytics' // Import the server action
@@ -11,6 +12,8 @@ import { getFleetStats } from '@/lib/actions/vehicle.analytics' // Import the se
 export default function FleetTabs({ vehicleData }) {
     const [fleetStats, setFleetStats] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const vehicleColumns = useVehicleColumns();
+    const { t } = useLocale();
 
     const handleTabChange = async (key) => {
         // If the analytics tab is selected and we haven't fetched the data yet
@@ -29,13 +32,13 @@ export default function FleetTabs({ vehicleData }) {
 
     return (
         <Tabs aria-label="Fleet options" fullWidth onSelectionChange={handleTabChange}>
-            <Tab key="list" title="Fleet List">
+            <Tab key="list" title={t('nav.fleet')}>
                 <TableUI columns={vehicleColumns} data={vehicleData} />
             </Tab>
-            <Tab key="analytics" title="Analytics">
+            <Tab key="analytics" title={t('dashboard.analytics')}>
                 {isLoading ? (
                     <div className="flex justify-center items-center h-64">
-                        <Spinner label="Loading analytics..." color="primary" />
+                        <Spinner label={t('common.loading')} color="primary" />
                     </div>
                 ) : (
                     <FleetOverview fleetStats={fleetStats} />

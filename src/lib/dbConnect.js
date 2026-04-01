@@ -4,14 +4,22 @@ import { currentUser } from '@clerk/nextjs'
 let cached = global.mongoose
 
 async function dbConnect() {
+	let user = null
+	try {
+		user = await currentUser()
+	} catch (error) {
+		// If Clerk context is unavailable, fall back to the default DB URI.
+		user = null
+	}
 
-	const user = await currentUser()
-  
-	const MONGODB_URI =
-		user?.username === 'demo' ? process.env.DB_URI_DEMO : process.env.DB_URI
+	const defaultUri = process.env.DB_URI || process.env.MONGODB_URI
+	const demoUri = process.env.DB_URI_DEMO || defaultUri
+	const MONGODB_URI = user?.username === 'demo' ? demoUri : defaultUri
 
 	if (!MONGODB_URI) {
-		throw new Error('Please define the MONGODB_URI environment variable')
+		throw new Error(
+			'Please define DB_URI (or MONGODB_URI) in your environment variables'
+		)
 	}
 
 	if (!cached) {

@@ -3,11 +3,13 @@
 import { SearchIcon } from 'lucide-react'
 import { Input } from '@nextui-org/input'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function SearchInput(props) {
     const router = useRouter()
     const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const { t } = useLocale()
 
 	function handleChange(value) {
         const params = new URLSearchParams(searchParams)
@@ -25,7 +27,7 @@ export default function SearchInput(props) {
 					inputWrapper:
 						'h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20',
 				}}
-				placeholder='Type to search...'
+				placeholder={t('common.search')}
 				size='sm'
 				startContent={<SearchIcon size={18} />}
 				type='search'

@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from "react";
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function UploadCSVFile({ action }) {
 	const [file, setFile] = useState()
+	const { t } = useLocale()
 
 	function handleChange(file) {
 		const reader = new FileReader()
@@ -22,7 +24,7 @@ export default function UploadCSVFile({ action }) {
 
 	return (
 		<form onSubmit={handleSubmit} className="flex gap-4 p-4">
-			<label>Upload csv file</label>
+			<label>{t('files.uploadCsv')}</label>
 			<input type='text'></input>
 			<input
 				type='file'
@@ -31,7 +33,7 @@ export default function UploadCSVFile({ action }) {
 				name='file'
 				onChange={(e) => handleChange(e.target.files[0])}
 			/>
-			<button type='submit'>Generate</button>
+			<button type='submit'>{t('files.generate')}</button>
 		</form>
 	)
 }

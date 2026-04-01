@@ -1,11 +1,14 @@
 'use client'
 
 import {NextUIProvider} from '@nextui-org/react'
+import { LocaleProvider } from '@/contexts/LocaleContext'
 
 export function Providers({children}) {
   return (
     <NextUIProvider>
-      {children}
+      <LocaleProvider>
+        {children}
+      </LocaleProvider>
     </NextUIProvider>
   )
 }

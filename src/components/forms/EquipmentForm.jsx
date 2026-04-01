@@ -25,10 +25,12 @@ import { equipValidationSchema } from '@/lib/validations/schemas'
 import { updateExtra } from '@/lib/actions/extras.actions'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function EquipmentForm({ equipment }) {
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const { t } = useLocale()
 
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 	const form = useForm({
@@ -71,7 +73,7 @@ export default function EquipmentForm({ equipment }) {
 				}}
 				color='primary'
 			>
-				Add Equipment
+				{t('forms.addEquipment')}
 			</Button>
 			<Modal
 				isOpen={isOpen}
@@ -89,7 +91,7 @@ export default function EquipmentForm({ equipment }) {
 						return (
 							<>
 								<ModalHeader className='flex flex-col gap-1'>
-									Add Equipment
+									{t('forms.addEquipment')}
 								</ModalHeader>
 								<ModalBody>
 									<Form {...form}>
@@ -102,7 +104,7 @@ export default function EquipmentForm({ equipment }) {
 												name='name'
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Equipment Name</FormLabel>
+														<FormLabel>{t('forms.equipmentName')}</FormLabel>
 														<FormControl>
 															<Input placeholder='Ex. Baby Seat' {...field} />
 														</FormControl>
@@ -122,13 +124,13 @@ export default function EquipmentForm({ equipment }) {
 															defaultSelectedKeys={
 																field.value ? [field.value] : undefined
 															}
-															label='Price Calculation'
+															label={t('forms.priceCalculation')}
 															labelPlacement='outside'
 															isRequired
 															size='md'
 														>
-															<SelectItem key={'day'}>Per day</SelectItem>
-															<SelectItem key={'fix'}>Fix</SelectItem>
+															<SelectItem key={'day'}>{t('forms.perDay')}</SelectItem>
+															<SelectItem key={'fix'}>{t('forms.fix')}</SelectItem>
 														</Select>
 														<FormMessage />
 													</FormItem>
@@ -140,7 +142,7 @@ export default function EquipmentForm({ equipment }) {
 												name='price_per_day'
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Price</FormLabel>
+														<FormLabel>{t('forms.price')}</FormLabel>
 														<FormControl>
 															<Input type='number' placeholder='' {...field} />
 														</FormControl>
@@ -150,7 +152,7 @@ export default function EquipmentForm({ equipment }) {
 											/>
 
 											<Button type='submit' color='primary' onPress={onSubmit}>
-												{equipment ? 'Update' : 'Add'}
+												{equipment ? t('forms.update') : t('common.add')}
 											</Button>
 										</form>
 									</Form>

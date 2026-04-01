@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useLocale } from '@/contexts/LocaleContext'
 
 import {
 	Form,
@@ -44,8 +45,8 @@ import Confirmation from '../shared/Confirmation'
 export function ClientForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
-	data = JSON.parse(data)
-	const client = data.client
+	const { t } = useLocale()
+	const client = data
 	const form = useForm({
 		resolver: zodResolver(clientValidationSchema),
 		defaultValues: {
@@ -102,7 +103,7 @@ export function ClientForm({ data }) {
 							name='full_name'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Full Name</FormLabel>
+									<FormLabel>{t('forms.fullName')}</FormLabel>
 									<FormControl>
 										<Input className='form-input' placeholder='' {...field} />
 									</FormControl>
@@ -114,29 +115,28 @@ export function ClientForm({ data }) {
 						<FormField
 							control={form.control}
 							name='dob'
-							render={({ field }) => (
-								<FormItem className='flex flex-col gap-1 mt-1'>
-									<FormLabel>Date of Birth</FormLabel>
-									<Popover>
-										<PopoverTrigger asChild>
-											<FormControl>
-												<Button
-													variant={''}
-													className={cn(
-														'w-[240px] pl-3 text-left font-normal',
-														!field.value && 'text-muted-foreground',
-														'form-input-bg '
-													)}
-												>
-													{field.value ? (
-														format(new Date(field.value), 'dd-LL-yyyy')
-													) : (
-														<span>Pick a date</span>
-													)}
-													<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-												</Button>
-											</FormControl>
-										</PopoverTrigger>
+							render={({ field }) => (							<FormItem className='flex flex-col gap-1 mt-1'>
+								<FormLabel>{t('forms.dateOfBirth')}</FormLabel>
+								<Popover>
+									<PopoverTrigger asChild>
+										<FormControl>
+											<Button
+												variant={''}
+												className={cn(
+													'w-[240px] pl-3 text-left font-normal',
+													!field.value && 'text-muted-foreground',
+													'form-input-bg '
+												)}
+											>
+												{field.value ? (
+													format(new Date(field.value), 'dd-LL-yyyy')
+												) : (
+													<span>{t('forms.pickADate')}</span>
+												)}
+												<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+											</Button>
+										</FormControl>
+									</PopoverTrigger>
 										<PopoverContent className='w-auto p-0' align='start'>
 											<Calendar
 												mode='single'
@@ -159,7 +159,7 @@ export function ClientForm({ data }) {
 							name='tel'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Telephone</FormLabel>
+									<FormLabel>{t('forms.phone')}</FormLabel>
 									<FormControl>
 										<Input className='form-input' placeholder='' {...field} />
 									</FormControl>
@@ -173,7 +173,7 @@ export function ClientForm({ data }) {
 							name='email'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Email</FormLabel>
+									<FormLabel>{t('forms.email')}</FormLabel>
 									<FormControl>
 										<Input className='form-input' placeholder='' {...field} />
 									</FormControl>
@@ -187,7 +187,7 @@ export function ClientForm({ data }) {
 							name='passport'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Passport</FormLabel>
+									<FormLabel>{t('forms.passport')}</FormLabel>
 									<FormControl>
 										<Input className='form-input' placeholder='' {...field} />
 									</FormControl>
@@ -201,7 +201,7 @@ export function ClientForm({ data }) {
 							name='license'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>License</FormLabel>
+									<FormLabel>{t('forms.license')}</FormLabel>
 									<FormControl>
 										<Input className='form-input' placeholder='' {...field} />
 									</FormControl>
@@ -216,7 +216,7 @@ export function ClientForm({ data }) {
 							render={({ field }) => (
 								<FormItem>
 									<div className='flex flex-col gap-2'>
-										<FormLabel>Country of Issue</FormLabel>
+										<FormLabel>{t('forms.countryOfIssue')}</FormLabel>
 
 										<Select
 											className='form-input'
@@ -244,7 +244,7 @@ export function ClientForm({ data }) {
 							name='address'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Full Address</FormLabel>
+									<FormLabel>{t('forms.fullAddress')}</FormLabel>
 									<FormControl>
 										<Input className='form-input' placeholder='' {...field} />
 									</FormControl>
@@ -255,7 +255,7 @@ export function ClientForm({ data }) {
 
 						<Card className='w-full flex flex-col'>
 							<CardBody>
-								<label>Documents</label>
+								<label>{t('forms.documents')}</label>
 								<Upload
 									form={form}
 									multiple={true}
@@ -280,10 +280,10 @@ export function ClientForm({ data }) {
 						</Card>
 					</div>
 					<div className='flex place-content-between'>
-						<Button type='submit'>Submit</Button>
+						<Button type='submit'>{t('common.submit')}</Button>
 						{client && (
 							<Button type='button' variant='destructive' onClick={onDelete}>
-								Delete
+								{t('common.delete')}
 							</Button>
 						)}
 						<Button
@@ -291,7 +291,7 @@ export function ClientForm({ data }) {
 							variant='secondary'
 							onClick={() => router.back()}
 						>
-							Back
+							{t('common.cancel')}
 						</Button>
 					</div>
 				</form>

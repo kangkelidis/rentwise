@@ -6,12 +6,15 @@ import { Spinner } from '@nextui-org/spinner'
 import { VehicleForm } from '@/components/forms/VehicleForm'
 import PriceChart from '@/components/shared/PriceChart'
 import VehicleStats from '@/components/shared/VehicleStats'
-import { orderColumns } from '@/components/tables/columns'
+import { useOrderColumns } from '@/components/tables/columns'
 import TableUI from '@/components/tables/table'
 import { DEFAULT_LIMIT } from '@/constants'
 import { getVehicleStats } from '@/lib/actions/vehicle.analytics'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function VehicleDetailsTabs({ data, vehicleId }) {
+    const { t } = useLocale()
+    const orderColumns = useOrderColumns()
     const [vehicleStats, setVehicleStats] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -33,15 +36,15 @@ export default function VehicleDetailsTabs({ data, vehicleId }) {
 
     return (
         <Tabs aria-label="Vehicle options" fullWidth onSelectionChange={handleTabChange}>
-            <Tab key="edit" title="Edit Vehicle">
+            <Tab key="edit" title={t('vehicle.editVehicle')}>
                 {/* Pass the full data object, stringified, as the form expects */}
                 <VehicleForm data={JSON.stringify(data)} />
             </Tab>
 
-            <Tab key="analytics" title="Analytics">
+            <Tab key="analytics" title={t('common.analytics')}>
                 {isLoading ? (
                     <div className="flex justify-center items-center h-64">
-                        <Spinner label="Loading analytics..." color="primary" />
+                        <Spinner label={t('common.loading')} color="primary" />
                     </div>
                 ) : (
                     // Pass the fetched stats to the component
@@ -49,16 +52,16 @@ export default function VehicleDetailsTabs({ data, vehicleId }) {
                 )}
             </Tab>
 
-            <Tab key="pricing" title="Pricing">
+            <Tab key="pricing" title={t('common.pricing')}>
                 <div className='card-container'>
-                    <h2>Price Distribution</h2>
+                    <h2>{t('common.pricing')} {t('common.distribution')}</h2>
                     <PriceChart vehicle={JSON.stringify(data.vehicle)} />
                 </div>
             </Tab>
 
-            <Tab key="history" title="History">
+            <Tab key="history" title={t('common.history')}>
                 <div className='card-container'>
-                    <h4>Booking History</h4>
+                    <h4>{t('common.booking')} {t('common.history')}</h4>
                     <TableUI
                         columns={orderColumns}
                         rowsPerPage={DEFAULT_LIMIT / 2}

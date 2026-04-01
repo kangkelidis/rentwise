@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useLocale } from '@/contexts/LocaleContext'
 
 import {
 	Form,
@@ -24,6 +25,7 @@ import { Input } from '@nextui-org/input'
 export function OwnerForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
+	const { t } = useLocale()
 	data = JSON.parse(data)
 	const owner = data.owner
 
@@ -58,7 +60,7 @@ export function OwnerForm({ data }) {
 						name='name'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>{t('common.name')}</FormLabel>
 								<FormControl>
 									<Input className='form-input' isRequired placeholder='' {...field} />
 								</FormControl>
@@ -69,15 +71,15 @@ export function OwnerForm({ data }) {
 				</div>
 				<div className='flex place-content-between'>
 					<Button type='submit' color='primary'>
-						Submit
+						{t('common.submit')}
 					</Button>
 					{owner && (
 						<Button type='button' color='danger' onClick={onDelete}>
-							Delete
+							{t('common.delete')}
 						</Button>
 					)}
 					<Button type='button' color='secondary' onClick={() => router.back()}>
-						Back
+						{t('forms.back')}
 					</Button>
 				</div>
 			</form>

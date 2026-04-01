@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from "next/cache";
+import { auth } from '@clerk/nextjs'
 import dbConnect from "../dbConnect";
 import settingsModel from "@/models/settings.model";
 
@@ -10,22 +11,33 @@ export async function fetchSettings(userId) {
     try {
 
         await dbConnect()
-        return await settingsModel.findOne({users: userId})
+        return await settingsModel.findOne({ users: userId })
     } catch (error) {
-        throw new Error('Failed to fetch Settings: ' + error.message)
+        console.warn('Failed to fetch settings:', error.message)
+        return null
     }
 }
 
 export async function updateSettings(userId, values, path) {
     try {
-        await dbConnect()    
-        await settingsModel.findOneAndUpdate({users: userId}, values)
-        revalidatePath(path);
+        const { userId: currentUserId } = auth()
+        const resolvedUserId = userId || currentUserId
+        if (!resolvedUserId) return false
+
+        await dbConnect()
+        await settingsModel.findOneAndUpdate(
+            { users: resolvedUserId },
+            { ...values, users: resolvedUserId },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        )
+        if (typeof path === 'string' && path.length > 0) {
+            revalidatePath(path)
+        }
         return true;
-      } catch (error) {
+    } catch (error) {
         console.log(error);
         return false
-      }
+    }
 }
 
 export async function createSettings(userId, values, path) {
@@ -34,14 +46,16 @@ export async function createSettings(userId, values, path) {
             ...values,
             users: userId
         }
-        await dbConnect()        
+        await dbConnect()
         await settingsModel.create(newSettings)
-        revalidatePath(path);
+        if (typeof path === 'string' && path.length > 0) {
+            revalidatePath(path)
+        }
         return true;
-      } catch (error) {
+    } catch (error) {
         console.log(error);
         return false
-      }
+    }
 }
 
 export async function deleteSettings(id, path) {

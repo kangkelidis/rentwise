@@ -4,10 +4,11 @@ import { fetchEquipment, fetchInsurances } from '@/lib/actions/extras.actions'
 import { fetchSettings } from '@/lib/actions/settings.action'
 import { fetchVehicles, markUnavailable } from '@/lib/actions/vehicle.actions'
 import { auth } from "@clerk/nextjs";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 export default async function Page({ searchParams }) {
 	const { userId } = auth();
-	
+
 	const vehicles = fetchVehicles()
 	const clients = fetchClientsList()
     const equipment = fetchEquipment()
@@ -34,7 +35,7 @@ export default async function Page({ searchParams }) {
 
 	return (
 		<div className=''>
-			<h2 className='head-text'>Add a new Order</h2>
+			<PageHeader titleKey="order.addNewOrder" fallbackTitle="Add a new Order" />
 			<OrderForm data={JSON.stringify(data)} />
 		</div>
 	)

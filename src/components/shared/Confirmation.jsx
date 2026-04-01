@@ -10,8 +10,10 @@ import {
 import LoadingButton from '@/components/ui/loadingButton'
 import { Button } from '@nextui-org/react'
 import { useState } from 'react'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function Confirmation({ isOpen, onOpenChange, deleteItem }) {
+	const { t } = useLocale()
 	const [isLoading, setIsLoading] = useState(false)
 
 	return (
@@ -25,10 +27,10 @@ export default function Confirmation({ isOpen, onOpenChange, deleteItem }) {
 				{(onClose) => {
 					return (
 						<>
-							<ModalHeader>Confirmation</ModalHeader>
+							<ModalHeader>{t('common.confirmation')}</ModalHeader>
 
 							<ModalBody>
-								Are you sure you want to delete {deleteItem.title} ?
+								{t('messages.confirmDelete')} {deleteItem.title} ?
 							</ModalBody>
 							<ModalFooter>
 								<LoadingButton
@@ -41,9 +43,9 @@ export default function Confirmation({ isOpen, onOpenChange, deleteItem }) {
 										setIsLoading(false)
 									}}
 								>
-									Yes
+									{t('common.yes')}
 								</LoadingButton>
-								<Button onPress={() => onClose()}>Cancel</Button>
+								<Button onPress={() => onClose()}>{t('common.cancel')}</Button>
 							</ModalFooter>
 						</>
 					)

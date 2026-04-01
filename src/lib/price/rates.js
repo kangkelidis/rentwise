@@ -67,9 +67,9 @@ export function getVehiclePrice(vehicle, num_days) {
 
 function getDriverPrice(drivers, num_days, settings) {
 	if (drivers.length && num_days) {
-		const priceType = settings.extra_driver_price_type
+		const priceType = settings?.extra_driver_price_type || 'day'
 		const numOfDrivers = drivers.length
-		const rate = settings.extra_driver_price_per_day
+		const rate = Number(settings?.extra_driver_price_per_day || 0)
 		const numDays = priceType === 'day' ? num_days : 1
 
 		return numOfDrivers * rate * numDays

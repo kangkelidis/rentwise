@@ -3,8 +3,11 @@
 import Image from 'next/image'
 import { CldImage } from 'next-cloudinary'
 import { Link } from '@nextui-org/link'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function VehicleDetails({ vehicle, size = 4, showRegistrationText = false }) {
+    const { t } = useLocale()
+
     if (!vehicle) {
         return (
             <div className={`flex gap-3 w-full`}>
@@ -17,7 +20,7 @@ export default function VehicleDetails({ vehicle, size = 4, showRegistrationText
                     />
                 </div>
                 <div className='flex flex-col gap-1 whitespace-nowrap'>
-                    <p className='text-gray-500'>No vehicle data</p>
+                    <p className='text-gray-500'>{t('vehicle.noVehicleData')}</p>
                 </div>
             </div>
         )

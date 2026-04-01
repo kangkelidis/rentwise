@@ -13,12 +13,14 @@ import {
 	useDisclosure,
 } from '@nextui-org/modal'
 import { createSettings, updateSettings } from '@/lib/actions/settings.action'
+import { useLocale } from '@/contexts/LocaleContext'
 
 import { useAuth } from "@clerk/nextjs";
 
 export default function Signature({ field, form, clientSignature }) {
 	const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 	const { isLoaded, userId, sessionId, getToken } = useAuth();
+	const { t } = useLocale()
 
 	let sigCanvas = {}
 
@@ -34,13 +36,13 @@ export default function Signature({ field, form, clientSignature }) {
 
 	return (
 		<div>
-			<Button onPress={onOpen}>Edit Signature</Button>
+			<Button onPress={onOpen}>{t('forms.editSignature')}</Button>
 			<Modal isOpen={isOpen} onOpenChange={onOpenChange}>
 				<ModalContent>
 					{(onClose) => (
 						<div>
 							<ModalHeader className=''>
-								Signature
+								{t('forms.signature')}
 							</ModalHeader>
 							<ModalBody>
 								<div className='w-[500px] h-[200px]'>
@@ -51,12 +53,12 @@ export default function Signature({ field, form, clientSignature }) {
 										ref={(ref) => {
 											sigCanvas = ref
 										}}
-										
-									/>
-									<Button onClick={() => sigCanvas?.clear()}>clear</Button>
-									<Button onClick={saveSignature}>save</Button>
 
-	
+									/>
+									<Button onClick={() => sigCanvas?.clear()}>{t('forms.clear')}</Button>
+									<Button onClick={saveSignature}>{t('common.save')}</Button>
+
+
 								</div>
 							</ModalBody>
 							<ModalFooter></ModalFooter>

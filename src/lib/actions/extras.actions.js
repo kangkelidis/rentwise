@@ -8,34 +8,36 @@ import extraModel from "@/models/extra.model";
 export async function fetchEquipment() {
     try {
         await dbConnect()
-        return await extraModel.find({category: 'equipment'})
+        return await extraModel.find({ category: 'equipment' })
     } catch (error) {
-        throw new Error('Failed to fetch Equipment: ' + error.message)
+        console.warn('Failed to fetch equipment:', error.message)
+        return []
     }
 }
 
 export async function fetchInsurances() {
     try {
         await dbConnect()
-        return await extraModel.find({category: 'insurance'})
+        return await extraModel.find({ category: 'insurance' })
     } catch (error) {
-        throw new Error('Failed to fetch Insurance: ' + error.message)
+        console.warn('Failed to fetch insurances:', error.message)
+        return []
     }
 }
 
 
 export async function updateExtra(extraID, values, path) {
     try {
-        await dbConnect()        
+        await dbConnect()
         const extra = extraID ? await extraModel.findByIdAndUpdate(extraID, values)
-        :
-        await extraModel.create(values)
+            :
+            await extraModel.create(values)
         revalidatePath(path);
         return true;
-      } catch (error) {
+    } catch (error) {
         console.log(error);
         return false
-      }
+    }
 }
 
 export async function deleteExtra(id, path) {

@@ -1,149 +1,171 @@
 'use client'
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
+import { useLocale } from '@/contexts/LocaleContext'
+import { useMemo } from 'react'
 
-export const vehicleColumns = [
-	{
-		key: 'number',
-		label: 'Id',
-	},
-	{
-		key: 'vehicle',
-		label: 'Vehicle',
-	},
-	{
-		key: 'owner',
-		label: 'Owner',
-	},
-]
+// Hook-based columns that use translations
+export const useVehicleColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'number',
+			label: t('table.id'),
+		},
+		{
+			key: 'vehicle',
+			label: t('common.name'),
+		},
+		{
+			key: 'owner',
+			label: t('forms.owner'),
+		},
+	], [t])
+}
 
-export const orderColumns = [
-	{
-		key: 'number',
-		label: 'ID',
-	},
-	{
-		key: 'status',
-		label: 'Status',
-	},
-	{
-		key: 'pick_up_date',
-		label: 'Pick Up',
-	},
-	{
-		key: 'drop_off_date',
-		label: 'Drop off',
-	},
-	{
-		key: 'num_days',
-		label: 'Total Days',
-	},
-	{
-		key: 'vehicle',
-		label: 'Car',
-	},
-	{
-		key: 'client',
-		label: 'Client',
-	},
-	{
-		key: 'prices',
-		label: 'Amount',
-	},
-	{
-		key: 'actions_order',
-		label: 'Actions',
-	},
-]
+export const useOrderColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'number',
+			label: t('table.id'),
+		},
+		{
+			key: 'status',
+			label: t('common.status'),
+		},
+		{
+			key: 'pick_up_date',
+			label: t('table.pickUp'),
+		},
+		{
+			key: 'drop_off_date',
+			label: t('table.dropOff'),
+		},
+		{
+			key: 'num_days',
+			label: t('table.totalDays'),
+		},
+		{
+			key: 'vehicle',
+			label: t('table.car'),
+		},
+		{
+			key: 'client',
+			label: t('client.client'),
+		},
+		{
+			key: 'prices',
+			label: t('table.amount'),
+		},
+		{
+			key: 'actions_order',
+			label: t('common.actions'),
+		},
+	], [t])
+}
 
-export const clientColumns = [
-	{
-		key: 'number',
-		label: 'ID',
-	},
-	{
-		key: 'full_name',
-		label: 'Name',
-	},
-	{
-		key: 'email',
-		label: 'Email'
-	},
-	{
-		key: 'tel',
-		label: 'Tel'
-	}
-]
+export const useClientColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'number',
+			label: t('table.id'),
+		},
+		{
+			key: 'full_name',
+			label: t('common.name'),
+		},
+		{
+			key: 'email',
+			label: t('common.email')
+		},
+		{
+			key: 'tel',
+			label: t('common.phone')
+		}
+	], [t])
+}
 
-export const ownerColumns = [
-	{
-		key: 'number',
-		label: 'Id',
-	},
-	{
-		key: 'name',
-		label: 'Name',
-	},
-]
+export const useOwnerColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'number',
+			label: t('table.id'),
+		},
+		{
+			key: 'name',
+			label: t('common.name'),
+		},
+	], [t])
+}
 
-export const groupColumns = [
-	{
-		key: 'name',
-		label: 'Name',
-	},
-	{
-		key: 'vehicles',
-		label: 'Vehicles',
-	},
-	{
-		key: 'actions',
-		label: 'Actions',
-	},
-]
+export const useGroupColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'name',
+			label: t('common.name'),
+		},
+		{
+			key: 'vehicles',
+			label: t('table.vehicles'),
+		},
+		{
+			key: 'actions',
+			label: t('common.actions'),
+		},
+	], [t])
+}
 
-export const insuranceColumns = [
-	{
-		key: 'name',
-		label: 'Name',
-	},
-	{
-		key: 'price_per_day',
-		label: 'Price',
-	},
-	{
-		key: 'price_type',
-		label: 'Price Type',
-	},
-	{
-		key: 'deposit_amount',
-		label: 'Deposit',
-	},
-	{
-		key: 'deposit_excess',
-		label: 'Excess',
-	},
-	{
-		key: 'actions',
-		label: 'Actions',
-	},
-]
+export const useInsuranceColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'name',
+			label: t('common.name'),
+		},
+		{
+			key: 'price_per_day',
+			label: t('forms.price'),
+		},
+		{
+			key: 'price_type',
+			label: t('table.priceType'),
+		},
+		{
+			key: 'deposit_amount',
+			label: t('common.deposit'),
+		},
+		{
+			key: 'deposit_excess',
+			label: t('table.excess'),
+		},
+		{
+			key: 'actions',
+			label: t('common.actions'),
+		},
+	], [t])
+}
 
-export const equipmentColumns = [
-	{
-		key: 'name',
-		label: 'Name',
-	},
-	{
-		key: 'price_per_day',
-		label: 'Price',
-	},
-	{
-		key: 'price_type',
-		label: 'Price Type',
-	},
-	{
-		key: 'actions',
-		label: 'Actions',
-	},
-]
+export const useEquipmentColumns = () => {
+	const { t } = useLocale()
+	return useMemo(() => [
+		{
+			key: 'name',
+			label: t('common.name'),
+		},
+		{
+			key: 'price_per_day',
+			label: t('forms.price'),
+		},
+		{
+			key: 'price_type',
+			label: t('table.priceType'),
+		},
+		{
+			key: 'actions',
+			label: t('common.actions'),
+		},
+	], [t])
+}

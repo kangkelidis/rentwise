@@ -48,6 +48,7 @@ export async function totalCountVehicles() {
 }
 
 export async function fetchAvailableVehicles(fromDate, tillDate) {
+	await dbConnect()
 	const allVehicles = await vehicleModel.find({})
 	const boolArray = await Promise.all(
 		allVehicles.map((v) => v.isAvailableDuring(fromDate, tillDate))
@@ -57,6 +58,7 @@ export async function fetchAvailableVehicles(fromDate, tillDate) {
 }
 
 export async function fetchUnavailableVehicles(fromDate, tillDate) {
+	await dbConnect()
 	const allVehicles = await vehicleModel.find({})
 	const boolArray = await Promise.all(
 		allVehicles.map((v) => !v.isAvailableDuring(fromDate, tillDate))
@@ -80,6 +82,7 @@ export async function markUnavailable(vehicles, from, till) {
 }
 
 export async function isAvailableDuring(vehicle, from, till) {
+	await dbConnect()
 	const orders = await orderModel
 		.find({ vehicle: vehicle })
 		.select(['pick_up_date', 'drop_off_date', 'vehicle'])
@@ -129,7 +132,8 @@ export async function fetchVehicle(id) {
 		await dbConnect()
 		return JSON.stringify(await vehicleModel.findById(id))
 	} catch (error) {
-		throw new Error('Failed to fetch vehicle: ' + error.message)
+		console.warn('Failed to fetch vehicle:', error.message)
+		return JSON.stringify(null)
 	}
 }
 

@@ -3,6 +3,7 @@ import { fetchGroups } from '@/lib/actions/group.actions'
 import { fetchSettings } from '@/lib/actions/settings.action'
 import { fetchVehiclesInGroup } from '@/lib/actions/vehicle.actions'
 import Settings from '@/components/shared/Settings'
+import { PageHeader } from '@/components/shared/PageHeader'
 
 import { auth } from '@clerk/nextjs'
 
@@ -48,7 +49,7 @@ export default async function Page({ searchParams }) {
 	// BUG: crashes on escape to close modal
 	return (
 		<main>
-			<h2 className='head-text'>Settings</h2>
+			<PageHeader titleKey="settings.settings" fallbackTitle="Settings" />
 
 			<Settings data={JSON.stringify(dataProps)} />
 		</main>

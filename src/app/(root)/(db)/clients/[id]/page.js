@@ -1,9 +1,7 @@
-import { ClientForm } from '@/components/forms/ClientForm'
-import { orderColumns } from '@/components/tables/columns'
-import TableUI from '@/components/tables/table'
 import { DEFAULT_LIMIT } from '@/constants'
 import { fetchClient } from '@/lib/actions/client.actions'
 import { fetchOrders } from '@/lib/actions/order.actions'
+import ClientDetailsPageContent from '@/components/shared/ClientDetailsPageContent'
 
 export default async function Page({ params, searchParams }) {
 	const page = searchParams.page || 1
@@ -17,25 +15,9 @@ export default async function Page({ params, searchParams }) {
 	})
 	const result = await Promise.all([client, orders])
 	const data = {
-		client: result[0],
-		orders: result[1],
+		client: JSON.parse(JSON.stringify(result[0])),
+		orders: JSON.parse(JSON.stringify(result[1])),
 	}
 
-	return (
-		<div className='flex flex-col gap-4'>
-			<h2 className='head-text'>Edit</h2>
-			<div>
-				<ClientForm data={JSON.stringify(data)} />
-			</div>
-
-			<div >
-				<TableUI
-                title='Order History'
-					columns={orderColumns}
-					rowsPerPage={DEFAULT_LIMIT / 2}
-					data={JSON.stringify(data.orders)}
-				/>
-			</div>
-		</div>
-	)
+	return <ClientDetailsPageContent data={data} />
 }

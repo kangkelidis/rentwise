@@ -1,10 +1,6 @@
-import Link from 'next/link'
-import { ownerColumns } from '@/components/tables/columns'
 import { fetchOwners, totalCountOwners } from '@/lib/actions/owner.actions'
-import TableUI from '@/components/tables/table'
-
-import {Button} from '@nextui-org/button'
 import { DEFAULT_LIMIT } from '@/constants'
+import OwnersPageContent from '@/components/shared/OwnersPageContent'
 
 async function getData(page, limit, sortColumn, sortDirection) {
 	const result = await fetchOwners(page, limit, sortColumn, sortDirection)
@@ -20,14 +16,6 @@ export default async function Page({ searchParams }) {
 	const data = await getData(page, limit, sortColumn, sortDirection)
 
 	return (
-		<div className=''>
-			<div className='flex place-content-between mb-3 items-baseline'>
-				<h2 className='head-text'>Owners</h2>
-				<Button color='secondary' className='mb-4'>
-					<Link href={'/owners/create'}>Add Owner</Link>
-				</Button>
-			</div>
-			<TableUI columns={ownerColumns} data={data} />
-		</div>
+		<OwnersPageContent data={data} />
 	)
 }

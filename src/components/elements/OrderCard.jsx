@@ -10,12 +10,15 @@ import Agreement from '../shared/Agreement'
 import Link from 'next/link'
 import { Button } from '@nextui-org/button'
 import StatusChip from './StatusChip'
+import { useLocale } from '@/contexts/LocaleContext'
 
 const cellClass ='border-[0.1px] border-gray-500 p-4 grow  '
 export default function OrderCard({ order, type, settings }) {
+	const { t } = useLocale()
+
 	// Add safety checks
 	if (!order) {
-		return <div className="text-gray-500">No order data available</div>
+		return <div className="text-gray-500">{t('messages.noDataFound')}</div>
 	}
 
 	const timeTill = formatDateDifference(
@@ -33,14 +36,14 @@ export default function OrderCard({ order, type, settings }) {
 			<div className='flex flex-row w-full max-sm:flex-col '>
 				<div className={cellClass}>
 						<span className='block text-subtle-semibold text-gray-400 mb-1'>
-							Time
+							{t('common.time')}
 						</span>
 						<span
 							className={`capitalize text-body-bold ${
 								type === 'pick_up' ? 'text-green-500' : 'text-yellow-500'
 							}`}
 						>
-							{type.replace('_', ' ')}
+							{type === 'pick_up' ? t('order.pickup') : t('order.return')}
 						</span>
 						<div
 							className={`text-heading2-bold ${
@@ -59,7 +62,7 @@ export default function OrderCard({ order, type, settings }) {
 
 				<div className={cellClass}>
 					<span className='block text-subtle-semibold text-gray-400 mb-1'>
-						Location
+						{t('common.location')}
 					</span>
 
 					{order[type + '_location']}
@@ -68,7 +71,7 @@ export default function OrderCard({ order, type, settings }) {
 
 				<div className={cellClass}>
 					<span className='block text-subtle-semibold text-gray-400 mb-1'>
-						Client
+						{t('client.client')}
 					</span>
 
 					{order.client.full_name}
@@ -77,35 +80,35 @@ export default function OrderCard({ order, type, settings }) {
 
 				<div className={cellClass}>
 					<span className='block text-subtle-semibold text-gray-400 mb-1'>
-						Vehicle
+						{t('vehicle.vehicle')}
 					</span>
 					{order.vehicle ? (
 						<VehicleDetails vehicle={order.vehicle} />
 					) : (
-						<p className="text-gray-500">No vehicle assigned</p>
+						<p className="text-gray-500">{t('vehicle.noVehicleAssigned')}</p>
 					)}
 				</div>
 
 
 				<div className={cellClass}>
 					<span className='block text-subtle-semibold text-gray-400 mb-1'>
-						Detail
+						{t('order.orderDetails')}
 					</span>
 
-					<span className='block'>Insurance: {order.insurance?.name}</span>
-					<span className='block'>Deposit: {toCurrency(order.insurance?.deposit_amount)}</span>
-					<span className='block'>Total: {toCurrency(getTotalPrice(order.prices))}</span>
+					<span className='block'>{t('order.insurance')}: {order.insurance?.name}</span>
+					<span className='block'>{t('order.deposit')}: {toCurrency(order.insurance?.deposit_amount)}</span>
+					<span className='block'>{t('order.totalAmount')}: {toCurrency(getTotalPrice(order.prices))}</span>
 				</div>
 
 
 				<div className={cellClass}>
 					<span className='block text-subtle-semibold text-gray-400 mb-1'>
-						Actions
+						{t('common.actions')}
 					</span>
 					<div className='flex flex-col gap-1'>
 
 					<Link href={'/orders/' + order.id}>
-						<Button>View Order</Button>
+						<Button>{t('order.viewOrder')}</Button>
 					</Link>
 					<Agreement prices={order.prices} order={order} settings={settings} />
 					</div>
@@ -114,7 +117,7 @@ export default function OrderCard({ order, type, settings }) {
 
 				<div className={cellClass}>
 				<span className='block text-subtle-semibold text-gray-400 mb-1'>
-						Status
+						{t('common.status')}
 					</span>
 					<StatusChip status={order.status}/>
 				</div>

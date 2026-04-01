@@ -19,7 +19,8 @@ export async function fetchOwners(
 			.limit(limit)
 			.skip((page - 1) * limit)
 	} catch (error) {
-		throw new Error('Failed to fetch owners: ' + error.message)
+		console.warn('Failed to fetch owners:', error.message)
+		return []
 	}
 }
 
@@ -52,7 +53,8 @@ export async function fetchOwner(id) {
 		await dbConnect()
 		return await ownerModel.findById(id)
 	} catch (error) {
-		throw new Error('Failed to fetch owner: ' + error.message)
+		console.warn('Failed to fetch owner:', error.message)
+		return null
 	}
 }
 

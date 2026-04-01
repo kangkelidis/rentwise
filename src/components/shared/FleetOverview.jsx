@@ -5,8 +5,10 @@ import { Card, CardBody, CardHeader } from '@nextui-org/card'
 import VehicleDetails from '@/components/elements/vehicle-details'
 import { toCurrency } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function FleetOverview({ fleetStats }) {
+  const { t } = useLocale()
   const router = useRouter()
   const [sortConfig, setSortConfig] = useState({ key: 'totalRevenue', direction: 'descending' });
 
@@ -58,7 +60,7 @@ export default function FleetOverview({ fleetStats }) {
   if (!fleetStats || fleetStats.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No fleet data available</p>
+        <p className="text-gray-500">{t('messages.noDataFound')}</p>
       </div>
     )
   }
@@ -82,7 +84,7 @@ export default function FleetOverview({ fleetStats }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <h4 className="text-sm font-medium text-gray-400">Total Fleet Revenue</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.totalFleetRevenue')}</h4>
           </CardHeader>
           <CardBody>
             <p className="text-2xl font-bold">{toCurrency(totalRevenue)}</p>
@@ -91,7 +93,7 @@ export default function FleetOverview({ fleetStats }) {
 
         <Card>
           <CardHeader>
-            <h4 className="text-sm font-medium text-gray-400">Total Bookings</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.totalBookings')}</h4>
           </CardHeader>
           <CardBody>
             <p className="text-2xl font-bold">{totalBookings}</p>
@@ -100,7 +102,7 @@ export default function FleetOverview({ fleetStats }) {
 
         <Card>
           <CardHeader>
-            <h4 className="text-sm font-medium text-gray-400">Avg Utilization</h4>
+            <h4 className="text-sm font-medium text-gray-400">{t('vehicle.avgUtilization')}</h4>
           </CardHeader>
           <CardBody>
             <p className="text-2xl font-bold">{avgUtilization.toFixed(1)}%</p>
@@ -111,19 +113,19 @@ export default function FleetOverview({ fleetStats }) {
       {/* Vehicle Performance Table */}
       <Card>
         <CardHeader>
-          <h4 className="text-lg font-semibold">Vehicle Performance</h4>
+          <h4 className="text-lg font-semibold">{t('vehicle.vehiclePerformance')}</h4>
         </CardHeader>
         <CardBody>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-600">
-                  <SortableHeader sortKey="vehicle" align="left">Vehicle</SortableHeader>
-                  <SortableHeader sortKey="totalRevenue">Revenue</SortableHeader>
-                  <SortableHeader sortKey="totalBookings">Bookings</SortableHeader>
-                  <SortableHeader sortKey="totalDaysRented">Days Rented</SortableHeader>
-                  <SortableHeader sortKey="utilizationRate">Utilization</SortableHeader>
-                  <SortableHeader sortKey="averageDailyRate">Avg Daily Rate</SortableHeader>
+                  <SortableHeader sortKey="vehicle" align="left">{t('vehicle.vehicle')}</SortableHeader>
+                  <SortableHeader sortKey="totalRevenue">{t('vehicle.revenue')}</SortableHeader>
+                  <SortableHeader sortKey="totalBookings">{t('vehicle.bookings')}</SortableHeader>
+                  <SortableHeader sortKey="totalDaysRented">{t('vehicle.daysRented')}</SortableHeader>
+                  <SortableHeader sortKey="utilizationRate">{t('vehicle.utilization')}</SortableHeader>
+                  <SortableHeader sortKey="averageDailyRate">{t('vehicle.avgDailyRate')}</SortableHeader>
                 </tr>
               </thead>
               <tbody>

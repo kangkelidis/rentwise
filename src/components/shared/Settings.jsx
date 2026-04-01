@@ -8,16 +8,23 @@ import GroupForm from '@/components/forms/GroupForm'
 import EquipmentForm from '@/components/forms/EquipmentForm'
 import InsuranceForm from '@/components/forms/InsuranceForm'
 import {
-	equipmentColumns,
-	groupColumns,
-	insuranceColumns,
+	useEquipmentColumns,
+	useGroupColumns,
+	useInsuranceColumns,
 } from '@/components/tables/columns'
 import { RentalsForm } from '../forms/RentalsForm'
 import { Card, CardHeader } from '@nextui-org/react'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function Settings({ data }) {
 	data = JSON.parse(data)
 	const [selected, setSelected] = useState('rentals')
+	const { t } = useLocale()
+
+	// Get translated columns
+	const groupColumns = useGroupColumns()
+	const equipmentColumns = useEquipmentColumns()
+	const insuranceColumns = useInsuranceColumns()
 
 	return (
 		<div>
@@ -28,10 +35,10 @@ export default function Settings({ data }) {
 					onSelectionChange={setSelected}
 				>
 
-					<Tab key='rentals' title='Rental'>
+					<Tab key='rentals' title={t('settings.rental')}>
 						<Card className='container p-4 flex gap-5'>
 							<Card className='container p-4 flex gap-5'>
-								<CardHeader>Groups</CardHeader>
+								<CardHeader>{t('settings.groups')}</CardHeader>
 								<GroupForm group={data.group} />
 								<TableUI
 									columns={groupColumns}
@@ -42,7 +49,7 @@ export default function Settings({ data }) {
 						</Card>
 					</Tab>
 
-					<Tab key='extras' title='Extras'>
+					<Tab key='extras' title={t('settings.extras')}>
 						<div>
 							<EquipmentForm equipment={data.equipment} />
 							<TableUI
@@ -58,7 +65,7 @@ export default function Settings({ data }) {
 						</div>
 					</Tab>
 
-					<Tab key='company' title='Company'>
+					<Tab key='company' title={t('settings.company')}>
 						<div>
 							<SettingsForm data={data.data.settings} />
 						</div>

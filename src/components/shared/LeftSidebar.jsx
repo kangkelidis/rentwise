@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { SignOutButton, SignedIn, useAuth } from '@clerk/nextjs'
+import { useLocale } from '@/contexts/LocaleContext'
 
 import { sidebarLinks } from '@/constants'
 import SignOutCard from '../elements/SignOutCard'
@@ -11,8 +12,8 @@ import SignOutCard from '../elements/SignOutCard'
 export default function LeftSidebar() {
 	const router = useRouter()
 	const pathname = usePathname()
-
 	const { userId } = useAuth()
+	const { t } = useLocale()
 
 	return (
 		<section className='custom-scrollbar leftsidebar'>
@@ -35,7 +36,9 @@ export default function LeftSidebar() {
 								height={24}
 							/>
 
-							<p className='text-light-1 max-lg:hidden'>{link.label}</p>
+							<p className='text-light-1 max-lg:hidden'>
+								{t(`nav.${link.labelKey}`)}
+							</p>
 						</Link>
 					)
 				})}

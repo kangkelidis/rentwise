@@ -4,10 +4,12 @@ import { useRouter } from 'next/navigation'
 import { SignOutButton, SignedIn } from '@clerk/nextjs'
 import Image from 'next/image'
 import { useUser } from '@clerk/nextjs'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function SignOutCard(props) {
 	const router = useRouter()
 	const { isSignedIn, user, isLoaded } = useUser()
+	const { t } = useLocale()
 
 	return (
 		<>
@@ -21,7 +23,7 @@ export default function SignOutCard(props) {
 
 					<div>
 						<p>{user?.username}</p>
-						<p className='text-light-2 max-lg:hidden'>Logout</p>
+						<p className='text-light-2 max-lg:hidden'>{t('auth.logout')}</p>
 					</div>
 				</div>
 			</SignOutButton>

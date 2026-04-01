@@ -1,5 +1,6 @@
 'use client'
 
+import { useLocale } from '@/contexts/LocaleContext'
 import {
 	Modal,
 	ModalContent,
@@ -28,6 +29,7 @@ import { useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 export default function InsuranceForm({ insurance }) {
+	const { t } = useLocale()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 
@@ -75,7 +77,7 @@ export default function InsuranceForm({ insurance }) {
 				}}
 				color='primary'
 			>
-				Add Insurance
+				{t('forms.addInsurance')}
 			</Button>
 			<Modal
 				isOpen={isOpen}
@@ -93,7 +95,7 @@ export default function InsuranceForm({ insurance }) {
 						return (
 							<>
 								<ModalHeader className='flex flex-col gap-1'>
-									Add Insurance
+									{insurance ? t('forms.editInsurance') : t('forms.addInsurance')}
 								</ModalHeader>
 								<ModalBody>
 									<Form {...form}>
@@ -106,7 +108,7 @@ export default function InsuranceForm({ insurance }) {
 												name='name'
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Insurance Name</FormLabel>
+														<FormLabel>{t('forms.insuranceName')}</FormLabel>
 														<FormControl>
 															<Input placeholder='Ex. SDW' {...field} />
 														</FormControl>
@@ -126,13 +128,13 @@ export default function InsuranceForm({ insurance }) {
 															defaultSelectedKeys={
 																field.value ? [field.value] : undefined
 															}
-															label='Price Calculation'
+															label={t('forms.priceCalculation')}
 															labelPlacement='outside'
 															isRequired
 															size='md'
 														>
-															<SelectItem key={'day'}>Per day</SelectItem>
-															<SelectItem key={'fix'}>Fix</SelectItem>
+															<SelectItem key={'day'}>{t('forms.perDay')}</SelectItem>
+															<SelectItem key={'fix'}>{t('forms.fix')}</SelectItem>
 														</Select>
 														<FormMessage />
 													</FormItem>
@@ -144,7 +146,7 @@ export default function InsuranceForm({ insurance }) {
 												name='price_per_day'
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Price</FormLabel>
+														<FormLabel>{t('forms.price')}</FormLabel>
 														<FormControl>
 															<Input type='number' placeholder='' {...field} />
 														</FormControl>
@@ -157,7 +159,7 @@ export default function InsuranceForm({ insurance }) {
 												isSelected={isDepositSelected}
 												onValueChange={setDepositSelected}
 											>
-												Security Deposit
+												{t('forms.securityDeposit')}
 											</Checkbox>
 
 											{isDepositSelected && (
@@ -167,7 +169,7 @@ export default function InsuranceForm({ insurance }) {
 														name='deposit_amount'
 														render={({ field }) => (
 															<FormItem>
-																<FormLabel>Deposit Amount</FormLabel>
+																<FormLabel>{t('forms.depositAmount')}</FormLabel>
 																<FormControl>
 																	<Input
 																		type='number'
@@ -184,7 +186,7 @@ export default function InsuranceForm({ insurance }) {
 														name='deposit_excess'
 														render={({ field }) => (
 															<FormItem>
-																<FormLabel>Excess Amount</FormLabel>
+																<FormLabel>{t('forms.excessAmount')}</FormLabel>
 																<FormControl>
 																	<Input
 																		type='number'
@@ -204,7 +206,7 @@ export default function InsuranceForm({ insurance }) {
 
 								<ModalFooter>
 									<Button type='submit' color='primary' onPress={onSubmit}>
-										{insurance ? 'Update' : 'Add'}
+										{insurance ? t('forms.update') : t('common.add')}
 									</Button>
 								</ModalFooter>
 							</>

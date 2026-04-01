@@ -18,10 +18,12 @@ import {
 
 import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
+import { useLocale } from "@/contexts/LocaleContext"
 
 export function DataTable({ columns, data }) {
   const router = useRouter()
   const pathname = usePathname()
+  const { t } = useLocale()
 
   const table = useReactTable({
     data,
@@ -62,13 +64,13 @@ export function DataTable({ columns, data }) {
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
-                ))} 
+                ))}
               </TableRow>
             ))
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                {t('table.noResults')}
               </TableCell>
             </TableRow>
           )}

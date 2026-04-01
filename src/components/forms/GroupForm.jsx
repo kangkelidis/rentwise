@@ -1,5 +1,6 @@
 'use client'
 
+import { useLocale } from '@/contexts/LocaleContext'
 import {
 	Modal,
 	ModalContent,
@@ -27,6 +28,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function GroupForm({ group }) {
+	const { t } = useLocale()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 
@@ -56,7 +58,7 @@ export default function GroupForm({ group }) {
 		}
 		const values = form.getValues()
 		await updateGroup(group?._id, values, pathname)
-		
+
 		group = undefined
 		onClose()
 		router.push(pathname)
@@ -72,7 +74,7 @@ export default function GroupForm({ group }) {
 				}}
 				color='primary'
 			>
-				Add Group
+				{t('forms.addGroup')}
 			</Button>
 			<Modal
 				isOpen={isOpen}
@@ -90,7 +92,7 @@ export default function GroupForm({ group }) {
 						return (
 							<>
 								<ModalHeader className='flex flex-col gap-1'>
-									{group ? 'Edit Group' : 'Add Group'}
+									{group ? t('forms.editGroup') : t('forms.addGroup')}
 								</ModalHeader>
 								<ModalBody>
 									<Form {...form}>
@@ -103,7 +105,7 @@ export default function GroupForm({ group }) {
 												name='name'
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Group Name</FormLabel>
+														<FormLabel>{t('forms.groupName')}</FormLabel>
 														<FormControl>
 															<Input placeholder='Ex. Economy' {...field} />
 														</FormControl>
@@ -117,7 +119,7 @@ export default function GroupForm({ group }) {
 												color='primary'
 												onPress={onSubmit}
 											>
-												{group ? 'Update' : 'Add'}
+												{group ? t('forms.update') : t('common.add')}
 											</Button>
 										</form>
 									</Form>

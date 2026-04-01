@@ -5,6 +5,7 @@ import { Calendar } from '@/components/ui/calendar'
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
+import { useLocale } from '@/contexts/LocaleContext'
 import {
 	Popover,
 	PopoverContent,
@@ -17,6 +18,7 @@ export default function DailyPlan({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
+	const { t } = useLocale()
 
 	const selectedDate = searchParams.get('date') || new Date()
 	function handleDateChange(e) {
@@ -30,9 +32,9 @@ export default function DailyPlan({ data }) {
 
 	return (
 		<div className=''>
-			<h2 className='text-heading2-bold my-5'>Daily Plan</h2>
+			<h2 className='text-heading2-bold my-5'>{t('dashboard.dailyPlan')}</h2>
 			<div className=''>
-				<span>Select Date </span>
+				<span>{t('common.date')} </span>
 				<Popover>
 					<PopoverTrigger asChild>
 						<Button
@@ -44,7 +46,7 @@ export default function DailyPlan({ data }) {
 							{selectedDate ? (
 								format(new Date(selectedDate), 'PPP')
 							) : (
-								<span>Pick a date</span>
+								<span>{t('common.date')}</span>
 							)}
 							<CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
 						</Button>
@@ -78,7 +80,7 @@ export default function DailyPlan({ data }) {
 			)}
 			<Divider className='my-4' />
 			<div className=' bg-content1 rounded-xl shadow-lg p-4 mt-3 '>
-				<h3 className='text-heading2-bold'>Missed Orders</h3>
+				<h3 className='text-heading2-bold'>{t('dashboard.missedOrders')}</h3>
 				{data?.missedOrders?.map((order) => {
 					return (
 						<div key={order.id} className='my-3'>

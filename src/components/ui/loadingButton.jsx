@@ -1,7 +1,10 @@
 import React from "react";
 import {Button} from "@nextui-org/button";
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function LoadingButton({isLoading, children, ...props}) {
+  const { t } = useLocale()
+
   return (
     <Button
     isLoading={isLoading}
@@ -30,7 +33,7 @@ export default function LoadingButton({isLoading, children, ...props}) {
       }
       {...props}
     >
-      {isLoading ? 'Loading...' : children}
+      {isLoading ? t('common.loading') : children}
     </Button>
   );
 }

@@ -31,6 +31,7 @@ import { getTotalPrice } from '@/lib/price/rates'
 import StatusChip from '../elements/StatusChip'
 import { deleteOrder } from '@/lib/actions/order.actions'
 import Confirmation from '../shared/Confirmation'
+import { useLocale } from '@/contexts/LocaleContext'
 
 export default function TableUI({
 	columns,
@@ -39,6 +40,7 @@ export default function TableUI({
 	rowsPerPage = DEFAULT_LIMIT,
 	title
 }) {
+	const { t } = useLocale()
 	try {
 		data = JSON.parse(data)
 	} catch (error) {}
@@ -46,11 +48,11 @@ export default function TableUI({
 	const items = data.items
 	const [selectedKeys, setSelectedKeys] = useState(new Set([]))
 
-	
+
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
-	
+
 	const [page, setPage] = useState(Number(searchParams.get('page')) || 1)
 	const pages = count ? Math.ceil(count / rowsPerPage) : 0
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -84,7 +86,7 @@ export default function TableUI({
 				{selectionMode === 'multiple' && (
 					<span className='w-[30%] text-small text-default-400'>
 						{selectedKeys === 'all'
-							? 'All items selected'
+							? t('table.allItemsSelected')
 							: `${selectedKeys.size} of ${count.length} selected`}
 					</span>
 				)}
@@ -99,7 +101,7 @@ export default function TableUI({
 							total={pages}
 							onChange={(page) => onChangePage(page)}
 						/>
-						<span className='text-small text-gray-500'>Total: {count}</span>
+						<span className='text-small text-gray-500'>{t('common.total')}: {count}</span>
 					</div>
 				)}
 			</div>
@@ -162,11 +164,11 @@ export default function TableUI({
 				if (!cellValue) return
 				return (
 					<div>
-						<p className='text-subtle-medium text-gray-500'>Vehicle</p>
+						<p className='text-subtle-medium text-gray-500'>{t('table.vehicle')}</p>
 						<p>
 							{toCurrency(cellValue.vehicle.custom || cellValue.vehicle.total)}
 						</p>
-						<p className='text-subtle-medium text-gray-500'>Total</p>
+						<p className='text-subtle-medium text-gray-500'>{t('common.total')}</p>
 						<p>{toCurrency(getTotalPrice(cellValue))}</p>
 					</div>
 				)
@@ -242,7 +244,7 @@ export default function TableUI({
 							onPress={async () => {
 								setDeleteItem({
 									id: item.id,
-									title: 'Order No: ' + item.number,
+									title: t('table.orderNo') + ': ' + item.number,
 									action: deleteOrder,
 									params: [item.id, pathname],
 								})
@@ -291,7 +293,7 @@ export default function TableUI({
 								</TableColumn>
 							)}
 						</TableHeader>
-						<TableBody emptyContent={'No rows to display.'} items={items}>
+						<TableBody emptyContent={t('table.noRowsToDisplay')} items={items}>
 							{(item) => (
 								<TableRow className='' key={item.key}>
 									{(columnKey) => (
