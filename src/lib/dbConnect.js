@@ -2,6 +2,47 @@ import mongoose from 'mongoose'
 
 let cached = global.mongoose
 
+function getSafeUriDetails(uri) {
+	if (!uri) {
+		return {
+			hasUri: false,
+			host: null,
+			hasDbPath: false,
+		}
+	}
+
+	try {
+		const parsed = new URL(uri)
+		const rawPath = parsed.pathname || ''
+		const hasDbPath = rawPath.length > 1
+
+		return {
+			hasUri: true,
+			host: parsed.host,
+			hasDbPath,
+		}
+	} catch (error) {
+		return {
+			hasUri: true,
+			host: null,
+			hasDbPath: false,
+			uriParseError: true,
+		}
+	}
+}
+
+export function getMongoDiagnostics() {
+	const uri = process.env.DB_URI || process.env.MONGODB_URI
+	return {
+		env: process.env.VERCEL_ENV || 'local',
+		nodeEnv: process.env.NODE_ENV || 'development',
+		mongo: getSafeUriDetails(uri),
+		mongooseReadyState: mongoose.connection?.readyState ?? null,
+		cachedConnReadyState: cached?.conn?.connection?.readyState ?? null,
+		cachedPromiseExists: Boolean(cached?.promise),
+	}
+}
+
 async function dbConnect() {
 	const MONGODB_URI = process.env.DB_URI || process.env.MONGODB_URI
 
@@ -40,6 +81,13 @@ async function dbConnect() {
 		cached.conn = await cached.promise
 	} catch (e) {
 		cached.promise = null
+		const info = getMongoDiagnostics()
+		console.error('MongoDB connection failed', {
+			message: e?.message,
+			name: e?.name,
+			code: e?.code,
+			...info,
+		})
 		throw e
 	}
 	return cached.conn
