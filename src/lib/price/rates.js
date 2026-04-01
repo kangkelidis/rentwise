@@ -134,6 +134,13 @@ export function getNormalPrices(params, settings, prev) {
 }
 
 export function getTotalPrice(prices) {
+	if (!prices || typeof prices !== 'object') {
+		return 0
+	}
+
+	const equipment =
+		prices.equipment && typeof prices.equipment === 'object' ? prices.equipment : {}
+
 	let total = 0
 	Object.keys(prices).forEach((key) => {
 		if (key !== 'deposit' && key !== 'excess' && key !== 'equipment') {
@@ -144,11 +151,11 @@ export function getTotalPrice(prices) {
 					: 0
 		}
 		if (key === 'equipment') {
-			Object.keys(prices.equipment).forEach((k) => {
+			Object.keys(equipment).forEach((k) => {
 				total += hasCustomPrice(k, prices, true)
-					? prices.equipment[k].custom
-					: typeof prices.equipment?.[k].total === 'number'
-						? prices.equipment[k].total
+					? equipment[k].custom
+					: typeof equipment?.[k].total === 'number'
+						? equipment[k].total
 						: 0
 			})
 		}
