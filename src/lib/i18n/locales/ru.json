@@ -153,7 +153,8 @@
     "passport": "Паспорт",
     "drivingLicense": "Водительские права",
     "client": "Клиент",
-    "orderHistory": "История заказов"
+    "orderHistory": "История заказов",
+    "missingClient": "Клиент отсутствует"
   },
   "owner": {
     "addOwner": "Добавить владельца",
@@ -314,6 +315,7 @@
     "confirmDelete": "Вы уверены, что хотите удалить этот элемент?",
     "deleteSuccess": "Элемент успешно удалён",
     "saveSuccess": "Изменения успешно сохранены",
+    "saveFailed": "Не удалось сохранить изменения",
     "errorOccurred": "Произошла ошибка",
     "noDataFound": "Данные не найдены",
     "uploadSuccess": "Файл успешно загружен",

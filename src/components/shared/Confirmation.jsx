@@ -15,6 +15,7 @@ import { useLocale } from '@/contexts/LocaleContext'
 export default function Confirmation({ isOpen, onOpenChange, deleteItem }) {
 	const { t } = useLocale()
 	const [isLoading, setIsLoading] = useState(false)
+	const [error, setError] = useState('')
 
 	return (
 		<Modal
@@ -31,16 +32,25 @@ export default function Confirmation({ isOpen, onOpenChange, deleteItem }) {
 
 							<ModalBody>
 								{t('messages.confirmDelete')} {deleteItem.title} ?
+								{error && <p className='text-red-500'>{error}</p>}
 							</ModalBody>
 							<ModalFooter>
 								<LoadingButton
 									isLoading={isLoading}
 									onPress={async () => {
+										if (isLoading) return
+
 										setIsLoading(true)
-										await deleteItem.action(...deleteItem.params)
-                                        onClose()
-                                        deleteItem.onSuccess()
-										setIsLoading(false)
+										setError('')
+										try {
+											await deleteItem.action(...deleteItem.params)
+											onClose()
+											deleteItem.onSuccess?.()
+										} catch (error) {
+											setError(error?.message || t('messages.errorOccurred'))
+										} finally {
+											setIsLoading(false)
+										}
 									}}
 								>
 									{t('common.yes')}

@@ -32,6 +32,7 @@ import StatusChip from '../elements/StatusChip'
 import { deleteOrder } from '@/lib/actions/order.actions'
 import Confirmation from '../shared/Confirmation'
 import { useLocale } from '@/contexts/LocaleContext'
+import { getClientDisplayName, getRecordId } from '@/lib/client-display'
 
 export default function TableUI({
 	columns,
@@ -135,11 +136,21 @@ export default function TableUI({
 					></VehicleDetails>
 				)
 			case 'client':
-				return (
-					<Link href={`/clients/${item.client._id}`}>
-						<p>{item.client?.full_name}</p>
-					</Link>
-				)
+				{
+					const clientId = getRecordId(item.client)
+					const clientName = getClientDisplayName(
+						item.client,
+						t('client.missingClient')
+					)
+
+					return clientId ? (
+						<Link href={`/clients/${clientId}`}>
+							<p>{clientName}</p>
+						</Link>
+					) : (
+						<p className='text-red-500'>{clientName}</p>
+					)
+				}
 
 			case 'owner':
 				return <p>{item.owner?.name}</p>

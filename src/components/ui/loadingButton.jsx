@@ -2,12 +2,13 @@ import React from "react";
 import {Button} from "@nextui-org/button";
 import { useLocale } from '@/contexts/LocaleContext'
 
-export default function LoadingButton({isLoading, children, ...props}) {
+export default function LoadingButton({isLoading, children, isDisabled, ...props}) {
   const { t } = useLocale()
 
   return (
     <Button
     isLoading={isLoading}
+    isDisabled={isDisabled || isLoading}
     color="secondary"
     spinner={
         <svg

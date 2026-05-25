@@ -3,7 +3,44 @@
 import { revalidatePath } from 'next/cache'
 import dbConnect from '../dbConnect'
 import clientModel from '@/models/client.model'
+import orderModel from '@/models/order.model'
 import * as CSV from 'csv-string'
+import { getClientDisplayName } from '@/lib/client-display'
+
+function cleanOptionalString(value) {
+	if (typeof value !== 'string') return value
+
+	const trimmed = value.trim()
+	return trimmed || undefined
+}
+
+function cleanClientValues(values = {}) {
+	return {
+		...values,
+		full_name: cleanOptionalString(values.full_name),
+		tel: cleanOptionalString(values.tel),
+		email: cleanOptionalString(values.email)?.toLowerCase(),
+		passport: cleanOptionalString(values.passport),
+		license: cleanOptionalString(values.license),
+		nationality: cleanOptionalString(values.nationality),
+		address: cleanOptionalString(values.address),
+		dob: values.dob || undefined,
+		documents: Array.isArray(values.documents) ? values.documents : [],
+	}
+}
+
+function getDuplicateClientQuery(values) {
+	const checks = []
+
+	if (values.email) checks.push({ email: values.email })
+	if (values.license) checks.push({ license: values.license })
+	if (values.passport) checks.push({ passport: values.passport })
+	if (values.full_name && values.tel) {
+		checks.push({ full_name: values.full_name, tel: values.tel })
+	}
+
+	return checks.length ? { $or: checks } : null
+}
 
 export async function fetchClients(
 	page,
@@ -43,7 +80,7 @@ export async function fetchClientsList() {
 	const clients = await fetchClients()
 	if (!clients || !clients.items) return []
 	return clients.items.map((client) => ({
-		label: client.full_name,
+		label: getClientDisplayName(client, 'Unnamed client'),
 		value: client._id,
 	}))
 }
@@ -51,10 +88,20 @@ export async function fetchClientsList() {
 export async function updateClient(clientID, values, path) {
 	try {
 		await dbConnect()
+		const cleanValues = cleanClientValues(values)
 
-		const client = clientID
-			? await clientModel.findByIdAndUpdate(clientID, values)
-			: await clientModel.create(values)
+		if (clientID) {
+			await clientModel.findByIdAndUpdate(clientID, cleanValues)
+		} else {
+			const duplicateQuery = getDuplicateClientQuery(cleanValues)
+			const existingClient = duplicateQuery
+				? await clientModel.findOne(duplicateQuery)
+				: null
+
+			if (!existingClient) {
+				await clientModel.create(cleanValues)
+			}
+		}
 
 		revalidatePath(path)
 		return true
@@ -77,12 +124,20 @@ export async function fetchClient(id) {
 export async function deleteClient(id, path) {
 	try {
 		await dbConnect()
+		const orderCount = await orderModel.countDocuments({ client: id })
+
+		if (orderCount > 0) {
+			throw new Error(
+				'Cannot delete a client with existing orders. Reassign or delete the orders first.'
+			)
+		}
+
 		await clientModel.findByIdAndDelete(id)
 		revalidatePath(path)
 		return true
 	} catch (error) {
 		console.log(error)
-		throw new Error('Could not delete client with id: ' + id)
+		throw new Error(error?.message || 'Could not delete client with id: ' + id)
 	}
 }
 

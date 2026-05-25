@@ -153,7 +153,8 @@
     "passport": "Passport",
     "drivingLicense": "Driving License",
     "client": "Client",
-    "orderHistory": "Order History"
+    "orderHistory": "Order History",
+    "missingClient": "Missing client"
   },
   "owner": {
     "addOwner": "Add Owner",
@@ -314,6 +315,7 @@
     "confirmDelete": "Are you sure you want to delete this item?",
     "deleteSuccess": "Item deleted successfully",
     "saveSuccess": "Changes saved successfully",
+    "saveFailed": "Could not save changes",
     "errorOccurred": "An error occurred",
     "noDataFound": "No data found",
     "uploadSuccess": "File uploaded successfully",

@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { Button } from '@nextui-org/button'
 import StatusChip from './StatusChip'
 import { useLocale } from '@/contexts/LocaleContext'
+import { getClientDisplayName, getRecordId } from '@/lib/client-display'
 
 const cellClass ='border-[0.1px] border-gray-500 p-4 grow  '
 export default function OrderCard({ order, type, settings }) {
@@ -25,6 +26,10 @@ export default function OrderCard({ order, type, settings }) {
 		new Date(),
 		new Date(order[type + '_date'])
 	)
+	const clientId = getRecordId(order.client)
+	const clientName = getClientDisplayName(order.client, t('client.missingClient'))
+	const canPrintAgreement = Boolean(order.client && clientId)
+
 	return (
 		<div
 			className={` rounded-lg border-2 ${
@@ -74,7 +79,11 @@ export default function OrderCard({ order, type, settings }) {
 						{t('client.client')}
 					</span>
 
-					{order.client.full_name}
+					{clientId ? (
+						<Link href={`/clients/${clientId}`}>{clientName}</Link>
+					) : (
+						<span className='text-red-500'>{clientName}</span>
+					)}
 				</div>
 
 
@@ -110,7 +119,12 @@ export default function OrderCard({ order, type, settings }) {
 					<Link href={'/orders/' + order.id}>
 						<Button>{t('order.viewOrder')}</Button>
 					</Link>
-					<Agreement prices={order.prices} order={order} settings={settings} />
+					<Agreement
+						prices={order.prices}
+						order={order}
+						settings={settings}
+						isDisabled={!canPrintAgreement}
+					/>
 					</div>
 				</div>
 

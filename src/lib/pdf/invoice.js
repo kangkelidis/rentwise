@@ -1,5 +1,6 @@
 import * as jsPDF from 'jspdf'
 import { hasCustomPrice, toCurrency, zeroPad } from '../utils.js'
+import { getClientDisplayName } from '../client-display.js'
 import autoTable from 'jspdf-autotable'
 
 const doc = new jsPDF.jsPDF()
@@ -101,20 +102,21 @@ function printHeader(company, logoImgData, order, totals) {
 	doc.text('Bill To:', xPos, yPos)
 	yPos += 2 * LINE_SPACE
 	doc.setFont('Helvetica', 'bold')
-	doc.text(order.client.full_name, xPos, yPos)
+	const client = order.client || {}
+	doc.text(getClientDisplayName(client, 'Missing client'), xPos, yPos)
 
 	doc.setFont('Helvetica', 'normal')
 	yPos += 2 * LINE_SPACE
-	if (order.client.email) {
-		doc.text(order.client.email, xPos, yPos)
+	if (client.email) {
+		doc.text(client.email, xPos, yPos)
 		yPos += 1.5*LINE_SPACE
 	}
-	if (order.client.tel) {
-		doc.text(order.client.tel, xPos, yPos)
+	if (client.tel) {
+		doc.text(client.tel, xPos, yPos)
 		yPos += 1.5*LINE_SPACE
 	}
-	if (order.client.address && order.client.address !== ', , , , ') {
-		doc.text(order.client.address, xPos, yPos)
+	if (client.address && client.address !== ', , , , ') {
+		doc.text(client.address, xPos, yPos)
 		yPos += 1.5*LINE_SPACE
 	}
 	yPos += LINE_SPACE

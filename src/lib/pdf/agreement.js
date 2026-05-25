@@ -1,5 +1,6 @@
 import * as jsPDF from 'jspdf'
 import { hasCustomPrice, toCurrency, zeroPad } from '../utils.js'
+import { getClientDisplayName } from '../client-display.js'
 
 const doc = new jsPDF.jsPDF()
 
@@ -262,7 +263,7 @@ function printVehicleInfo(order) {
 	return VEHICLE_Y + LINE_SPACE + 5 * CELL_HEIGHT
 }
 
-function printDriver(yPos, client, drivers) {
+function printDriver(yPos, client = {}, drivers) {
 	let xPos = PAGE_MARGIN
 	yPos = yPos + 3 * LINE_SPACE
 
@@ -295,7 +296,7 @@ function printDriver(yPos, client, drivers) {
 	yPos += LINE_SPACE + 1.5
 	doc.setFont('Helvetica', 'bold')
 	doc.setFontSize(11)
-	doc.text(client.full_name, xPos, yPos)
+	doc.text(getClientDisplayName(client, 'Missing client'), xPos, yPos)
 	xPos += COL_WIDTH
 	doc.line(xPos - 1, TOP_LINE+CELL_HEIGHT, xPos - 1, TOP_LINE + 3 * CELL_HEIGHT)
 	// doc.text(client.last_name, xPos, yPos)

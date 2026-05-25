@@ -21,7 +21,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@nextui-org/input'
 import { Calendar } from '@/components/ui/calendar'
-import { Select, SelectSection, SelectItem } from '@nextui-org/select'
+import { Select, SelectItem } from '@nextui-org/select'
 
 import countries from '@/lib/data/countries.json' assert { type: 'json' }
 
@@ -32,21 +32,33 @@ import { updateClient, deleteClient } from '@/lib/actions/client.actions'
 import { clientValidationSchema } from '@/lib/validations/schemas'
 
 import { useRouter, usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useRef, useState } from 'react'
 import { format } from 'date-fns'
-import { Check, ChevronsUpDown, CalendarIcon } from 'lucide-react'
-import { DayPicker } from 'react-day-picker'
+import { CalendarIcon } from 'lucide-react'
 import Upload from '../elements/Upload'
 import { CldImage } from 'next-cloudinary'
 import { Card, CardBody } from '@nextui-org/card'
 import { useDisclosure } from '@nextui-org/react'
 import Confirmation from '../shared/Confirmation'
+import LoadingButton from '../ui/loadingButton'
+import { getClientDisplayName } from '@/lib/client-display'
+
+function parseClientData(data) {
+	if (typeof data !== 'string') return data || null
+
+	try {
+		return JSON.parse(data || '{}')
+	} catch (error) {
+		return null
+	}
+}
 
 export function ClientForm({ data }) {
 	const router = useRouter()
 	const pathname = usePathname()
 	const { t } = useLocale()
-	const client = data
+	const client = parseClientData(data)
+	const hasClient = Boolean(client?._id || client?.id)
 	const form = useForm({
 		resolver: zodResolver(clientValidationSchema),
 		defaultValues: {
@@ -62,6 +74,9 @@ export function ClientForm({ data }) {
 		},
 	})
 	const { isOpen, onOpen, onOpenChange } = useDisclosure()
+	const isSubmittingRef = useRef(false)
+	const [isSaving, setIsSaving] = useState(false)
+	const [submitError, setSubmitError] = useState('')
 	const [deleteItem, setDeleteItem] = useState({
 		id: null,
 		title: '',
@@ -70,18 +85,36 @@ export function ClientForm({ data }) {
 	})
 
 	async function onSubmit(values) {
-		const success = await updateClient(client?._id, values, pathname)
-		if (success) {
-			router.push('/clients')
+		if (isSubmittingRef.current) return
+
+		isSubmittingRef.current = true
+		setIsSaving(true)
+		setSubmitError('')
+
+		const success = await updateClient(
+			hasClient ? client._id || client.id : null,
+			values,
+			pathname
+		)
+
+		if (!success) {
+			setSubmitError(t('messages.saveFailed'))
+			isSubmittingRef.current = false
+			setIsSaving(false)
+			return
 		}
+
+		router.push('/clients')
 	}
 
 	async function onDelete() {
+		const clientId = client._id || client.id
+
 		setDeleteItem({
-			id: client.id,
-			title: client.full_name,
+			id: clientId,
+			title: getClientDisplayName(client, t('client.missingClient')),
 			action: deleteClient,
-			params: [client.id, pathname],
+			params: [clientId, pathname],
 			onSuccess: () => router.back()
 		})
 		onOpen()
@@ -96,7 +129,7 @@ export function ClientForm({ data }) {
 			/>
 
 			<Form {...form}>
-				<form action={form.handleSubmit(onSubmit)} className='space-y-8'>
+				<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
 					<div className='form-container '>
 						<FormField
 							control={form.control}
@@ -105,7 +138,12 @@ export function ClientForm({ data }) {
 								<FormItem>
 									<FormLabel>{t('forms.fullName')}</FormLabel>
 									<FormControl>
-										<Input className='form-input' placeholder='' {...field} />
+										<Input
+											className='form-input'
+											placeholder=''
+											isDisabled={isSaving}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -161,7 +199,12 @@ export function ClientForm({ data }) {
 								<FormItem>
 									<FormLabel>{t('forms.phone')}</FormLabel>
 									<FormControl>
-										<Input className='form-input' placeholder='' {...field} />
+										<Input
+											className='form-input'
+											placeholder=''
+											isDisabled={isSaving}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -175,7 +218,12 @@ export function ClientForm({ data }) {
 								<FormItem>
 									<FormLabel>{t('forms.email')}</FormLabel>
 									<FormControl>
-										<Input className='form-input' placeholder='' {...field} />
+										<Input
+											className='form-input'
+											placeholder=''
+											isDisabled={isSaving}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -189,7 +237,12 @@ export function ClientForm({ data }) {
 								<FormItem>
 									<FormLabel>{t('forms.passport')}</FormLabel>
 									<FormControl>
-										<Input className='form-input' placeholder='' {...field} />
+										<Input
+											className='form-input'
+											placeholder=''
+											isDisabled={isSaving}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -203,7 +256,12 @@ export function ClientForm({ data }) {
 								<FormItem>
 									<FormLabel>{t('forms.license')}</FormLabel>
 									<FormControl>
-										<Input className='form-input' placeholder='' {...field} />
+										<Input
+											className='form-input'
+											placeholder=''
+											isDisabled={isSaving}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -223,7 +281,7 @@ export function ClientForm({ data }) {
 											defaultSelectedKeys={
 												field.value ? [field.value] : undefined
 											}
-											isRequired
+											isDisabled={isSaving}
 											size='sm'
 											onChange={field.onChange}
 										>
@@ -246,7 +304,12 @@ export function ClientForm({ data }) {
 								<FormItem>
 									<FormLabel>{t('forms.fullAddress')}</FormLabel>
 									<FormControl>
-										<Input className='form-input' placeholder='' {...field} />
+										<Input
+											className='form-input'
+											placeholder=''
+											isDisabled={isSaving}
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -280,20 +343,33 @@ export function ClientForm({ data }) {
 						</Card>
 					</div>
 					<div className='flex place-content-between'>
-						<Button type='submit'>{t('common.submit')}</Button>
-						{client && (
-							<Button type='button' variant='destructive' onClick={onDelete}>
+						<LoadingButton
+							type='submit'
+							isLoading={isSaving}
+							isDisabled={isSaving}
+						>
+							{t('common.submit')}
+						</LoadingButton>
+						{hasClient && (
+							<Button
+								type='button'
+								variant='destructive'
+								disabled={isSaving}
+								onClick={onDelete}
+							>
 								{t('common.delete')}
 							</Button>
 						)}
 						<Button
 							type='button'
 							variant='secondary'
+							disabled={isSaving}
 							onClick={() => router.back()}
 						>
 							{t('common.cancel')}
 						</Button>
 					</div>
+					{submitError && <p className='text-red-500'>{submitError}</p>}
 				</form>
 			</Form>
 		</>

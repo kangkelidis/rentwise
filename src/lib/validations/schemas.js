@@ -1,5 +1,8 @@
 import * as z from 'zod'
 
+const optionalString = z.string().trim().optional().or(z.literal(''))
+const optionalEmail = z.string().trim().email().optional().or(z.literal(''))
+
 export const vehicleValidationSchema = z.object({
     make: z.string(),
     model: z.string(),
@@ -51,14 +54,14 @@ export const orderValidationSchema = z.object({
 })
 
 export const clientValidationSchema = z.object({
-	full_name: z.string(),
-	dob: z.date(),
-	tel: z.string(),
-	email: z.string().email(),
-	passport: z.string(),
-	license: z.string(),
-	nationality: z.string(),
-	address: z.string(),
+	full_name: optionalString,
+	dob: z.date().optional().nullable().or(z.literal('')),
+	tel: optionalString,
+	email: optionalEmail,
+	passport: optionalString,
+	license: optionalString,
+	nationality: optionalString,
+	address: optionalString,
 	documents: z.array(z.string()).optional()
 })
 

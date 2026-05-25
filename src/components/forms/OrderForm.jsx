@@ -46,7 +46,7 @@ import {
 import { orderValidationSchema } from "@/lib/validations/schemas";
 
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Total from "../shared/Total";
 import UsePopover from "../hooks/usePopover";
 import Signature from "../elements/Signature";
@@ -166,6 +166,7 @@ export function OrderForm({ data }) {
 
   const [prices, setPrices] = useState(order?.prices || {});
   const [isLoading, setIsLoading] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const [isDifferentReturnSelected, setDifferentReturnSelected] =
     useState(false);
@@ -174,19 +175,19 @@ export function OrderForm({ data }) {
   );
   const [extraDrivers, setExtraDrivers] = useState(order?.extra_drivers || []);
   const [equipmentData, setEquipmentData] = useState(
-    order?.extras.length ? order.extras : equipment,
+    order?.extras?.length ? order.extras : equipment,
   );
 
   const defaultFormValues = {
-    vehicle: order?.vehicle.id || "",
-    client: order?.client.id || "",
+    vehicle: order?.vehicle?.id || "",
+    client: order?.client?.id || "",
     pick_up_date: order ? new Date(order.pick_up_date) : "",
     drop_off_date: order ? new Date(order.drop_off_date) : "",
     pick_up_location: order?.pick_up_location || "",
     drop_off_location: order?.drop_off_location || "",
     extras: order?.extras || [],
     insurance:
-      order?.insurance?.id || order?.vehicle.default_insurance || insurances[0],
+      order?.insurance?.id || order?.vehicle?.default_insurance || insurances[0]?.id || "",
     client_signature: order?.client_signature || "",
     status: order?.status || STATUS[0],
     extra_drivers: order?.extra_drivers || [],
@@ -275,57 +276,68 @@ export function OrderForm({ data }) {
   }
 
   async function onSubmit(values) {
-    setIsLoading(true);
-    const submitValues = form.getValues();
-    const extras = Array.isArray(submitValues.extras)
-      ? submitValues.extras
-      : [];
-    const equipmentParam = extras
-      .map((extra) => {
-        const matchingEquipment = equipment.find(
-          (eq) => eq.item.id === extra.item,
-        );
-        if (!matchingEquipment) return null;
-        return {
-          item: matchingEquipment.item,
-          count: extra.count,
-        };
-      })
-      .filter(Boolean);
+    if (isSubmittingRef.current) return;
 
-    const calculatedPrices = getNormalPrices(
-      {
-        num_days: dateDiffInDays(
-          submitValues.pick_up_date,
-          submitValues.drop_off_date,
-        ),
-        vehicle: vehicles.find((v) => v.id === submitValues.vehicle),
-        drivers: submitValues.extra_drivers || [],
-        equipment: equipmentParam,
-        insurance: insurances.find((i) => i.id === submitValues.insurance),
-      },
-      settings,
-      prices,
-    );
-    setPrices(calculatedPrices);
-    const newValues = {
-      ...values,
-      drop_off_location: isDifferentReturnSelected
-        ? values.drop_off_location
-        : values.pick_up_location,
-      prices: calculatedPrices,
-      status: values.status === STATUS[0] ? STATUS[1] : values.status,
-    };
-    // TODO: use error form server action
-    let success;
-    if (order) {
-      success = await updateOrder(order._id, newValues, pathname);
-    } else {
-      success = await createOrder(newValues, pathname);
+    isSubmittingRef.current = true;
+    setIsLoading(true);
+
+    try {
+      const submitValues = form.getValues();
+      const extras = Array.isArray(submitValues.extras)
+        ? submitValues.extras
+        : [];
+      const equipmentParam = extras
+        .map((extra) => {
+          const matchingEquipment = equipment.find(
+            (eq) => eq.item.id === extra.item,
+          );
+          if (!matchingEquipment) return null;
+          return {
+            item: matchingEquipment.item,
+            count: extra.count,
+          };
+        })
+        .filter(Boolean);
+
+      const calculatedPrices = getNormalPrices(
+        {
+          num_days: dateDiffInDays(
+            submitValues.pick_up_date,
+            submitValues.drop_off_date,
+          ),
+          vehicle: vehicles.find((v) => v.id === submitValues.vehicle),
+          drivers: submitValues.extra_drivers || [],
+          equipment: equipmentParam,
+          insurance: insurances.find((i) => i.id === submitValues.insurance),
+        },
+        settings,
+        prices,
+      );
+      setPrices(calculatedPrices);
+      const newValues = {
+        ...values,
+        drop_off_location: isDifferentReturnSelected
+          ? values.drop_off_location
+          : values.pick_up_location,
+        prices: calculatedPrices,
+        status: values.status === STATUS[0] ? STATUS[1] : values.status,
+      };
+      // TODO: use error form server action
+      let success;
+      if (order) {
+        success = await updateOrder(order._id, newValues, pathname);
+      } else {
+        success = await createOrder(newValues, pathname);
+      }
+      if (success) {
+        router.push("/orders/" + success);
+        return;
+      }
+    } catch (error) {
+      console.error("Failed to save order", error);
     }
-    if (success) {
-      router.push("/orders/" + success);
-    }
+
+    isSubmittingRef.current = false;
     setIsLoading(false);
   }
 
@@ -408,7 +420,7 @@ export function OrderForm({ data }) {
         </CardHeader>
         <CardBody>
           <Form {...form}>
-            <form action={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="form-container">
                 <Card className="w-full">
                   <CardHeader>{t("common.status")}</CardHeader>
@@ -856,13 +868,14 @@ export function OrderForm({ data }) {
               </div>
 
               <div className="flex place-content-between">
-                <LoadingButton isLoading={isLoading} type="submit">
+                <LoadingButton isLoading={isLoading} isDisabled={isLoading} type="submit">
                   {t("common.save")}
                 </LoadingButton>
                 {order && (
                   <ButtonUI
                     type="button"
                     variant="destructive"
+                    disabled={isLoading}
                     onClick={onDelete}
                   >
                     {t("common.delete")}

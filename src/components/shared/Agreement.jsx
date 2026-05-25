@@ -5,7 +5,7 @@ import LoadingButton from "../ui/loadingButton";
 import { printInvoice } from '@/lib/pdf/invoice';
 import { useLocale } from '@/contexts/LocaleContext'
 
-export default function Agreement({ settings, order, prices, invoice }) {
+export default function Agreement({ settings, order, prices, invoice, isDisabled }) {
 	const { t } = useLocale()
 
 	const baseURL =
@@ -26,6 +26,8 @@ export default function Agreement({ settings, order, prices, invoice }) {
 		image.src = src
 	}
 	function handleClick() {
+		if (isDisabled) return
+
 		toDataURL(baseURL + settings.company.logo + '.png', function (dataURL) {
 			const logoImgData = dataURL
 			invoice ? printInvoice(settings, order, prices, logoImgData) :
@@ -39,6 +41,7 @@ export default function Agreement({ settings, order, prices, invoice }) {
 				type='button'
 				color={invoice ? 'default' : "primary"}
 				onClick={handleClick}
+				isDisabled={isDisabled}
 				>
 
 				{invoice ? t('order.printInvoice') : t('order.printAgreement')}
@@ -46,4 +49,3 @@ export default function Agreement({ settings, order, prices, invoice }) {
 		</>
 	)
 }
-

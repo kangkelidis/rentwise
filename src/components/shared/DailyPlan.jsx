@@ -28,7 +28,11 @@ export default function DailyPlan({ data }) {
 	}
 	try {
 		data = JSON.parse(data)
-	} catch (error) {}
+	} catch (error) {
+		data = {}
+	}
+	const orders = Array.isArray(data.orders) ? data.orders : []
+	const missedOrders = Array.isArray(data.missedOrders) ? data.missedOrders : []
 
 	return (
 		<div className=''>
@@ -63,9 +67,9 @@ export default function DailyPlan({ data }) {
 				</Popover>
 			</div>
 
-			{data.orders.length > 0 && (
+			{orders.length > 0 && (
 				<div className=' bg-content1 rounded-xl shadow-lg p-4 mt-3 '>
-					{data.orders.map((order) => {
+					{orders.map((order) => {
 						return (
 							<div key={order.id} className='my-3'>
 								<OrderCard
@@ -81,7 +85,7 @@ export default function DailyPlan({ data }) {
 			<Divider className='my-4' />
 			<div className=' bg-content1 rounded-xl shadow-lg p-4 mt-3 '>
 				<h3 className='text-heading2-bold'>{t('dashboard.missedOrders')}</h3>
-				{data?.missedOrders?.map((order) => {
+				{missedOrders.map((order) => {
 					return (
 						<div key={order.id} className='my-3'>
 							<OrderCard

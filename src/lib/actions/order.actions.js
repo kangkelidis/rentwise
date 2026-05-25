@@ -86,7 +86,7 @@ export async function fetchOrder(id) {
 export async function fetchOrderForDate(date) {
 
 	if (date.toString() === 'Invalid Date') {
-		return
+		return []
 	}
 
 	date = discardTime(date)
@@ -126,31 +126,36 @@ export async function fetchOrderForDate(date) {
 }
 
 export async function fetchMissedOrders() {
-	await dbConnect()
-	const now = new Date()
-	const orders = await orderModel.find({
-		$or: [
-			{ $and: [{ pick_up_date: { $lt: now } }, { status: 'reserved' }] },
-			{ $and: [{ drop_off_date: { $lt: now } }, { status: { $ne: 'done' } }] },
-		]
-	})
-		.populate({
-			path: 'vehicle',
-			model: 'Vehicle',
-			populate: { path: 'group', model: 'Group' },
+	try {
+		await dbConnect()
+		const now = new Date()
+		const orders = await orderModel.find({
+			$or: [
+				{ $and: [{ pick_up_date: { $lt: now } }, { status: 'reserved' }] },
+				{ $and: [{ drop_off_date: { $lt: now } }, { status: { $ne: 'done' } }] },
+			]
 		})
-		.populate('client')
-		.populate('insurance')
-		.populate({ path: 'extras.item', model: 'Extras' })
+			.populate({
+				path: 'vehicle',
+				model: 'Vehicle',
+				populate: { path: 'group', model: 'Group' },
+			})
+			.populate('client')
+			.populate('insurance')
+			.populate({ path: 'extras.item', model: 'Extras' })
 
-	return orders.map((order) => {
-		const type =
-			order.pick_up_date < now
-				? 'pick_up'
-				: 'drop_off'
+		return orders.map((order) => {
+			const type =
+				order.pick_up_date < now
+					? 'pick_up'
+					: 'drop_off'
 
-		return { data: order, type: type }
-	})
+			return { data: order, type: type }
+		})
+	} catch (error) {
+		console.warn('Failed to fetch missed orders:', error.message)
+		return []
+	}
 }
 
 export async function deleteOrder(id, path) {
