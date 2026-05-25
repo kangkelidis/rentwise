@@ -1,6 +1,7 @@
 import * as jsPDF from 'jspdf'
 import { hasCustomPrice, toCurrency, zeroPad } from '../utils.js'
 import { getClientDisplayName } from '../client-display.js'
+import { getVatAmount, getVatTotals } from '../price/rates.js'
 
 const doc = new jsPDF.jsPDF()
 
@@ -444,7 +445,7 @@ function printDriver(yPos, client = {}, drivers) {
 	return yPos
 }
 
-function printTotal(yPos, order, totals, prices) {
+function printTotal(yPos, order, totals, prices, vatTotals) {
 	let xPos = PAGE_MARGIN
 	yPos = yPos + 3 * LINE_SPACE
 
@@ -492,7 +493,7 @@ function printTotal(yPos, order, totals, prices) {
 		prices
 	)
 	yPos = printInsurance(yPos, order, totals, prices)
-	yPos = printTax(yPos, order, totals)
+	yPos = printTax(yPos, order, totals, vatTotals.mode)
 
 	const bottom_line = yPos + CELL_HEIGHT
 	yPos = yPos + LINE_SPACE
@@ -512,7 +513,7 @@ function printTotal(yPos, order, totals, prices) {
 	xPos += COL_WIDTH
 	doc.text(toCurrency(totals.excess), xPos, yPos)
 	xPos += COL_WIDTH
-	doc.text(toCurrency(totals.total), xPos, yPos)
+	doc.text(toCurrency(vatTotals.total), xPos, yPos)
 	xPos += COL_WIDTH
 	doc.line(
 		PAGE_MARGIN,
@@ -682,11 +683,11 @@ function printExtras(topY, extras, order, totals, prices) {
 	return topY + CELL_HEIGHT * total_cell_num
 }
 
-function printTax(topY, order, totals) {
+function printTax(topY, order, totals, vatMode) {
 	let cell_num = order.extras?.length > 0 ? 3 : 2
 	let xPos = PAGE_MARGIN
 	let yPos = topY + LINE_SPACE
-	let total = (totals.vehicle * 19) / 119
+	let total = getVatAmount(totals.vehicle, vatMode)
 	doc.setFont('Helvetica', 'normal')
 	doc.setFontSize(5)
 	doc.text(`TYPE`, xPos + 1, yPos)
@@ -701,11 +702,11 @@ function printTax(topY, order, totals) {
 			xPos + COL_WIDTH,
 			topY + 2 * CELL_HEIGHT
 		)
-		total += (totals.equipment * 19) / 119
+		total += getVatAmount(totals.equipment, vatMode)
 		doc.setFont('Helvetica', 'bold')
 		doc.setFontSize(11)
 		doc.text(
-			toCurrency((totals.equipment * 19) / 119),
+			toCurrency(getVatAmount(totals.equipment, vatMode)),
 			xPos + 1,
 			yPos + CELL_HEIGHT + LINE_SPACE + 1.5
 		)
@@ -721,13 +722,13 @@ function printTax(topY, order, totals) {
 	doc.setFontSize(11)
 	doc.text('TAX', xPos, yPos)
 	xPos += COL_WIDTH
-	doc.text(toCurrency((totals.vehicle * 19) / 119), xPos, yPos)
+	doc.text(toCurrency(getVatAmount(totals.vehicle, vatMode)), xPos, yPos)
 	doc.text(
-		toCurrency((totals.insurance * 19) / 119),
+		toCurrency(getVatAmount(totals.insurance, vatMode)),
 		xPos,
 		yPos + (cell_num - 1) * CELL_HEIGHT
 	)
-	total += (totals.insurance * 19) / 119
+	total += getVatAmount(totals.insurance, vatMode)
 	doc.line(
 		PAGE_MARGIN,
 		topY + cell_num * CELL_HEIGHT,
@@ -813,8 +814,10 @@ export function printAgreement(settings, order, prices, logoImgData) {
 		}, {}),
 	}
 
-	totals.total =
-		totals.vehicle + totals.insurance + totals.drivers + totals.equipment
+	const vatTotals = getVatTotals(prices, settings)
+	totals.subtotal = vatTotals.subtotal
+	totals.tax = vatTotals.tax
+	totals.total = vatTotals.total
 
 	printTitle(order.number)
 	doc.setLineWidth(0.8)
@@ -827,7 +830,7 @@ export function printAgreement(settings, order, prices, logoImgData) {
 	printHeader(settings.company, logoImgData)
 	let lastY = printVehicleInfo(order)
 	lastY = printDriver(lastY, order.client, order.extra_drivers)
-	lastY = printTotal(lastY, order, totals, prices)
+	lastY = printTotal(lastY, order, totals, prices, vatTotals)
 
 	doc.setFont('Helvetica', 'normal')
 	doc.setFontSize(9)

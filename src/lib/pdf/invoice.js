@@ -1,6 +1,7 @@
 import * as jsPDF from 'jspdf'
 import { hasCustomPrice, toCurrency, zeroPad } from '../utils.js'
 import { getClientDisplayName } from '../client-display.js'
+import { getVatAmount, getVatTotals } from '../price/rates.js'
 import autoTable from 'jspdf-autotable'
 
 const doc = new jsPDF.jsPDF()
@@ -24,7 +25,15 @@ const CELL_HEIGHT = 8
 const SPACING = 3.5
 const LINE_SPACE = 2.7
 
-function printHeader(company, logoImgData, order, totals) {
+function getLineSubtotal(amount, vatMode) {
+	return vatMode === 'excluded' ? amount : amount - getVatAmount(amount, vatMode)
+}
+
+function getTaxText(amount, vatMode) {
+	return `(VAT 19%)  ${toCurrency(getVatAmount(amount, vatMode))}`
+}
+
+function printHeader(company, logoImgData, order, totals, vatTotals) {
 	doc.addImage(
 		logoImgData,
 		'png',
@@ -92,7 +101,7 @@ function printHeader(company, logoImgData, order, totals) {
 	doc.setFontSize(13)
 	doc.setFont('Helvetica', 'bold')
 
-	doc.text(toCurrency(totals.total), xPos, yPos, null, null, 'right')
+	doc.text(toCurrency(vatTotals.total), xPos, yPos, null, null, 'right')
 
 	// CLient
 	doc.setFontSize(11)
@@ -139,24 +148,23 @@ function printHeader(company, logoImgData, order, totals) {
 				})  |  ${new Date(order.pick_up_date).toLocaleDateString(
 					'en-UK'
 				)} - ${new Date(order.drop_off_date).toLocaleDateString('en-UK')}`,
-				`(VAT 19%)  ${toCurrency(totals.vehicle * 19 / 119)}`,
-				toCurrency(totals.vehicle *100/119),
+				getTaxText(totals.vehicle, vatTotals.mode),
+				toCurrency(getLineSubtotal(totals.vehicle, vatTotals.mode)),
 			],
 			[
 				2,
 				`Insurance: ${order.insurance.name.toUpperCase()}`,
-				`(VAT 19%)  ${toCurrency(totals.insurance * 19 / 119)}`,
-				toCurrency(totals.insurance * 100/119),
+				getTaxText(totals.insurance, vatTotals.mode),
+				toCurrency(getLineSubtotal(totals.insurance, vatTotals.mode)),
 			],
 			...order.extras.map((extra, i) => {
-
-				console.log(totals[extra.item.name]);
 				if (extra.count > 0) {
+					const extraTotal = totals[extra.item.name]
 					return [
 						Number(3 + i),
 						`${extra.count}x ${extra.item.name}`,
-						`(VAT 19%)  ${toCurrency(totals[extra.item.name] * 19 / 119 * extra.count)}`,
-						toCurrency(totals[extra.item.name] * 100/119 * extra.count),
+						getTaxText(extraTotal, vatTotals.mode),
+						toCurrency(getLineSubtotal(extraTotal, vatTotals.mode)),
 					]
 				} else {return []}
 			}).filter(a => a.length > 0),
@@ -168,16 +176,16 @@ function printHeader(company, logoImgData, order, totals) {
   	doc.line(PAGE_MARGIN, yPos, PAGE_WIDTH-PAGE_MARGIN, yPos);
 	yPos += 2*LINE_SPACE
 	doc.text('Total Tax', xPos -35, yPos, null, null, 'right')
-	doc.text(toCurrency(totals.total * 19/119), xPos, yPos, null, null, 'right')
+	doc.text(toCurrency(vatTotals.tax), xPos, yPos, null, null, 'right')
 	yPos += 2*LINE_SPACE
 
 	doc.text('Subtotal', xPos -35, yPos, null, null, 'right')
-	doc.text(toCurrency(totals.total * 100/119), xPos, yPos, null, null, 'right')
+	doc.text(toCurrency(vatTotals.subtotal), xPos, yPos, null, null, 'right')
 	yPos += 2*LINE_SPACE
 
 	doc.setFont('Helvetica', 'bold')
 	doc.text('Balance Due', xPos -35, yPos, null, null, 'right')
-	doc.text(toCurrency(totals.total), xPos, yPos, null, null, 'right')
+	doc.text(toCurrency(vatTotals.total), xPos, yPos, null, null, 'right')
 
 	doc.setFontSize(9);
 	doc.setFont("Helvetica", "normal");
@@ -233,8 +241,9 @@ export function printInvoice(settings, order, prices, logoImgData) {
 
 	totals.total =
 		totals.vehicle + totals.insurance + totals.drivers + totals.equipment
+	const vatTotals = getVatTotals(prices, settings)
 
-	printHeader(settings.company, logoImgData, order, totals)
+	printHeader(settings.company, logoImgData, order, totals, vatTotals)
 
 	doc.save(`${zeroPad(order.number, 3)}_invoice.pdf`)
 }

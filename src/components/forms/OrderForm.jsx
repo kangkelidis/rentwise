@@ -392,6 +392,7 @@ export function OrderForm({ data }) {
     vehicles: vehicles,
     equipment: equipmentData,
     insurances: insurances,
+    settings: settings,
   };
 
   const searchParams = useSearchParams();

@@ -5,7 +5,7 @@ import { Divider } from '@nextui-org/divider'
 import React from 'react'
 import VehicleDetails from './vehicle-details'
 import { formatDateDifference, toCurrency } from '@/lib/utils'
-import { getTotalPrice } from '@/lib/price/rates'
+import { getVatTotals } from '@/lib/price/rates'
 import Agreement from '../shared/Agreement'
 import Link from 'next/link'
 import { Button } from '@nextui-org/button'
@@ -106,7 +106,7 @@ export default function OrderCard({ order, type, settings }) {
 
 					<span className='block'>{t('order.insurance')}: {order.insurance?.name}</span>
 					<span className='block'>{t('order.deposit')}: {toCurrency(order.insurance?.deposit_amount)}</span>
-					<span className='block'>{t('order.totalAmount')}: {toCurrency(getTotalPrice(order.prices))}</span>
+					<span className='block'>{t('order.totalAmount')}: {toCurrency(getVatTotals(order.prices, settings).total)}</span>
 				</div>
 
 

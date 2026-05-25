@@ -51,6 +51,11 @@ const settingSchema = new mongoose.Schema({
         type: String,
         enum: ['fix', 'day']
     },
+    vat_mode: {
+        type: String,
+        enum: ['included', 'excluded'],
+        default: 'included'
+    },
     long_term_cut_off: {
         type: Number,
     }

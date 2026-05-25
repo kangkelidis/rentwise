@@ -27,7 +27,7 @@ import { toCurrency, zeroPad } from '@/lib/utils'
 import DateDisplay from '../shared/DateDisplay'
 import { deleteExtra } from '@/lib/actions/extras.actions'
 import { deleteGroup } from '@/lib/actions/group.actions'
-import { getTotalPrice } from '@/lib/price/rates'
+import { getVatTotals } from '@/lib/price/rates'
 import StatusChip from '../elements/StatusChip'
 import { deleteOrder } from '@/lib/actions/order.actions'
 import Confirmation from '../shared/Confirmation'
@@ -180,7 +180,7 @@ export default function TableUI({
 							{toCurrency(cellValue.vehicle.custom || cellValue.vehicle.total)}
 						</p>
 						<p className='text-subtle-medium text-gray-500'>{t('common.total')}</p>
-						<p>{toCurrency(getTotalPrice(cellValue))}</p>
+						<p>{toCurrency(getVatTotals(cellValue).total)}</p>
 					</div>
 				)
 

@@ -110,4 +110,5 @@ export const settingsValidationSchema = z.object({
 export const rentalsSettingsValidationSchema = z.object({
 	extra_driver_price_type: z.enum(['fix', 'day']),
 	extra_driver_price_per_day: z.coerce.number(),
+	vat_mode: z.enum(['included', 'excluded']).default('included'),
 })

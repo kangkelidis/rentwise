@@ -1,6 +1,50 @@
 import { LONG_TERM_DAYS } from '@/constants'
 import { dateDiffInDays, hasCustomPrice } from '../utils'
 
+export const VAT_RATE = 0.19
+export const VAT_MODE_INCLUDED = 'included'
+export const VAT_MODE_EXCLUDED = 'excluded'
+
+export function getVatMode(value) {
+	const mode = typeof value === 'string' ? value : value?.vat_mode
+
+	return mode === VAT_MODE_EXCLUDED ? VAT_MODE_EXCLUDED : VAT_MODE_INCLUDED
+}
+
+export function getVatAmount(amount, vatMode = VAT_MODE_INCLUDED) {
+	const value = Number(amount) || 0
+	const mode = getVatMode(vatMode)
+
+	return mode === VAT_MODE_EXCLUDED
+		? value * VAT_RATE
+		: (value * VAT_RATE) / (1 + VAT_RATE)
+}
+
+export function getVatTotals(prices, settings) {
+	const baseTotal = getTotalPrice(prices)
+	const hasLinePrices =
+		prices &&
+		typeof prices === 'object' &&
+		Object.keys(prices).some((key) => key !== 'vat_mode')
+	const mode = prices?.vat_mode
+		? getVatMode(prices.vat_mode)
+		: hasLinePrices
+			? VAT_MODE_INCLUDED
+			: getVatMode(settings?.vat_mode)
+	const tax = getVatAmount(baseTotal, mode)
+	const subtotal = mode === VAT_MODE_EXCLUDED ? baseTotal : baseTotal - tax
+	const total = mode === VAT_MODE_EXCLUDED ? baseTotal + tax : baseTotal
+
+	return {
+		mode,
+		rate: VAT_RATE,
+		baseTotal,
+		subtotal,
+		tax,
+		total,
+	}
+}
+
 function calculatePrice(standard_rate, num_days) {
 	let total = 0
 	const adj = 0.7 * (1 - Math.exp(-0.045 * Math.sqrt(num_days)))
@@ -101,6 +145,7 @@ function getEquipPrice(equip, num_days) {
 
 export function getNormalPrices(params, settings, prev) {
 	return {
+		vat_mode: getVatMode(settings?.vat_mode),
 		vehicle: {
 			total: getVehiclePrice(params.vehicle, params.num_days),
 			type: 'day',

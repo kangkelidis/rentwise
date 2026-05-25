@@ -1,7 +1,11 @@
 'use client'
 
 // TODO use server action
-import { getNormalPrices, getPrice, getTotalPrice } from '@/lib/price/rates'
+import {
+	getVatAmount,
+	getVatMode,
+	getVatTotals,
+} from '@/lib/price/rates'
 import {
 	changeSingleStateValue,
 	dateDiffInDays,
@@ -25,6 +29,11 @@ export default function Total(props) {
 	const vehicle = props.vehicles.find((v) => v.id === props.watch.vehicle)
 	const selectedEquip = props.equipment.filter((e) => e.count > 0)
 	const insurance = props.insurances.find((i) => i.id === props.watch.insurance)
+	const vatTotals = getVatTotals(props.prices, props.settings)
+	const vatMode = getVatMode(vatTotals.mode)
+	const vehicleTotal = hasCustomPrice('vehicle', props.prices)
+		? props.prices.vehicle?.custom
+		: props.prices.vehicle?.total
 
 	const editableInputProps = {
 		customPrices: props.customPrices,
@@ -74,14 +83,13 @@ export default function Total(props) {
 							</p>
 						</span>
 						<span className=' w-full flex justify-between'>
-							<p className='text-subtle-medium'>{t('common.vatInc')}</p>
+							<p className='text-subtle-medium'>
+								{vatMode === 'excluded'
+									? t('common.vatExcluded')
+									: t('common.vatIncluded')}
+							</p>
 							<p className=' text-small-regular'>
-								{toCurrency(
-									((props.prices.vehicle?.custom ||
-										props.prices.vehicle?.total) *
-										19) /
-										119
-								)}{' '}
+								{toCurrency(getVatAmount(vehicleTotal, vatMode))}{' '}
 							</p>
 						</span>
 						<Divider className='my-1' />
@@ -184,8 +192,16 @@ export default function Total(props) {
 						<div>
 							<p className='text-heading4-medium'>{t('common.taxes')}</p>
 							<div className='flex justify-between'>
-								<p className='text-small-regular'>{t('common.vat19Inc')}</p>
-								<p>{toCurrency((19 / 119) * getTotalPrice(props.prices))}</p>
+								<p className='text-small-regular'>{t('common.subtotal')}</p>
+								<p>{toCurrency(vatTotals.subtotal)}</p>
+							</div>
+							<div className='flex justify-between'>
+								<p className='text-small-regular'>
+									{vatMode === 'excluded'
+										? t('common.vatExcluded')
+										: t('common.vatIncluded')}
+								</p>
+								<p>{toCurrency(vatTotals.tax)}</p>
 							</div>
 						</div>
 
@@ -226,7 +242,7 @@ export default function Total(props) {
 				)}
 				<div className='flex justify-between'>
 					<p className='text-base-semibold'>{t('common.dueBalance')}</p>
-					<p className=''>{toCurrency(getTotalPrice(props.prices))}</p>
+					<p className=''>{toCurrency(vatTotals.total)}</p>
 				</div>
 			</div>
 		</div>

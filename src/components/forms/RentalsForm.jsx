@@ -36,6 +36,7 @@ export function RentalsForm({ data }) {
     defaultValues: {
       extra_driver_price_type: data?.extra_driver_price_type || "",
       extra_driver_price_per_day: data?.extra_driver_price_per_day || "",
+      vat_mode: data?.vat_mode || "included",
     },
   });
 
@@ -47,7 +48,7 @@ export function RentalsForm({ data }) {
 
   return (
     <Form {...form}>
-      <form action={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="form-container w-fit flex flex-col">
           <h3>{t("forms.extraDrivers")}</h3>
           <FormField
@@ -88,6 +89,30 @@ export function RentalsForm({ data }) {
                     {...field}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="vat_mode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("forms.vatTreatment")}</FormLabel>
+
+                <Select
+                  className="form-input"
+                  onChange={field.onChange}
+                  defaultSelectedKeys={field.value ? [field.value] : ["included"]}
+                  aria-label={t("forms.vatTreatment")}
+                  labelPlacement="outside"
+                  isRequired
+                  size="md"
+                >
+                  <SelectItem key={"included"}>{t("common.vatIncluded")}</SelectItem>
+                  <SelectItem key={"excluded"}>{t("common.vatExcluded")}</SelectItem>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
