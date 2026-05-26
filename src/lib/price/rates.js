@@ -145,7 +145,7 @@ function getEquipPrice(equip, num_days) {
 
 export function getNormalPrices(params, settings, prev) {
 	return {
-		vat_mode: getVatMode(settings?.vat_mode),
+		vat_mode: getVatMode(params.vat_mode || prev?.vat_mode || settings?.vat_mode),
 		vehicle: {
 			total: getVehiclePrice(params.vehicle, params.num_days),
 			type: 'day',
@@ -188,7 +188,12 @@ export function getTotalPrice(prices) {
 
 	let total = 0
 	Object.keys(prices).forEach((key) => {
-		if (key !== 'deposit' && key !== 'excess' && key !== 'equipment') {
+		if (
+			key !== 'deposit' &&
+			key !== 'excess' &&
+			key !== 'equipment' &&
+			key !== 'vat_mode'
+		) {
 			total += hasCustomPrice(key, prices)
 				? prices[key].custom
 				: typeof prices[key]?.total === 'number'

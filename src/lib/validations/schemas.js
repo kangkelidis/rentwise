@@ -51,6 +51,7 @@ export const orderValidationSchema = z.object({
 		})
 	),
 	status: z.string(),
+	vat_mode: z.enum(['included', 'excluded']).default('included'),
 })
 
 export const clientValidationSchema = z.object({

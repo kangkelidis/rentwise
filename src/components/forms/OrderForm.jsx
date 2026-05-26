@@ -163,8 +163,14 @@ export function OrderForm({ data }) {
   const equipment = data.equipment.map((e) => ({ item: e, count: 0 }));
   const insurances = data.insurances;
   const settings = data.settings;
+  const defaultVatMode = order
+    ? order?.prices?.vat_mode || "included"
+    : settings?.vat_mode || "included";
 
-  const [prices, setPrices] = useState(order?.prices || {});
+  const [prices, setPrices] = useState({
+    ...(order?.prices || {}),
+    vat_mode: defaultVatMode,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const isSubmittingRef = useRef(false);
 
@@ -191,6 +197,7 @@ export function OrderForm({ data }) {
     client_signature: order?.client_signature || "",
     status: order?.status || STATUS[0],
     extra_drivers: order?.extra_drivers || [],
+    vat_mode: defaultVatMode,
   };
 
   const [dates, setDates] = useState({
@@ -309,6 +316,7 @@ export function OrderForm({ data }) {
           drivers: submitValues.extra_drivers || [],
           equipment: equipmentParam,
           insurance: insurances.find((i) => i.id === submitValues.insurance),
+          vat_mode: submitValues.vat_mode,
         },
         settings,
         prices,
@@ -370,6 +378,7 @@ export function OrderForm({ data }) {
       drivers: values.extra_drivers || [],
       equipment: equipmentParam,
       insurance: insurances.find((i) => i.id === values.insurance),
+      vat_mode: values.vat_mode,
     };
 
     setPrices((prev) => getNormalPrices(params, settings, prev));
@@ -437,6 +446,37 @@ export function OrderForm({ data }) {
                             </StatusRadio>
                           ))}
 
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardBody>
+                </Card>
+
+                <Card className="w-full">
+                  <CardHeader>{t("common.pricing")}</CardHeader>
+                  <CardBody>
+                    <FormField
+                      control={form.control}
+                      name="vat_mode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("forms.vatTreatment")}</FormLabel>
+                          <Select
+                            className="form-input !w-[16rem]"
+                            selectedKeys={field.value ? [field.value] : ["included"]}
+                            onChange={field.onChange}
+                            aria-label={t("forms.vatTreatment")}
+                            labelPlacement="outside"
+                            size="md"
+                          >
+                            <SelectItem key="included">
+                              {t("common.vatIncluded")}
+                            </SelectItem>
+                            <SelectItem key="excluded">
+                              {t("common.vatExcluded")}
+                            </SelectItem>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
