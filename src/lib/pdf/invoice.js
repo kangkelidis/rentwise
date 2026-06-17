@@ -73,7 +73,7 @@ function printHeader(company, logoImgData, order, totals, vatTotals) {
 	xPos = PAGE_WIDTH - PAGE_MARGIN
 	doc.setFontSize(19)
 	doc.setFont('Helvetica', 'normal')
-	doc.text('Proforma Invoice', xPos, yPos, null, null, 'right')
+	doc.text('Invoice', xPos, yPos, null, null, 'right')
 
 	doc.setFontSize(11)
 	yPos += 1.5 * LINE_SPACE
@@ -118,15 +118,15 @@ function printHeader(company, logoImgData, order, totals, vatTotals) {
 	yPos += 2 * LINE_SPACE
 	if (client.email) {
 		doc.text(client.email, xPos, yPos)
-		yPos += 1.5*LINE_SPACE
+		yPos += 1.5 * LINE_SPACE
 	}
 	if (client.tel) {
 		doc.text(client.tel, xPos, yPos)
-		yPos += 1.5*LINE_SPACE
+		yPos += 1.5 * LINE_SPACE
 	}
 	if (client.address && client.address !== ', , , , ') {
 		doc.text(client.address, xPos, yPos)
-		yPos += 1.5*LINE_SPACE
+		yPos += 1.5 * LINE_SPACE
 	}
 	yPos += LINE_SPACE
 
@@ -138,13 +138,12 @@ function printHeader(company, logoImgData, order, totals, vatTotals) {
 		styles: {
 			fontSize: 9,
 		},
-		columnStyles: { 0: { halign: 'center'}, 1: {halign: 'left'}, 2:{halign: 'left'}, 3: {halign: 'right'}  },
+		columnStyles: { 0: { halign: 'center' }, 1: { halign: 'left' }, 2: { halign: 'left' }, 3: { halign: 'right' } },
 		head: [['No', 'Description', 'Tax', 'Amount']],
 		body: [
 			[
 				1,
-				`${order.vehicle.make.toUpperCase()} ${order.vehicle.model.toUpperCase()} (${
-					order.vehicle.registration
+				`${order.vehicle.make.toUpperCase()} ${order.vehicle.model.toUpperCase()} (${order.vehicle.registration
 				})  |  ${new Date(order.pick_up_date).toLocaleDateString(
 					'en-UK'
 				)} - ${new Date(order.drop_off_date).toLocaleDateString('en-UK')}`,
@@ -166,40 +165,50 @@ function printHeader(company, logoImgData, order, totals, vatTotals) {
 						getTaxText(extraTotal, vatTotals.mode),
 						toCurrency(getLineSubtotal(extraTotal, vatTotals.mode)),
 					]
-				} else {return []}
+				} else { return [] }
 			}).filter(a => a.length > 0),
 		],
 	})
 
 	yPos = doc.lastAutoTable.finalY + LINE_SPACE;
 	xPos = PAGE_WIDTH - PAGE_MARGIN
-  	doc.line(PAGE_MARGIN, yPos, PAGE_WIDTH-PAGE_MARGIN, yPos);
-	yPos += 2*LINE_SPACE
-	doc.text('Total Tax', xPos -35, yPos, null, null, 'right')
+	doc.line(PAGE_MARGIN, yPos, PAGE_WIDTH - PAGE_MARGIN, yPos);
+	yPos += 2 * LINE_SPACE
+	doc.text('Total Tax', xPos - 35, yPos, null, null, 'right')
 	doc.text(toCurrency(vatTotals.tax), xPos, yPos, null, null, 'right')
-	yPos += 2*LINE_SPACE
+	yPos += 2 * LINE_SPACE
 
-	doc.text('Subtotal', xPos -35, yPos, null, null, 'right')
+	doc.text('Subtotal', xPos - 35, yPos, null, null, 'right')
 	doc.text(toCurrency(vatTotals.subtotal), xPos, yPos, null, null, 'right')
-	yPos += 2*LINE_SPACE
+	yPos += 2 * LINE_SPACE
 
 	doc.setFont('Helvetica', 'bold')
-	doc.text('Balance Due', xPos -35, yPos, null, null, 'right')
+	doc.text('Balance Due', xPos - 35, yPos, null, null, 'right')
 	doc.text(toCurrency(vatTotals.total), xPos, yPos, null, null, 'right')
 
 	doc.setFontSize(9);
 	doc.setFont("Helvetica", "normal");
-	doc.line(PAGE_MARGIN, 270, PAGE_WIDTH-PAGE_MARGIN, 270, "S");
-    doc.text(
-      [
-        "Account name: CYTRANSOLUTIONS LTD",
-        "Account number: 357026026038",
-        "IBAN: CY47002001950000357026026038",
-        "BIC: BCYPCY2N",
-      ],
-      PAGE_MARGIN,
-      275
-    );
+	doc.line(PAGE_MARGIN, 270, PAGE_WIDTH - PAGE_MARGIN, 270, "S");
+	doc.text(
+		[
+			"Account name: CYTRANSOLUTIONS LTD",
+			"Account number: 357026026038",
+			"IBAN: CY47002001950000357026026038",
+			"BIC: BCYPCY2N",
+		],
+		PAGE_MARGIN,
+		275
+	);
+	doc.text(
+		[
+			"Revolut account details:",
+			"IBAN: LT693250056253223862",
+			"BIC: REVOLT21",
+		],
+		PAGE_WIDTH - PAGE_MARGIN,
+		275,
+		"right",
+	);
 
 }
 
